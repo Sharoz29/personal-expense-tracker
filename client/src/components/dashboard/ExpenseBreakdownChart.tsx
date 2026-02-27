@@ -21,14 +21,14 @@ export default function ExpenseBreakdownChart({ data }: ExpenseBreakdownChartPro
           cx="50%"
           cy="50%"
           outerRadius={100}
-          label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+          label={({ name, percent }: { name: string; percent?: number }) => `${name} (${((percent ?? 0) * 100).toFixed(0)}%)`}
           labelLine={false}
         >
           {data.map((_, index) => (
             <Cell key={index} fill={COLORS[index % COLORS.length]} />
           ))}
         </Pie>
-        <Tooltip formatter={(value: number) => `PKR ${value.toFixed(2)}`} />
+        <Tooltip formatter={(value) => `PKR ${Number(value).toFixed(2)}`} />
         <Legend />
       </PieChart>
     </ResponsiveContainer>
