@@ -6,6 +6,7 @@ import Modal from "../components/common/Modal";
 import ConfirmDialog from "../components/common/ConfirmDialog";
 import { Plus } from "lucide-react";
 import type { Expense } from "../types";
+import { formatPKR } from "../utils/format";
 
 export default function CarLoan() {
   const { payments, loading, total, create, update, remove } = useCarPayments();
@@ -73,7 +74,7 @@ export default function CarLoan() {
         onClose={() => setDeleting(null)}
         onConfirm={handleDelete}
         title="Delete Payment"
-        message={`Delete this PKR ${deleting?.amount.toFixed(2)} payment?`}
+        message={`Delete this ${formatPKR(deleting?.amount ?? 0)} payment?`}
       />
     </>
   );

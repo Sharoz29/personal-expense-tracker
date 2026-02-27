@@ -1,6 +1,7 @@
 import type { Income } from "../../types";
 import { Pencil, Trash2 } from "lucide-react";
 import EmptyState from "../common/EmptyState";
+import { formatPKR } from "../../utils/format";
 
 interface IncomeListProps {
   incomes: Income[];
@@ -37,7 +38,7 @@ export default function IncomeList({ incomes, total, onEdit, onDelete }: IncomeL
               </td>
               <td className="py-3 px-4 text-gray-600">{income.description || "-"}</td>
               <td className="py-3 px-4 text-right font-medium text-gray-900">
-                PKR {income.amount.toFixed(2)}
+                {formatPKR(income.amount)}
               </td>
               <td className="py-3 px-4 text-right">
                 <div className="flex justify-end gap-1">
@@ -61,7 +62,7 @@ export default function IncomeList({ incomes, total, onEdit, onDelete }: IncomeL
         <tfoot>
           <tr className="border-t-2 border-gray-200">
             <td colSpan={3} className="py-3 px-4 font-semibold text-gray-700">Total</td>
-            <td className="py-3 px-4 text-right font-bold text-gray-900">PKR {total.toFixed(2)}</td>
+            <td className="py-3 px-4 text-right font-bold text-gray-900">{formatPKR(total)}</td>
             <td />
           </tr>
         </tfoot>

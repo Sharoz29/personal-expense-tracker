@@ -1,4 +1,5 @@
 import { TrendingUp, TrendingDown, PiggyBank } from "lucide-react";
+import { formatPKR } from "../../utils/format";
 
 interface SummaryCardsProps {
   totalIncome: number;
@@ -45,7 +46,7 @@ export default function SummaryCards({ totalIncome, totalExpenses, savings }: Su
             </div>
           </div>
           <div className={`text-2xl font-bold ${color}`}>
-            PKR {value.toFixed(2)}
+            {formatPKR(value)}
           </div>
         </div>
       ))}

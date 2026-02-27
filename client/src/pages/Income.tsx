@@ -9,6 +9,7 @@ import Modal from "../components/common/Modal";
 import ConfirmDialog from "../components/common/ConfirmDialog";
 import { Plus } from "lucide-react";
 import type { Income as IncomeType } from "../types";
+import { formatPKR } from "../utils/format";
 
 export default function Income() {
   const { month, year } = useMonthYear();
@@ -77,7 +78,7 @@ export default function Income() {
         onClose={() => setDeleting(null)}
         onConfirm={handleDelete}
         title="Delete Income"
-        message={`Delete this PKR ${deleting?.amount.toFixed(2)} income entry?`}
+        message={`Delete this ${formatPKR(deleting?.amount ?? 0)} income entry?`}
       />
     </>
   );

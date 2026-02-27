@@ -1,4 +1,5 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
+import { formatPKR } from "../../utils/format";
 
 interface ExpenseBreakdownChartProps {
   data: { name: string; total: number }[];
@@ -28,7 +29,7 @@ export default function ExpenseBreakdownChart({ data }: ExpenseBreakdownChartPro
             <Cell key={index} fill={COLORS[index % COLORS.length]} />
           ))}
         </Pie>
-        <Tooltip formatter={(value) => `PKR ${Number(value).toFixed(2)}`} />
+        <Tooltip formatter={(value) => formatPKR(Number(value))} />
         <Legend />
       </PieChart>
     </ResponsiveContainer>

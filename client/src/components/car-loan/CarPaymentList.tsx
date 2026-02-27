@@ -1,6 +1,7 @@
 import type { Expense } from "../../types";
 import { Pencil, Trash2 } from "lucide-react";
 import EmptyState from "../common/EmptyState";
+import { formatPKR } from "../../utils/format";
 
 interface CarPaymentListProps {
   payments: Expense[];
@@ -31,7 +32,7 @@ export default function CarPaymentList({ payments, total, onEdit, onDelete }: Ca
               <td className="py-3 px-4 text-gray-700">{payment.date}</td>
               <td className="py-3 px-4 text-gray-600">{payment.description || "-"}</td>
               <td className="py-3 px-4 text-right font-medium text-gray-900">
-                PKR {payment.amount.toFixed(2)}
+                {formatPKR(payment.amount)}
               </td>
               <td className="py-3 px-4 text-right">
                 <div className="flex justify-end gap-1">
@@ -55,7 +56,7 @@ export default function CarPaymentList({ payments, total, onEdit, onDelete }: Ca
         <tfoot>
           <tr className="border-t-2 border-gray-200">
             <td colSpan={2} className="py-3 px-4 font-semibold text-gray-700">Total Paid</td>
-            <td className="py-3 px-4 text-right font-bold text-gray-900">PKR {total.toFixed(2)}</td>
+            <td className="py-3 px-4 text-right font-bold text-gray-900">{formatPKR(total)}</td>
             <td />
           </tr>
         </tfoot>

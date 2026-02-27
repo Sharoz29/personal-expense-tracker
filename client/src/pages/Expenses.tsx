@@ -9,6 +9,7 @@ import Modal from "../components/common/Modal";
 import ConfirmDialog from "../components/common/ConfirmDialog";
 import { Plus } from "lucide-react";
 import type { Expense } from "../types";
+import { formatPKR } from "../utils/format";
 
 export default function Expenses() {
   const { month, year } = useMonthYear();
@@ -77,7 +78,7 @@ export default function Expenses() {
         onClose={() => setDeleting(null)}
         onConfirm={handleDelete}
         title="Delete Expense"
-        message={`Delete this PKR ${deleting?.amount.toFixed(2)} expense?`}
+        message={`Delete this ${formatPKR(deleting?.amount ?? 0)} expense?`}
       />
     </>
   );
