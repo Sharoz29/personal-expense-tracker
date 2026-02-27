@@ -21,7 +21,7 @@ export default function ExpenseBreakdownChart({ data }: ExpenseBreakdownChartPro
           cx="50%"
           cy="50%"
           outerRadius={100}
-          label={({ name, percent }: { name: string; percent?: number }) => `${name} (${((percent ?? 0) * 100).toFixed(0)}%)`}
+          label={(props: any) => `${props.name} (${((props.percent ?? 0) * 100).toFixed(0)}%)`}
           labelLine={false}
         >
           {data.map((_, index) => (
