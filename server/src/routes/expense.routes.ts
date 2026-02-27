@@ -8,6 +8,7 @@ const router = Router();
 const controller = new ExpenseController();
 
 router.get("/summary", validate(monthYearQuerySchema, "query"), asyncHandler(controller.getSummary));
+router.get("/by-type", asyncHandler(controller.getByTypeName));
 router.get("/", validate(monthYearQuerySchema, "query"), asyncHandler(controller.getByMonthYear));
 router.get("/:id", asyncHandler(controller.getById));
 router.post("/", validate(createExpenseSchema), asyncHandler(controller.create));

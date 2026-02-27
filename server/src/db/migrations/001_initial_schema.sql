@@ -67,7 +67,8 @@ INSERT OR IGNORE INTO expense_types (name) VALUES
     ('Entertainment'),
     ('Healthcare'),
     ('Dining Out'),
-    ('Miscellaneous');
+    ('Miscellaneous'),
+    ('Car Payment');
 
 INSERT OR IGNORE INTO income_sources (name) VALUES
     ('Salary'),

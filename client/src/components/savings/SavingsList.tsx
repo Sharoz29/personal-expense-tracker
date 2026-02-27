@@ -38,7 +38,7 @@ export default function SavingsList({ savings, onEdit, onRecalculate }: SavingsL
                 {MONTHS[s.month - 1]} {s.year}
               </td>
               <td className={`py-3 px-4 text-right font-medium ${s.amount >= 0 ? "text-green-600" : "text-red-600"}`}>
-                ${s.amount.toFixed(2)}
+                PKR {s.amount.toFixed(2)}
               </td>
               <td className="py-3 px-4 text-gray-600">{s.notes || "-"}</td>
               <td className="py-3 px-4 text-right">
@@ -66,7 +66,7 @@ export default function SavingsList({ savings, onEdit, onRecalculate }: SavingsL
           <tr className="border-t-2 border-gray-200">
             <td className="py-3 px-4 font-semibold text-gray-700">Total Savings</td>
             <td className={`py-3 px-4 text-right font-bold ${totalSavings >= 0 ? "text-green-600" : "text-red-600"}`}>
-              ${totalSavings.toFixed(2)}
+              PKR {totalSavings.toFixed(2)}
             </td>
             <td colSpan={2} />
           </tr>

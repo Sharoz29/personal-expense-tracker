@@ -34,5 +34,11 @@ export function useSavings() {
     return result;
   };
 
-  return { savings, loading, error, calculate, update, refetch: fetch };
+  const create = async (month: number, year: number, amount: number, notes: string) => {
+    const result = await savingsApi.update(month, year, amount, notes);
+    await fetch();
+    return result;
+  };
+
+  return { savings, loading, error, calculate, update, create, refetch: fetch };
 }

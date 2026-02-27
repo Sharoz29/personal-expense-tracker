@@ -77,7 +77,7 @@ export default function Expenses() {
         onClose={() => setDeleting(null)}
         onConfirm={handleDelete}
         title="Delete Expense"
-        message={`Delete this $${deleting?.amount.toFixed(2)} expense?`}
+        message={`Delete this PKR ${deleting?.amount.toFixed(2)} expense?`}
       />
     </>
   );

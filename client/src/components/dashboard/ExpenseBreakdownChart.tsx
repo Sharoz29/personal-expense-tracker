@@ -28,7 +28,7 @@ export default function ExpenseBreakdownChart({ data }: ExpenseBreakdownChartPro
             <Cell key={index} fill={COLORS[index % COLORS.length]} />
           ))}
         </Pie>
-        <Tooltip formatter={(value: number) => `$${value.toFixed(2)}`} />
+        <Tooltip formatter={(value: number) => `PKR ${value.toFixed(2)}`} />
         <Legend />
       </PieChart>
     </ResponsiveContainer>

@@ -42,6 +42,12 @@ export class ExpenseController {
     res.status(204).send();
   }
 
+  async getByTypeName(req: Request, res: Response) {
+    const { typeName } = req.query;
+    const data = await service.getByTypeName(String(typeName));
+    res.json({ data });
+  }
+
   async getSummary(req: Request, res: Response) {
     const { month, year } = req.query;
     const total = await service.getSummary(Number(month), Number(year));

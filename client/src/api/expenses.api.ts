@@ -26,6 +26,10 @@ export const expensesApi = {
   delete: async (id: number): Promise<void> => {
     await api.delete(`/expenses/${id}`);
   },
+  getByTypeName: async (typeName: string): Promise<Expense[]> => {
+    const res = await api.get("/expenses/by-type", { params: { typeName } });
+    return res.data.data;
+  },
   getSummary: async (month: number, year: number): Promise<number> => {
     const res = await api.get("/expenses/summary", { params: { month, year } });
     return res.data.data.total;

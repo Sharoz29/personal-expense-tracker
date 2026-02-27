@@ -56,6 +56,18 @@ export class ExpenseRepository {
     return result.rowsAffected > 0;
   }
 
+  async findByTypeName(typeName: string): Promise<Expense[]> {
+    const result = await this.db.execute({
+      sql: `SELECT e.*, et.name as expense_type_name
+            FROM expenses e
+            JOIN expense_types et ON e.expense_type_id = et.id
+            WHERE et.name = ?
+            ORDER BY e.date DESC`,
+      args: [typeName],
+    });
+    return mapRows<Expense>(result.rows);
+  }
+
   async sumByMonthYear(month: number, year: number): Promise<number> {
     const result = await this.db.execute({
       sql: "SELECT COALESCE(SUM(amount), 0) as total FROM expenses WHERE month = ? AND year = ?",

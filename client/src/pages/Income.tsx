@@ -77,7 +77,7 @@ export default function Income() {
         onClose={() => setDeleting(null)}
         onConfirm={handleDelete}
         title="Delete Income"
-        message={`Delete this $${deleting?.amount.toFixed(2)} income entry?`}
+        message={`Delete this PKR ${deleting?.amount.toFixed(2)} income entry?`}
       />
     </>
   );

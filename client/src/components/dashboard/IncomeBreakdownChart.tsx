@@ -15,7 +15,7 @@ export default function IncomeBreakdownChart({ data }: IncomeBreakdownChartProps
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="name" tick={{ fontSize: 12 }} />
         <YAxis tick={{ fontSize: 12 }} />
-        <Tooltip formatter={(value: number) => `$${value.toFixed(2)}`} />
+        <Tooltip formatter={(value: number) => `PKR ${value.toFixed(2)}`} />
         <Bar dataKey="total" fill="#22c55e" radius={[4, 4, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>

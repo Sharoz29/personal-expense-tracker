@@ -45,7 +45,7 @@ export default function SummaryCards({ totalIncome, totalExpenses, savings }: Su
             </div>
           </div>
           <div className={`text-2xl font-bold ${color}`}>
-            ${value.toFixed(2)}
+            PKR {value.toFixed(2)}
           </div>
         </div>
       ))}

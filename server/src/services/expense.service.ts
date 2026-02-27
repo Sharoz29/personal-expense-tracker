@@ -24,6 +24,10 @@ export class ExpenseService {
     return repo.delete(id);
   }
 
+  async getByTypeName(typeName: string) {
+    return repo.findByTypeName(typeName);
+  }
+
   async getSummary(month: number, year: number) {
     return repo.sumByMonthYear(month, year);
   }
