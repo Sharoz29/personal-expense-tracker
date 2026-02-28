@@ -7,9 +7,10 @@ export class ExpenseRepository {
 
   async findByMonthYear(month: number, year: number): Promise<Expense[]> {
     const result = await this.db.execute({
-      sql: `SELECT e.*, et.name as expense_type_name
+      sql: `SELECT e.*, et.name as expense_type_name, a.name as account_name
             FROM expenses e
             JOIN expense_types et ON e.expense_type_id = et.id
+            JOIN accounts a ON e.account_id = a.id
             WHERE e.month = ? AND e.year = ?
             ORDER BY e.date DESC`,
       args: [month, year],
@@ -19,9 +20,10 @@ export class ExpenseRepository {
 
   async findById(id: number): Promise<Expense | null> {
     const result = await this.db.execute({
-      sql: `SELECT e.*, et.name as expense_type_name
+      sql: `SELECT e.*, et.name as expense_type_name, a.name as account_name
             FROM expenses e
             JOIN expense_types et ON e.expense_type_id = et.id
+            JOIN accounts a ON e.account_id = a.id
             WHERE e.id = ?`,
       args: [id],
     });
@@ -30,9 +32,9 @@ export class ExpenseRepository {
 
   async create(dto: CreateExpenseDto): Promise<Expense> {
     const result = await this.db.execute({
-      sql: `INSERT INTO expenses (expense_type_id, amount, description, date, month, year)
-            VALUES (?, ?, ?, ?, ?, ?) RETURNING *`,
-      args: [dto.expense_type_id, dto.amount, dto.description, dto.date, dto.month, dto.year],
+      sql: `INSERT INTO expenses (expense_type_id, account_id, amount, description, date, month, year)
+            VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING *`,
+      args: [dto.expense_type_id, dto.account_id, dto.amount, dto.description, dto.date, dto.month, dto.year],
     });
     return mapRow<Expense>(result.rows[0]);
   }
@@ -40,10 +42,10 @@ export class ExpenseRepository {
   async update(id: number, dto: UpdateExpenseDto): Promise<Expense | null> {
     const result = await this.db.execute({
       sql: `UPDATE expenses
-            SET expense_type_id = ?, amount = ?, description = ?, date = ?,
+            SET expense_type_id = ?, account_id = ?, amount = ?, description = ?, date = ?,
                 month = ?, year = ?, updated_at = datetime('now')
             WHERE id = ? RETURNING *`,
-      args: [dto.expense_type_id, dto.amount, dto.description, dto.date, dto.month, dto.year, id],
+      args: [dto.expense_type_id, dto.account_id, dto.amount, dto.description, dto.date, dto.month, dto.year, id],
     });
     return result.rows.length ? mapRow<Expense>(result.rows[0]) : null;
   }
@@ -58,9 +60,10 @@ export class ExpenseRepository {
 
   async findByTypeName(typeName: string): Promise<Expense[]> {
     const result = await this.db.execute({
-      sql: `SELECT e.*, et.name as expense_type_name
+      sql: `SELECT e.*, et.name as expense_type_name, a.name as account_name
             FROM expenses e
             JOIN expense_types et ON e.expense_type_id = et.id
+            JOIN accounts a ON e.account_id = a.id
             WHERE et.name = ?
             ORDER BY e.date DESC`,
       args: [typeName],

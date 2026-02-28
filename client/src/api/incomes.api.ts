@@ -3,6 +3,7 @@ import type { Income } from "../types";
 
 interface CreateIncomePayload {
   income_source_id: number;
+  account_id: number;
   amount: number;
   description: string;
   date: string;

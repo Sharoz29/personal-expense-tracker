@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const createExpenseSchema = z.object({
   expense_type_id: z.number().int().positive(),
+  account_id: z.number().int().positive(),
   amount: z.number().nonnegative("Amount must be >= 0"),
   description: z.string().default(""),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD"),

@@ -3,6 +3,7 @@ import Header from "../components/layout/Header";
 import { useMonthYear } from "../context/MonthYearContext";
 import { useIncomes } from "../hooks/useIncomes";
 import { useIncomeSources } from "../hooks/useIncomeSources";
+import { useAccounts } from "../hooks/useAccounts";
 import IncomeList from "../components/income/IncomeList";
 import IncomeForm from "../components/income/IncomeForm";
 import Modal from "../components/common/Modal";
@@ -15,6 +16,7 @@ export default function Income() {
   const { month, year } = useMonthYear();
   const { incomes, loading, total, create, update, remove } = useIncomes(month, year);
   const { incomeSources } = useIncomeSources();
+  const { accounts } = useAccounts();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<IncomeType | null>(null);
   const [deleting, setDeleting] = useState<IncomeType | null>(null);
@@ -67,6 +69,7 @@ export default function Income() {
       >
         <IncomeForm
           incomeSources={incomeSources}
+          accounts={accounts}
           income={editing}
           onSubmit={handleSubmit}
           onCancel={() => { setShowForm(false); setEditing(null); }}

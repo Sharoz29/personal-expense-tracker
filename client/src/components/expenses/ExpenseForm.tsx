@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
-import type { Expense, ExpenseType } from "../../types";
+import type { Expense, ExpenseType, Account } from "../../types";
 import { useMonthYear } from "../../context/MonthYearContext";
 
 interface ExpenseFormProps {
   expenseTypes: ExpenseType[];
+  accounts: Account[];
   expense?: Expense | null;
   onSubmit: (data: {
     expense_type_id: number;
+    account_id: number;
     amount: number;
     description: string;
     date: string;
@@ -16,9 +18,10 @@ interface ExpenseFormProps {
   onCancel: () => void;
 }
 
-export default function ExpenseForm({ expenseTypes, expense, onSubmit, onCancel }: ExpenseFormProps) {
+export default function ExpenseForm({ expenseTypes, accounts, expense, onSubmit, onCancel }: ExpenseFormProps) {
   const { month, year } = useMonthYear();
   const [expenseTypeId, setExpenseTypeId] = useState(expense?.expense_type_id ?? (expenseTypes[0]?.id ?? 0));
+  const [accountId, setAccountId] = useState(expense?.account_id ?? (accounts[0]?.id ?? 0));
   const [amount, setAmount] = useState(expense?.amount?.toString() ?? "");
   const [description, setDescription] = useState(expense?.description ?? "");
   const [date, setDate] = useState(expense?.date ?? `${year}-${String(month).padStart(2, "0")}-01`);
@@ -40,6 +43,7 @@ export default function ExpenseForm({ expenseTypes, expense, onSubmit, onCancel 
       const d = new Date(date);
       await onSubmit({
         expense_type_id: expenseTypeId,
+        account_id: accountId,
         amount: Number(amount),
         description,
         date,
@@ -66,6 +70,19 @@ export default function ExpenseForm({ expenseTypes, expense, onSubmit, onCancel 
         >
           {expenseTypes.map((t) => (
             <option key={t.id} value={t.id}>{t.name}</option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Account</label>
+        <select
+          value={accountId}
+          onChange={(e) => setAccountId(Number(e.target.value))}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          {accounts.map((a) => (
+            <option key={a.id} value={a.id}>{a.name}</option>
           ))}
         </select>
       </div>

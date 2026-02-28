@@ -3,6 +3,7 @@ import Header from "../components/layout/Header";
 import { useMonthYear } from "../context/MonthYearContext";
 import { useExpenses } from "../hooks/useExpenses";
 import { useExpenseTypes } from "../hooks/useExpenseTypes";
+import { useAccounts } from "../hooks/useAccounts";
 import ExpenseList from "../components/expenses/ExpenseList";
 import ExpenseForm from "../components/expenses/ExpenseForm";
 import Modal from "../components/common/Modal";
@@ -15,6 +16,7 @@ export default function Expenses() {
   const { month, year } = useMonthYear();
   const { expenses, loading, total, create, update, remove } = useExpenses(month, year);
   const { expenseTypes } = useExpenseTypes();
+  const { accounts } = useAccounts();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Expense | null>(null);
   const [deleting, setDeleting] = useState<Expense | null>(null);
@@ -67,6 +69,7 @@ export default function Expenses() {
       >
         <ExpenseForm
           expenseTypes={expenseTypes}
+          accounts={accounts}
           expense={editing}
           onSubmit={handleSubmit}
           onCancel={() => { setShowForm(false); setEditing(null); }}

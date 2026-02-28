@@ -7,9 +7,10 @@ export class IncomeRepository {
 
   async findByMonthYear(month: number, year: number): Promise<Income[]> {
     const result = await this.db.execute({
-      sql: `SELECT i.*, s.name as income_source_name
+      sql: `SELECT i.*, s.name as income_source_name, a.name as account_name
             FROM incomes i
             JOIN income_sources s ON i.income_source_id = s.id
+            JOIN accounts a ON i.account_id = a.id
             WHERE i.month = ? AND i.year = ?
             ORDER BY i.date DESC`,
       args: [month, year],
@@ -19,9 +20,10 @@ export class IncomeRepository {
 
   async findById(id: number): Promise<Income | null> {
     const result = await this.db.execute({
-      sql: `SELECT i.*, s.name as income_source_name
+      sql: `SELECT i.*, s.name as income_source_name, a.name as account_name
             FROM incomes i
             JOIN income_sources s ON i.income_source_id = s.id
+            JOIN accounts a ON i.account_id = a.id
             WHERE i.id = ?`,
       args: [id],
     });
@@ -30,9 +32,9 @@ export class IncomeRepository {
 
   async create(dto: CreateIncomeDto): Promise<Income> {
     const result = await this.db.execute({
-      sql: `INSERT INTO incomes (income_source_id, amount, description, date, month, year)
-            VALUES (?, ?, ?, ?, ?, ?) RETURNING *`,
-      args: [dto.income_source_id, dto.amount, dto.description, dto.date, dto.month, dto.year],
+      sql: `INSERT INTO incomes (income_source_id, account_id, amount, description, date, month, year)
+            VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING *`,
+      args: [dto.income_source_id, dto.account_id, dto.amount, dto.description, dto.date, dto.month, dto.year],
     });
     return mapRow<Income>(result.rows[0]);
   }
@@ -40,10 +42,10 @@ export class IncomeRepository {
   async update(id: number, dto: UpdateIncomeDto): Promise<Income | null> {
     const result = await this.db.execute({
       sql: `UPDATE incomes
-            SET income_source_id = ?, amount = ?, description = ?, date = ?,
+            SET income_source_id = ?, account_id = ?, amount = ?, description = ?, date = ?,
                 month = ?, year = ?, updated_at = datetime('now')
             WHERE id = ? RETURNING *`,
-      args: [dto.income_source_id, dto.amount, dto.description, dto.date, dto.month, dto.year, id],
+      args: [dto.income_source_id, dto.account_id, dto.amount, dto.description, dto.date, dto.month, dto.year, id],
     });
     return result.rows.length ? mapRow<Income>(result.rows[0]) : null;
   }

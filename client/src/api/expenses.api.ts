@@ -3,6 +3,7 @@ import type { Expense } from "../types";
 
 interface CreateExpensePayload {
   expense_type_id: number;
+  account_id: number;
   amount: number;
   description: string;
   date: string;

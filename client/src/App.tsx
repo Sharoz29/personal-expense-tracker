@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { MonthYearProvider } from "./context/MonthYearContext";
 import Layout from "./components/layout/Layout";
 import Dashboard from "./pages/Dashboard";
+import Accounts from "./pages/Accounts";
 import Expenses from "./pages/Expenses";
 import Income from "./pages/Income";
 import Savings from "./pages/Savings";
@@ -15,6 +16,7 @@ export default function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<Dashboard />} />
+            <Route path="/accounts" element={<Accounts />} />
             <Route path="/expenses" element={<Expenses />} />
             <Route path="/income" element={<Income />} />
             <Route path="/savings" element={<Savings />} />

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useCarPayments } from "../hooks/useCarPayments";
+import { useAccounts } from "../hooks/useAccounts";
 import CarPaymentList from "../components/car-loan/CarPaymentList";
 import CarPaymentForm from "../components/car-loan/CarPaymentForm";
 import Modal from "../components/common/Modal";
@@ -10,6 +11,7 @@ import { formatPKR } from "../utils/format";
 
 export default function CarLoan() {
   const { payments, loading, total, create, update, remove } = useCarPayments();
+  const { accounts } = useAccounts();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Expense | null>(null);
   const [deleting, setDeleting] = useState<Expense | null>(null);
@@ -63,6 +65,7 @@ export default function CarLoan() {
         title={editing ? "Edit Payment" : "Add Payment"}
       >
         <CarPaymentForm
+          accounts={accounts}
           payment={editing}
           onSubmit={handleSubmit}
           onCancel={() => { setShowForm(false); setEditing(null); }}

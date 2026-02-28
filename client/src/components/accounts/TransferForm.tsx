@@ -1,46 +1,43 @@
 import { useState } from "react";
-import type { Expense, Account } from "../../types";
+import type { Account } from "../../types";
 
-interface CarPaymentFormProps {
+interface TransferFormProps {
   accounts: Account[];
-  payment?: Expense | null;
   onSubmit: (data: {
-    account_id: number;
+    from_account_id: number;
+    to_account_id: number;
     amount: number;
     description: string;
     date: string;
-    month: number;
-    year: number;
   }) => Promise<void>;
   onCancel: () => void;
 }
 
-export default function CarPaymentForm({ accounts, payment, onSubmit, onCancel }: CarPaymentFormProps) {
-  const today = new Date().toISOString().split("T")[0];
-  const [accountId, setAccountId] = useState(payment?.account_id ?? (accounts[0]?.id ?? 0));
-  const [amount, setAmount] = useState(payment?.amount?.toString() ?? "");
-  const [description, setDescription] = useState(payment?.description ?? "");
-  const [date, setDate] = useState(payment?.date ?? today);
+export default function TransferForm({ accounts, onSubmit, onCancel }: TransferFormProps) {
+  const [fromId, setFromId] = useState(accounts[0]?.id ?? 0);
+  const [toId, setToId] = useState(accounts[1]?.id ?? accounts[0]?.id ?? 0);
+  const [amount, setAmount] = useState("");
+  const [description, setDescription] = useState("");
+  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!amount || Number(amount) < 0) { setError("Amount must be >= 0"); return; }
+    if (!amount || Number(amount) <= 0) { setError("Amount must be > 0"); return; }
+    if (fromId === toId) { setError("Cannot transfer to the same account"); return; }
     setSubmitting(true);
     setError(null);
     try {
-      const d = new Date(date);
       await onSubmit({
-        account_id: accountId,
+        from_account_id: fromId,
+        to_account_id: toId,
         amount: Number(amount),
         description,
         date,
-        month: d.getMonth() + 1,
-        year: d.getFullYear(),
       });
     } catch (err: any) {
-      setError(err.response?.data?.error || "Failed to save");
+      setError(err.response?.data?.error || "Failed to transfer");
     } finally {
       setSubmitting(false);
     }
@@ -51,10 +48,10 @@ export default function CarPaymentForm({ accounts, payment, onSubmit, onCancel }
       {error && <div className="text-red-600 text-sm p-2 bg-red-50 rounded">{error}</div>}
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Account</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">From Account</label>
         <select
-          value={accountId}
-          onChange={(e) => setAccountId(Number(e.target.value))}
+          value={fromId}
+          onChange={(e) => setFromId(Number(e.target.value))}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           {accounts.map((a) => (
@@ -64,11 +61,24 @@ export default function CarPaymentForm({ accounts, payment, onSubmit, onCancel }
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Amount (PKR)</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">To Account</label>
+        <select
+          value={toId}
+          onChange={(e) => setToId(Number(e.target.value))}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          {accounts.map((a) => (
+            <option key={a.id} value={a.id}>{a.name}</option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
         <input
           type="number"
           step="0.01"
-          min="0"
+          min="0.01"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -111,7 +121,7 @@ export default function CarPaymentForm({ accounts, payment, onSubmit, onCancel }
           disabled={submitting}
           className="px-4 py-2 text-sm rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
         >
-          {submitting ? "Saving..." : payment ? "Update" : "Add Payment"}
+          {submitting ? "Transferring..." : "Transfer"}
         </button>
       </div>
     </form>

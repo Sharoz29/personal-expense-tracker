@@ -6,6 +6,7 @@ import type { Expense } from "../types";
 const CAR_PAYMENT_TYPE = "Car Payment";
 
 interface CreateCarPaymentPayload {
+  account_id: number;
   amount: number;
   description: string;
   date: string;

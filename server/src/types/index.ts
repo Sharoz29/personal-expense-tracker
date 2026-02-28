@@ -14,10 +14,34 @@ export interface IncomeSource {
   updated_at: string;
 }
 
+export interface Account {
+  id: number;
+  name: string;
+  account_number: string;
+  balance: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AccountTransfer {
+  id: number;
+  from_account_id: number;
+  from_account_name?: string;
+  to_account_id: number;
+  to_account_name?: string;
+  amount: number;
+  description: string;
+  date: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Expense {
   id: number;
   expense_type_id: number;
   expense_type_name?: string;
+  account_id: number;
+  account_name?: string;
   amount: number;
   description: string;
   date: string;
@@ -31,6 +55,8 @@ export interface Income {
   id: number;
   income_source_id: number;
   income_source_name?: string;
+  account_id: number;
+  account_name?: string;
   amount: number;
   description: string;
   date: string;
@@ -54,6 +80,7 @@ export interface Savings {
 
 export interface CreateExpenseDto {
   expense_type_id: number;
+  account_id: number;
   amount: number;
   description: string;
   date: string;
@@ -65,6 +92,7 @@ export type UpdateExpenseDto = CreateExpenseDto;
 
 export interface CreateIncomeDto {
   income_source_id: number;
+  account_id: number;
   amount: number;
   description: string;
   date: string;
@@ -85,6 +113,25 @@ export interface CreateIncomeSourceDto {
 }
 
 export type UpdateIncomeSourceDto = CreateIncomeSourceDto;
+
+export interface CreateAccountDto {
+  name: string;
+  account_number: string;
+  balance: number;
+}
+
+export interface UpdateAccountDto {
+  name: string;
+  account_number: string;
+}
+
+export interface CreateAccountTransferDto {
+  from_account_id: number;
+  to_account_id: number;
+  amount: number;
+  description: string;
+  date: string;
+}
 
 export interface DashboardSummary {
   totalIncome: number;
