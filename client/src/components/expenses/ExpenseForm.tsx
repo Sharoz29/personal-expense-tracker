@@ -29,6 +29,18 @@ export default function ExpenseForm({ expenseTypes, accounts, expense, onSubmit,
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!expense && accounts.length > 0 && !accounts.some(a => a.id === accountId)) {
+      setAccountId(accounts[0].id);
+    }
+  }, [accounts, expense, accountId]);
+
+  useEffect(() => {
+    if (!expense && expenseTypes.length > 0 && !expenseTypes.some(t => t.id === expenseTypeId)) {
+      setExpenseTypeId(expenseTypes[0].id);
+    }
+  }, [expenseTypes, expense, expenseTypeId]);
+
+  useEffect(() => {
     if (!expense) {
       setDate(`${year}-${String(month).padStart(2, "0")}-01`);
     }

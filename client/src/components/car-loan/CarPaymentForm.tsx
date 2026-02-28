@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Expense, Account } from "../../types";
 
 interface CarPaymentFormProps {
@@ -23,6 +23,12 @@ export default function CarPaymentForm({ accounts, payment, onSubmit, onCancel }
   const [date, setDate] = useState(payment?.date ?? today);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!payment && accounts.length > 0 && !accounts.some(a => a.id === accountId)) {
+      setAccountId(accounts[0].id);
+    }
+  }, [accounts, payment, accountId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

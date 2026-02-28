@@ -29,6 +29,18 @@ export default function IncomeForm({ incomeSources, accounts, income, onSubmit, 
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!income && accounts.length > 0 && !accounts.some(a => a.id === accountId)) {
+      setAccountId(accounts[0].id);
+    }
+  }, [accounts, income, accountId]);
+
+  useEffect(() => {
+    if (!income && incomeSources.length > 0 && !incomeSources.some(s => s.id === sourceId)) {
+      setSourceId(incomeSources[0].id);
+    }
+  }, [incomeSources, income, sourceId]);
+
+  useEffect(() => {
     if (!income) {
       setDate(`${year}-${String(month).padStart(2, "0")}-01`);
     }
