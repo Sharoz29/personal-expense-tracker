@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import Header from "../components/layout/Header";
 import { useMonthYear } from "../context/MonthYearContext";
 import { useExpenses } from "../hooks/useExpenses";
@@ -17,10 +18,22 @@ export default function Expenses() {
   const { expenses, loading, total, create, update, remove } = useExpenses(month, year);
   const { expenseTypes } = useExpenseTypes();
   const { accounts } = useAccounts();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Expense | null>(null);
   const [deleting, setDeleting] = useState<Expense | null>(null);
   const [filterTypeId, setFilterTypeId] = useState<number | null>(null);
+
+  // Sync filter from URL search param when expense types load
+  useEffect(() => {
+    const typeName = searchParams.get("type");
+    if (typeName && expenseTypes.length > 0) {
+      const match = expenseTypes.find((t) => t.name === typeName);
+      if (match) setFilterTypeId(match.id);
+      searchParams.delete("type");
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [searchParams, expenseTypes, setSearchParams]);
 
   const filteredExpenses = filterTypeId
     ? expenses.filter((e) => e.expense_type_id === filterTypeId)

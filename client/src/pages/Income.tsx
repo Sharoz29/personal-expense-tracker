@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import Header from "../components/layout/Header";
 import { useMonthYear } from "../context/MonthYearContext";
 import { useIncomes } from "../hooks/useIncomes";
@@ -17,10 +18,22 @@ export default function Income() {
   const { incomes, loading, total, create, update, remove } = useIncomes(month, year);
   const { incomeSources } = useIncomeSources();
   const { accounts } = useAccounts();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<IncomeType | null>(null);
   const [deleting, setDeleting] = useState<IncomeType | null>(null);
   const [filterSourceId, setFilterSourceId] = useState<number | null>(null);
+
+  // Sync filter from URL search param when income sources load
+  useEffect(() => {
+    const sourceName = searchParams.get("source");
+    if (sourceName && incomeSources.length > 0) {
+      const match = incomeSources.find((s) => s.name === sourceName);
+      if (match) setFilterSourceId(match.id);
+      searchParams.delete("source");
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [searchParams, incomeSources, setSearchParams]);
 
   const filteredIncomes = filterSourceId
     ? incomes.filter((i) => i.income_source_id === filterSourceId)
