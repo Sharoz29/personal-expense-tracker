@@ -17,36 +17,36 @@ export default function ExpenseList({ expenses, total, onEdit, onDelete }: Expen
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-sm">
+      <table className="w-full text-sm min-w-150">
         <thead>
           <tr className="border-b border-gray-200">
-            <th className="text-left py-3 px-4 font-medium text-gray-500">Date</th>
-            <th className="text-left py-3 px-4 font-medium text-gray-500">Type</th>
-            <th className="text-left py-3 px-4 font-medium text-gray-500">Account</th>
-            <th className="text-left py-3 px-4 font-medium text-gray-500">Description</th>
-            <th className="text-right py-3 px-4 font-medium text-gray-500">Amount</th>
-            <th className="text-right py-3 px-4 font-medium text-gray-500">Actions</th>
+            <th className="text-left py-3 px-3 md:px-4 font-medium text-gray-500">Date</th>
+            <th className="text-left py-3 px-3 md:px-4 font-medium text-gray-500">Type</th>
+            <th className="text-left py-3 px-3 md:px-4 font-medium text-gray-500">Account</th>
+            <th className="text-left py-3 px-3 md:px-4 font-medium text-gray-500">Description</th>
+            <th className="text-right py-3 px-3 md:px-4 font-medium text-gray-500">Amount</th>
+            <th className="text-right py-3 px-3 md:px-4 font-medium text-gray-500">Actions</th>
           </tr>
         </thead>
         <tbody>
           {expenses.map((expense) => (
             <tr key={expense.id} className="border-b border-gray-100 hover:bg-gray-50">
-              <td className="py-3 px-4 text-gray-700">{expense.date}</td>
-              <td className="py-3 px-4">
+              <td className="py-3 px-3 md:px-4 text-gray-700">{expense.date}</td>
+              <td className="py-3 px-3 md:px-4">
                 <span className="px-2 py-1 bg-red-50 text-red-700 rounded text-xs font-medium">
                   {expense.expense_type_name}
                 </span>
               </td>
-              <td className="py-3 px-4">
+              <td className="py-3 px-3 md:px-4">
                 <span className="px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs font-medium">
                   {expense.account_name}
                 </span>
               </td>
-              <td className="py-3 px-4 text-gray-600">{expense.description || "-"}</td>
-              <td className="py-3 px-4 text-right font-medium text-gray-900">
+              <td className="py-3 px-3 md:px-4 text-gray-600">{expense.description || "-"}</td>
+              <td className="py-3 px-3 md:px-4 text-right font-medium text-gray-900">
                 {formatPKR(expense.amount)}
               </td>
-              <td className="py-3 px-4 text-right">
+              <td className="py-3 px-3 md:px-4 text-right">
                 <div className="flex justify-end gap-1">
                   <button
                     onClick={() => onEdit(expense)}

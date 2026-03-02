@@ -61,15 +61,15 @@ export default function Expenses() {
   return (
     <>
       <Header title="Expenses" />
-      <div className="p-6">
+      <div className="p-4 md:p-6">
         <div className="bg-white rounded-xl border border-gray-200">
-          <div className="flex items-center justify-between p-4 border-b border-gray-200">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between p-4 border-b border-gray-200">
             <h3 className="font-semibold text-gray-700">
               {loading ? "Loading..." : `${filteredExpenses.length} expense${filteredExpenses.length !== 1 ? "s" : ""}`}
             </h3>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               <div className="flex items-center gap-1.5 text-gray-500">
-                <Filter size={14} />
+                <Filter size={14} className="hidden sm:block" />
                 <select
                   value={filterTypeId ?? ""}
                   onChange={(e) => setFilterTypeId(e.target.value ? Number(e.target.value) : null)}
@@ -83,7 +83,7 @@ export default function Expenses() {
               </div>
               <button
                 onClick={() => { setEditing(null); setShowForm(true); }}
-                className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors flex items-center gap-1"
+                className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors flex items-center gap-1 whitespace-nowrap"
               >
                 <Plus size={16} /> Add Expense
               </button>

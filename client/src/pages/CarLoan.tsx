@@ -34,8 +34,8 @@ export default function CarLoan() {
 
   return (
     <>
-      <header className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200">
-        <h2 className="text-2xl font-bold text-gray-800">Car Loan</h2>
+      <header className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4 bg-white border-b border-gray-200">
+        <h2 className="text-xl md:text-2xl font-bold text-gray-800">Car Loan</h2>
         <button
           onClick={() => { setEditing(null); setShowForm(true); }}
           className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors flex items-center gap-1"
@@ -43,7 +43,7 @@ export default function CarLoan() {
           <Plus size={16} /> Add Payment
         </button>
       </header>
-      <div className="p-6">
+      <div className="p-4 md:p-6">
         <div className="bg-white rounded-xl border border-gray-200">
           <div className="p-4 border-b border-gray-200">
             <h3 className="font-semibold text-gray-700">

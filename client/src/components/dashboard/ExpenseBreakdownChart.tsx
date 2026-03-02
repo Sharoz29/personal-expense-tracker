@@ -15,8 +15,8 @@ export default function ExpenseBreakdownChart({ data }: ExpenseBreakdownChartPro
     return <div className="text-center text-gray-500 py-8">No expense data for this month</div>;
   }
 
-  const handleClick = (entry: { name: string }) => {
-    navigate(`/expenses?type=${encodeURIComponent(entry.name)}`);
+  const handleClick = (entry: { name?: string }) => {
+    if (entry.name) navigate(`/expenses?type=${encodeURIComponent(entry.name)}`);
   };
 
   return (

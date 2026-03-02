@@ -17,7 +17,7 @@ export default function IncomeList({ incomes, total, onEdit, onDelete }: IncomeL
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-sm">
+      <table className="w-full text-sm min-w-150">
         <thead>
           <tr className="border-b border-gray-200">
             <th className="text-left py-3 px-4 font-medium text-gray-500">Date</th>

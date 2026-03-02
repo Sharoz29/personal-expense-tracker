@@ -13,8 +13,8 @@ export default function IncomeBreakdownChart({ data }: IncomeBreakdownChartProps
     return <div className="text-center text-gray-500 py-8">No income data for this month</div>;
   }
 
-  const handleClick = (entry: { name: string }) => {
-    navigate(`/income?source=${encodeURIComponent(entry.name)}`);
+  const handleClick = (entry: { name?: string }) => {
+    if (entry.name) navigate(`/income?source=${encodeURIComponent(entry.name)}`);
   };
 
   return (

@@ -1,13 +1,14 @@
 import { Outlet } from "react-router-dom";
-import Sidebar from "./Sidebar";
+import { DesktopSidebar, MobileBottomNav } from "./Sidebar";
 
 export default function Layout() {
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar />
-      <main className="flex-1 flex flex-col">
+      <DesktopSidebar />
+      <main className="flex-1 flex flex-col pb-16 md:pb-0">
         <Outlet />
       </main>
+      <MobileBottomNav />
     </div>
   );
 }

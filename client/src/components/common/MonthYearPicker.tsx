@@ -20,11 +20,11 @@ export default function MonthYearPicker() {
   };
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-2 sm:gap-3">
       <button onClick={goBack} className="p-1 rounded hover:bg-gray-200 transition-colors">
         <ChevronLeft size={20} />
       </button>
-      <span className="text-lg font-semibold min-w-[180px] text-center">
+      <span className="text-sm sm:text-lg font-semibold min-w-35 sm:min-w-45 text-center">
         {MONTHS[month - 1]} {year}
       </span>
       <button onClick={goForward} className="p-1 rounded hover:bg-gray-200 transition-colors">

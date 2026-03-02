@@ -24,7 +24,7 @@ export default function Dashboard() {
   return (
     <>
       <Header title="Dashboard" />
-      <div className="p-6 space-y-6">
+      <div className="p-4 md:p-6 space-y-4 md:space-y-6">
         {loading ? (
           <div className="text-gray-500">Loading...</div>
         ) : summary ? (
@@ -34,12 +34,12 @@ export default function Dashboard() {
               totalExpenses={summary.totalExpenses}
               savings={summary.savings}
             />
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+              <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Expenses by Type</h3>
                 <ExpenseBreakdownChart data={summary.expensesByType} />
               </div>
-              <div className="bg-white rounded-xl border border-gray-200 p-6">
+              <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Income by Source</h3>
                 <IncomeBreakdownChart data={summary.incomeBySource} />
               </div>
