@@ -8,7 +8,7 @@ import IncomeList from "../components/income/IncomeList";
 import IncomeForm from "../components/income/IncomeForm";
 import Modal from "../components/common/Modal";
 import ConfirmDialog from "../components/common/ConfirmDialog";
-import { Plus } from "lucide-react";
+import { Plus, Filter } from "lucide-react";
 import type { Income as IncomeType } from "../types";
 import { formatPKR } from "../utils/format";
 
@@ -20,6 +20,14 @@ export default function Income() {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<IncomeType | null>(null);
   const [deleting, setDeleting] = useState<IncomeType | null>(null);
+  const [filterSourceId, setFilterSourceId] = useState<number | null>(null);
+
+  const filteredIncomes = filterSourceId
+    ? incomes.filter((i) => i.income_source_id === filterSourceId)
+    : incomes;
+  const filteredTotal = filterSourceId
+    ? filteredIncomes.reduce((sum, i) => sum + i.amount, 0)
+    : total;
 
   const handleSubmit = async (data: Parameters<typeof create>[0]) => {
     if (editing) {
@@ -44,18 +52,33 @@ export default function Income() {
         <div className="bg-white rounded-xl border border-gray-200">
           <div className="flex items-center justify-between p-4 border-b border-gray-200">
             <h3 className="font-semibold text-gray-700">
-              {loading ? "Loading..." : `${incomes.length} income entr${incomes.length !== 1 ? "ies" : "y"}`}
+              {loading ? "Loading..." : `${filteredIncomes.length} income entr${filteredIncomes.length !== 1 ? "ies" : "y"}`}
             </h3>
-            <button
-              onClick={() => { setEditing(null); setShowForm(true); }}
-              className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors flex items-center gap-1"
-            >
-              <Plus size={16} /> Add Income
-            </button>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1.5 text-gray-500">
+                <Filter size={14} />
+                <select
+                  value={filterSourceId ?? ""}
+                  onChange={(e) => setFilterSourceId(e.target.value ? Number(e.target.value) : null)}
+                  className="px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">All Sources</option>
+                  {incomeSources.map((s) => (
+                    <option key={s.id} value={s.id}>{s.name}</option>
+                  ))}
+                </select>
+              </div>
+              <button
+                onClick={() => { setEditing(null); setShowForm(true); }}
+                className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors flex items-center gap-1"
+              >
+                <Plus size={16} /> Add Income
+              </button>
+            </div>
           </div>
           <IncomeList
-            incomes={incomes}
-            total={total}
+            incomes={filteredIncomes}
+            total={filteredTotal}
             onEdit={(i) => { setEditing(i); setShowForm(true); }}
             onDelete={setDeleting}
           />

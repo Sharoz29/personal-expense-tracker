@@ -8,7 +8,7 @@ import ExpenseList from "../components/expenses/ExpenseList";
 import ExpenseForm from "../components/expenses/ExpenseForm";
 import Modal from "../components/common/Modal";
 import ConfirmDialog from "../components/common/ConfirmDialog";
-import { Plus } from "lucide-react";
+import { Plus, Filter } from "lucide-react";
 import type { Expense } from "../types";
 import { formatPKR } from "../utils/format";
 
@@ -20,6 +20,14 @@ export default function Expenses() {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Expense | null>(null);
   const [deleting, setDeleting] = useState<Expense | null>(null);
+  const [filterTypeId, setFilterTypeId] = useState<number | null>(null);
+
+  const filteredExpenses = filterTypeId
+    ? expenses.filter((e) => e.expense_type_id === filterTypeId)
+    : expenses;
+  const filteredTotal = filterTypeId
+    ? filteredExpenses.reduce((sum, e) => sum + e.amount, 0)
+    : total;
 
   const handleSubmit = async (data: Parameters<typeof create>[0]) => {
     if (editing) {
@@ -44,18 +52,33 @@ export default function Expenses() {
         <div className="bg-white rounded-xl border border-gray-200">
           <div className="flex items-center justify-between p-4 border-b border-gray-200">
             <h3 className="font-semibold text-gray-700">
-              {loading ? "Loading..." : `${expenses.length} expense${expenses.length !== 1 ? "s" : ""}`}
+              {loading ? "Loading..." : `${filteredExpenses.length} expense${filteredExpenses.length !== 1 ? "s" : ""}`}
             </h3>
-            <button
-              onClick={() => { setEditing(null); setShowForm(true); }}
-              className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors flex items-center gap-1"
-            >
-              <Plus size={16} /> Add Expense
-            </button>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1.5 text-gray-500">
+                <Filter size={14} />
+                <select
+                  value={filterTypeId ?? ""}
+                  onChange={(e) => setFilterTypeId(e.target.value ? Number(e.target.value) : null)}
+                  className="px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">All Types</option>
+                  {expenseTypes.map((t) => (
+                    <option key={t.id} value={t.id}>{t.name}</option>
+                  ))}
+                </select>
+              </div>
+              <button
+                onClick={() => { setEditing(null); setShowForm(true); }}
+                className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors flex items-center gap-1"
+              >
+                <Plus size={16} /> Add Expense
+              </button>
+            </div>
           </div>
           <ExpenseList
-            expenses={expenses}
-            total={total}
+            expenses={filteredExpenses}
+            total={filteredTotal}
             onEdit={(e) => { setEditing(e); setShowForm(true); }}
             onDelete={setDeleting}
           />
