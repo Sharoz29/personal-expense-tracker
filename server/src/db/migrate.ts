@@ -11,6 +11,7 @@ async function migrate() {
   const migrationFiles = [
     "001_initial_schema.sql",
     "002_accounts.sql",
+    "003_payables.sql",
   ];
 
   for (const file of migrationFiles) {
@@ -21,7 +22,15 @@ async function migrate() {
       .map((s) => s.trim())
       .filter((s) => s.length > 0 && !s.startsWith("--"));
 
-    await db.batch(statements.map((sql) => ({ sql, args: [] })));
+    for (const stmt of statements) {
+      try {
+        await db.execute({ sql: stmt, args: [] });
+      } catch (err: any) {
+        // Tolerate "duplicate column" errors from re-running ALTER TABLE
+        if (err.message?.includes("duplicate column")) continue;
+        throw err;
+      }
+    }
     console.log(`Migration ${file} completed.`);
   }
 

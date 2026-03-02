@@ -76,6 +76,21 @@ export interface Savings {
   updated_at: string;
 }
 
+export interface Payable {
+  id: number;
+  description: string;
+  amount: number;
+  from_person: string;
+  status: "pending" | "paid";
+  due_date: string | null;
+  paid_date: string | null;
+  account_id: number | null;
+  account_name?: string;
+  income_id: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
 // ---- DTOs ----
 
 export interface CreateExpenseDto {
@@ -132,6 +147,15 @@ export interface CreateAccountTransferDto {
   description: string;
   date: string;
 }
+
+export interface CreatePayableDto {
+  description: string;
+  amount: number;
+  from_person: string;
+  due_date?: string;
+}
+
+export type UpdatePayableDto = CreatePayableDto;
 
 export interface DashboardSummary {
   totalIncome: number;

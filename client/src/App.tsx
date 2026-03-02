@@ -8,6 +8,7 @@ import Income from "./pages/Income";
 import Savings from "./pages/Savings";
 import CarLoan from "./pages/CarLoan";
 import Settings from "./pages/Settings";
+import Payables from "./pages/Payables";
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
             <Route path="/accounts" element={<Accounts />} />
             <Route path="/expenses" element={<Expenses />} />
             <Route path="/income" element={<Income />} />
+            <Route path="/payables" element={<Payables />} />
             <Route path="/savings" element={<Savings />} />
             <Route path="/car-loan" element={<CarLoan />} />
             <Route path="/settings" element={<Settings />} />
