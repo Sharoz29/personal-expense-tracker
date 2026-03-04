@@ -36,6 +36,11 @@ export interface AccountTransfer {
   updated_at: string;
 }
 
+export interface ExpenseBreakdown {
+  label: string;
+  amount: number;
+}
+
 export interface Expense {
   id: number;
   expense_type_id: number;
@@ -47,6 +52,7 @@ export interface Expense {
   date: string;
   month: number;
   year: number;
+  breakdowns: ExpenseBreakdown[] | null;
   created_at: string;
   updated_at: string;
 }
@@ -110,6 +116,7 @@ export interface CreateExpenseDto {
   date: string;
   month: number;
   year: number;
+  breakdowns?: ExpenseBreakdown[] | null;
 }
 
 export type UpdateExpenseDto = CreateExpenseDto;

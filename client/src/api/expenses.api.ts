@@ -1,5 +1,5 @@
 import api from "./client";
-import type { Expense } from "../types";
+import type { Expense, ExpenseBreakdown } from "../types";
 
 interface CreateExpensePayload {
   expense_type_id: number;
@@ -9,6 +9,7 @@ interface CreateExpensePayload {
   date: string;
   month: number;
   year: number;
+  breakdowns?: ExpenseBreakdown[] | null;
 }
 
 export const expensesApi = {
