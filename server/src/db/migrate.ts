@@ -12,6 +12,7 @@ async function migrate() {
     "001_initial_schema.sql",
     "002_accounts.sql",
     "003_payables.sql",
+    "004_payable_types.sql",
   ];
 
   for (const file of migrationFiles) {

@@ -5,6 +5,7 @@ export const createPayableSchema = z.object({
   amount: z.number().positive("Amount must be positive"),
   from_person: z.string().default(""),
   due_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD").optional(),
+  payable_type_id: z.number().int().positive().optional(),
 });
 
 export const updatePayableSchema = createPayableSchema;

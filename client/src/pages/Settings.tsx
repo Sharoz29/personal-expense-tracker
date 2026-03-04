@@ -1,5 +1,6 @@
 import ExpenseTypeManager from "../components/settings/ExpenseTypeManager";
 import IncomeSourceManager from "../components/settings/IncomeSourceManager";
+import PayableTypeManager from "../components/settings/PayableTypeManager";
 
 export default function Settings() {
   return (
@@ -14,6 +15,9 @@ export default function Settings() {
           </div>
           <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
             <IncomeSourceManager />
+          </div>
+          <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
+            <PayableTypeManager />
           </div>
         </div>
       </div>

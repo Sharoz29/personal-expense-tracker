@@ -6,6 +6,7 @@ interface CreatePayablePayload {
   amount: number;
   from_person: string;
   due_date?: string;
+  payable_type_id?: number;
 }
 
 export const payablesApi = {

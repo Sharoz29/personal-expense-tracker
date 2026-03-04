@@ -1,22 +1,33 @@
 import { useState } from "react";
 import { usePayables } from "../hooks/usePayables";
 import { useAccounts } from "../hooks/useAccounts";
+import { usePayableTypes } from "../hooks/usePayableTypes";
 import PayableList from "../components/payables/PayableList";
 import PayableForm from "../components/payables/PayableForm";
 import MarkPaidDialog from "../components/payables/MarkPaidDialog";
 import Modal from "../components/common/Modal";
 import ConfirmDialog from "../components/common/ConfirmDialog";
-import { Plus } from "lucide-react";
+import { Plus, Filter } from "lucide-react";
 import type { Payable } from "../types";
 import { formatPKR } from "../utils/format";
 
 export default function Payables() {
-  const { payables, loading, totalPending, create, update, markPaid, remove } = usePayables();
+  const { payables, loading, create, update, markPaid, remove } = usePayables();
   const { accounts } = useAccounts();
+  const { payableTypes } = usePayableTypes();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Payable | null>(null);
   const [deleting, setDeleting] = useState<Payable | null>(null);
   const [markingPaid, setMarkingPaid] = useState<Payable | null>(null);
+  const [filterTypeId, setFilterTypeId] = useState<number>(0);
+
+  const filteredPayables = filterTypeId
+    ? payables.filter((p) => p.payable_type_id === filterTypeId)
+    : payables;
+
+  const filteredTotalPending = filteredPayables
+    .filter((p) => p.status === "pending")
+    .reduce((sum, p) => sum + p.amount, 0);
 
   const handleSubmit = async (data: Parameters<typeof create>[0]) => {
     if (editing) {
@@ -55,20 +66,33 @@ export default function Payables() {
         <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
           <p className="text-sm text-gray-500 mb-1">Total Pending</p>
           <p className="text-2xl font-bold text-yellow-600">
-            {formatPKR(totalPending)}
+            {formatPKR(filteredTotalPending)}
           </p>
         </div>
 
         {/* Payables List */}
         <div className="bg-white rounded-xl border border-gray-200">
-          <div className="p-4 border-b border-gray-200">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between p-4 border-b border-gray-200">
             <h3 className="font-semibold text-gray-700">
-              {loading ? "Loading..." : `${payables.length} payable${payables.length !== 1 ? "s" : ""}`}
+              {loading ? "Loading..." : `${filteredPayables.length} payable${filteredPayables.length !== 1 ? "s" : ""}`}
             </h3>
+            <div className="flex items-center gap-1.5 text-gray-500">
+              <Filter size={14} className="hidden sm:block" />
+              <select
+                value={filterTypeId}
+                onChange={(e) => setFilterTypeId(Number(e.target.value))}
+                className="px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value={0}>All Types</option>
+                {payableTypes.map((t) => (
+                  <option key={t.id} value={t.id}>{t.name}</option>
+                ))}
+              </select>
+            </div>
           </div>
           <PayableList
-            payables={payables}
-            totalPending={totalPending}
+            payables={filteredPayables}
+            totalPending={filteredTotalPending}
             onEdit={(p) => { setEditing(p); setShowForm(true); }}
             onDelete={setDeleting}
             onMarkPaid={setMarkingPaid}
@@ -83,6 +107,7 @@ export default function Payables() {
       >
         <PayableForm
           payable={editing}
+          payableTypes={payableTypes}
           onSubmit={handleSubmit}
           onCancel={() => { setShowForm(false); setEditing(null); }}
         />

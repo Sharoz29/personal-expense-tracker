@@ -76,6 +76,13 @@ export interface Savings {
   updated_at: string;
 }
 
+export interface PayableType {
+  id: number;
+  name: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Payable {
   id: number;
   description: string;
@@ -87,6 +94,8 @@ export interface Payable {
   account_id: number | null;
   account_name?: string;
   income_id: number | null;
+  payable_type_id: number | null;
+  payable_type_name?: string;
   created_at: string;
   updated_at: string;
 }
@@ -148,11 +157,18 @@ export interface CreateAccountTransferDto {
   date: string;
 }
 
+export interface CreatePayableTypeDto {
+  name: string;
+}
+
+export type UpdatePayableTypeDto = CreatePayableTypeDto;
+
 export interface CreatePayableDto {
   description: string;
   amount: number;
   from_person: string;
   due_date?: string;
+  payable_type_id?: number;
 }
 
 export type UpdatePayableDto = CreatePayableDto;

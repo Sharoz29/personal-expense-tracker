@@ -23,6 +23,7 @@ export default function PayableList({ payables, totalPending, onEdit, onDelete, 
           <tr className="border-b border-gray-200">
             <th className="text-left py-3 px-3 md:px-4 font-medium text-gray-500">Status</th>
             <th className="text-left py-3 px-3 md:px-4 font-medium text-gray-500">From</th>
+            <th className="text-left py-3 px-3 md:px-4 font-medium text-gray-500">Type</th>
             <th className="text-left py-3 px-3 md:px-4 font-medium text-gray-500">Description</th>
             <th className="text-left py-3 px-3 md:px-4 font-medium text-gray-500">Due Date</th>
             <th className="text-right py-3 px-3 md:px-4 font-medium text-gray-500">Amount</th>
@@ -40,6 +41,7 @@ export default function PayableList({ payables, totalPending, onEdit, onDelete, 
                 )}
               </td>
               <td className="py-3 px-3 md:px-4 text-gray-700">{p.from_person || "-"}</td>
+              <td className="py-3 px-3 md:px-4 text-gray-600">{p.payable_type_name || "-"}</td>
               <td className="py-3 px-3 md:px-4 text-gray-600">
                 {p.description}
                 {p.status === "paid" && p.account_name && (
@@ -86,7 +88,7 @@ export default function PayableList({ payables, totalPending, onEdit, onDelete, 
         </tbody>
         <tfoot>
           <tr className="border-t-2 border-gray-200">
-            <td colSpan={4} className="py-3 px-3 md:px-4 font-semibold text-gray-700">Total Pending</td>
+            <td colSpan={5} className="py-3 px-3 md:px-4 font-semibold text-gray-700">Total Pending</td>
             <td className="py-3 px-3 md:px-4 text-right font-bold text-gray-900">{formatPKR(totalPending)}</td>
             <td />
           </tr>

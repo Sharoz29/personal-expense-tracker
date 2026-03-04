@@ -7,9 +7,10 @@ export class PayableRepository {
 
   async findAll(): Promise<Payable[]> {
     const result = await this.db.execute({
-      sql: `SELECT p.*, a.name as account_name
+      sql: `SELECT p.*, a.name as account_name, pt.name as payable_type_name
             FROM payables p
             LEFT JOIN accounts a ON p.account_id = a.id
+            LEFT JOIN payable_types pt ON p.payable_type_id = pt.id
             ORDER BY
               CASE p.status WHEN 'pending' THEN 0 ELSE 1 END,
               p.created_at DESC`,
@@ -20,9 +21,10 @@ export class PayableRepository {
 
   async findById(id: number): Promise<Payable | null> {
     const result = await this.db.execute({
-      sql: `SELECT p.*, a.name as account_name
+      sql: `SELECT p.*, a.name as account_name, pt.name as payable_type_name
             FROM payables p
             LEFT JOIN accounts a ON p.account_id = a.id
+            LEFT JOIN payable_types pt ON p.payable_type_id = pt.id
             WHERE p.id = ?`,
       args: [id],
     });
@@ -31,9 +33,9 @@ export class PayableRepository {
 
   async create(dto: CreatePayableDto): Promise<Payable> {
     const result = await this.db.execute({
-      sql: `INSERT INTO payables (description, amount, from_person, due_date)
-            VALUES (?, ?, ?, ?) RETURNING *`,
-      args: [dto.description, dto.amount, dto.from_person, dto.due_date ?? null],
+      sql: `INSERT INTO payables (description, amount, from_person, due_date, payable_type_id)
+            VALUES (?, ?, ?, ?, ?) RETURNING *`,
+      args: [dto.description, dto.amount, dto.from_person, dto.due_date ?? null, dto.payable_type_id ?? null],
     });
     return mapRow<Payable>(result.rows[0]);
   }
@@ -41,9 +43,9 @@ export class PayableRepository {
   async update(id: number, dto: UpdatePayableDto): Promise<Payable | null> {
     const result = await this.db.execute({
       sql: `UPDATE payables
-            SET description = ?, amount = ?, from_person = ?, due_date = ?, updated_at = datetime('now')
+            SET description = ?, amount = ?, from_person = ?, due_date = ?, payable_type_id = ?, updated_at = datetime('now')
             WHERE id = ? AND status = 'pending' RETURNING *`,
-      args: [dto.description, dto.amount, dto.from_person, dto.due_date ?? null, id],
+      args: [dto.description, dto.amount, dto.from_person, dto.due_date ?? null, dto.payable_type_id ?? null, id],
     });
     return result.rows.length ? mapRow<Payable>(result.rows[0]) : null;
   }

@@ -1,22 +1,25 @@
 import { useState } from "react";
-import type { Payable } from "../../types";
+import type { Payable, PayableType } from "../../types";
 
 interface PayableFormProps {
   payable?: Payable | null;
+  payableTypes: PayableType[];
   onSubmit: (data: {
     description: string;
     amount: number;
     from_person: string;
     due_date?: string;
+    payable_type_id?: number;
   }) => Promise<void>;
   onCancel: () => void;
 }
 
-export default function PayableForm({ payable, onSubmit, onCancel }: PayableFormProps) {
+export default function PayableForm({ payable, payableTypes, onSubmit, onCancel }: PayableFormProps) {
   const [description, setDescription] = useState(payable?.description ?? "");
   const [amount, setAmount] = useState(payable?.amount?.toString() ?? "");
   const [fromPerson, setFromPerson] = useState(payable?.from_person ?? "");
   const [dueDate, setDueDate] = useState(payable?.due_date ?? "");
+  const [payableTypeId, setPayableTypeId] = useState<number | "">(payable?.payable_type_id ?? "");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,6 +35,7 @@ export default function PayableForm({ payable, onSubmit, onCancel }: PayableForm
         amount: Number(amount),
         from_person: fromPerson.trim(),
         ...(dueDate ? { due_date: dueDate } : {}),
+        ...(payableTypeId ? { payable_type_id: Number(payableTypeId) } : {}),
       });
     } catch (err: any) {
       setError(err.response?.data?.error || "Failed to save");
@@ -78,6 +82,20 @@ export default function PayableForm({ payable, onSubmit, onCancel }: PayableForm
           placeholder="Who owes you..."
           className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Type (optional)</label>
+        <select
+          value={payableTypeId}
+          onChange={(e) => setPayableTypeId(e.target.value ? Number(e.target.value) : "")}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">No type</option>
+          {payableTypes.map((t) => (
+            <option key={t.id} value={t.id}>{t.name}</option>
+          ))}
+        </select>
       </div>
 
       <div>
