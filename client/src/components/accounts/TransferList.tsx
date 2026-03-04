@@ -1,6 +1,6 @@
 import type { AccountTransfer } from "../../types";
 import EmptyState from "../common/EmptyState";
-import { formatPKR } from "../../utils/format";
+import { formatPKR, formatDate } from "../../utils/format";
 
 interface TransferListProps {
   transfers: AccountTransfer[];
@@ -26,7 +26,7 @@ export default function TransferList({ transfers }: TransferListProps) {
         <tbody>
           {transfers.map((t) => (
             <tr key={t.id} className="border-b border-gray-100 hover:bg-gray-50">
-              <td className="py-3 px-4 text-gray-700">{t.date}</td>
+              <td className="py-3 px-4 text-gray-700">{formatDate(t.date)}</td>
               <td className="py-3 px-4">
                 <span className="px-2 py-1 bg-red-50 text-red-700 rounded text-xs font-medium">
                   {t.from_account_name}

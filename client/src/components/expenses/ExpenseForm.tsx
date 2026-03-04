@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import type { Expense, ExpenseType, Account, ExpenseBreakdown } from "../../types";
 import { useMonthYear } from "../../context/MonthYearContext";
-import { formatPKR } from "../../utils/format";
+import { formatPKR, todayISO } from "../../utils/format";
 import { Plus, Trash2, ChevronDown, ChevronUp } from "lucide-react";
 
 interface ExpenseFormProps {
@@ -27,7 +27,7 @@ export default function ExpenseForm({ expenseTypes, accounts, expense, onSubmit,
   const [accountId, setAccountId] = useState(expense?.account_id ?? (accounts[0]?.id ?? 0));
   const [amount, setAmount] = useState(expense?.amount?.toString() ?? "");
   const [description, setDescription] = useState(expense?.description ?? "");
-  const [date, setDate] = useState(expense?.date ?? `${year}-${String(month).padStart(2, "0")}-01`);
+  const [date, setDate] = useState(expense?.date ?? todayISO());
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -59,7 +59,7 @@ export default function ExpenseForm({ expenseTypes, accounts, expense, onSubmit,
 
   useEffect(() => {
     if (!expense) {
-      setDate(`${year}-${String(month).padStart(2, "0")}-01`);
+      setDate(todayISO());
     }
   }, [month, year, expense]);
 

@@ -1,7 +1,7 @@
 import type { Payable } from "../../types";
 import { Pencil, Trash2, CheckCircle } from "lucide-react";
 import EmptyState from "../common/EmptyState";
-import { formatPKR } from "../../utils/format";
+import { formatPKR, formatDate } from "../../utils/format";
 
 interface PayableListProps {
   payables: Payable[];
@@ -50,7 +50,7 @@ export default function PayableList({ payables, totalPending, onEdit, onDelete, 
                   </span>
                 )}
               </td>
-              <td className="py-3 px-3 md:px-4 text-gray-600">{p.due_date || "-"}</td>
+              <td className="py-3 px-3 md:px-4 text-gray-600">{p.due_date ? formatDate(p.due_date) : "-"}</td>
               <td className="py-3 px-3 md:px-4 text-right font-medium text-gray-900">
                 {formatPKR(p.amount)}
               </td>

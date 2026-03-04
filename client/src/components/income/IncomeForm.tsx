@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import type { Income, IncomeSource, Account } from "../../types";
 import { useMonthYear } from "../../context/MonthYearContext";
+import { todayISO } from "../../utils/format";
 
 interface IncomeFormProps {
   incomeSources: IncomeSource[];
@@ -24,7 +25,7 @@ export default function IncomeForm({ incomeSources, accounts, income, onSubmit, 
   const [accountId, setAccountId] = useState(income?.account_id ?? (accounts[0]?.id ?? 0));
   const [amount, setAmount] = useState(income?.amount?.toString() ?? "");
   const [description, setDescription] = useState(income?.description ?? "");
-  const [date, setDate] = useState(income?.date ?? `${year}-${String(month).padStart(2, "0")}-01`);
+  const [date, setDate] = useState(income?.date ?? todayISO());
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -42,7 +43,7 @@ export default function IncomeForm({ incomeSources, accounts, income, onSubmit, 
 
   useEffect(() => {
     if (!income) {
-      setDate(`${year}-${String(month).padStart(2, "0")}-01`);
+      setDate(todayISO());
     }
   }, [month, year, income]);
 

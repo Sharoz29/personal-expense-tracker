@@ -1,7 +1,7 @@
 import type { Income } from "../../types";
 import { Pencil, Trash2 } from "lucide-react";
 import EmptyState from "../common/EmptyState";
-import { formatPKR } from "../../utils/format";
+import { formatPKR, formatDate } from "../../utils/format";
 
 interface IncomeListProps {
   incomes: Income[];
@@ -31,7 +31,7 @@ export default function IncomeList({ incomes, total, onEdit, onDelete }: IncomeL
         <tbody>
           {incomes.map((income) => (
             <tr key={income.id} className="border-b border-gray-100 hover:bg-gray-50">
-              <td className="py-3 px-4 text-gray-700">{income.date}</td>
+              <td className="py-3 px-4 text-gray-700">{formatDate(income.date)}</td>
               <td className="py-3 px-4">
                 <span className="px-2 py-1 bg-green-50 text-green-700 rounded text-xs font-medium">
                   {income.income_source_name}

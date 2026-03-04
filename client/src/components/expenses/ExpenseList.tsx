@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { Expense } from "../../types";
 import { Pencil, Trash2, ChevronDown, ChevronUp } from "lucide-react";
 import EmptyState from "../common/EmptyState";
-import { formatPKR } from "../../utils/format";
+import { formatPKR, formatDate } from "../../utils/format";
 
 interface ExpenseListProps {
   expenses: Expense[];
@@ -38,7 +38,7 @@ export default function ExpenseList({ expenses, total, onEdit, onDelete }: Expen
 
             return (
               <tr key={expense.id} className="border-b border-gray-100 hover:bg-gray-50 group">
-                <td className="py-3 px-3 md:px-4 text-gray-700">{expense.date}</td>
+                <td className="py-3 px-3 md:px-4 text-gray-700">{formatDate(expense.date)}</td>
                 <td className="py-3 px-3 md:px-4">
                   <span className="px-2 py-1 bg-red-50 text-red-700 rounded text-xs font-medium">
                     {expense.expense_type_name}
