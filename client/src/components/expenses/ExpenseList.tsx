@@ -49,7 +49,12 @@ export default function ExpenseList({ expenses, total, onEdit, onDelete }: Expen
                     {expense.account_name}
                   </span>
                 </td>
-                <td className="py-3 px-3 md:px-4 text-gray-600">{expense.description || "-"}</td>
+                <td className="py-3 px-3 md:px-4 text-gray-600">
+                  {expense.description || (hasBreakdowns
+                    ? expense.breakdowns!.map(b => b.label).join(", ")
+                    : "-"
+                  )}
+                </td>
                 <td className="py-3 px-3 md:px-4 text-right font-medium text-gray-900">
                   <div className="flex items-center justify-end gap-1">
                     {hasBreakdowns && (
