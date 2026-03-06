@@ -104,6 +104,34 @@ export interface Payable {
   updated_at: string;
 }
 
+export interface AssetType {
+  id: number;
+  name: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Asset {
+  id: number;
+  name: string;
+  asset_type_id: number;
+  asset_type_name?: string;
+  current_value: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SavingsCertificate {
+  id: number;
+  certificate_type: string;
+  principal_amount: number;
+  profit_rate: number;
+  purchase_date: string;
+  maturity_date: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface DashboardSummary {
   totalIncome: number;
   totalExpenses: number;

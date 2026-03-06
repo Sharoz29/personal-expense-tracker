@@ -8,6 +8,9 @@ import dashboardRoutes from "./dashboard.routes.js";
 import accountRoutes from "./account.routes.js";
 import payableRoutes from "./payable.routes.js";
 import payableTypeRoutes from "./payable-type.routes.js";
+import assetTypeRoutes from "./asset-type.routes.js";
+import assetRoutes from "./asset.routes.js";
+import savingsCertificateRoutes from "./savings-certificate.routes.js";
 
 const router = Router();
 
@@ -20,5 +23,8 @@ router.use("/dashboard", dashboardRoutes);
 router.use("/accounts", accountRoutes);
 router.use("/payables", payableRoutes);
 router.use("/payable-types", payableTypeRoutes);
+router.use("/asset-types", assetTypeRoutes);
+router.use("/assets", assetRoutes);
+router.use("/savings-certificates", savingsCertificateRoutes);
 
 export default router;
