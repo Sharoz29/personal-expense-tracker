@@ -23,6 +23,8 @@ export default function Expenses() {
   const [editing, setEditing] = useState<Expense | null>(null);
   const [deleting, setDeleting] = useState<Expense | null>(null);
   const [filterTypeId, setFilterTypeId] = useState<number | null>(null);
+  const [filterAccountId, setFilterAccountId] = useState<number | null>(null);
+  const [filterDate, setFilterDate] = useState("");
 
   // Sync filter from URL search param when expense types load
   useEffect(() => {
@@ -35,10 +37,14 @@ export default function Expenses() {
     }
   }, [searchParams, expenseTypes, setSearchParams]);
 
-  const filteredExpenses = filterTypeId
-    ? expenses.filter((e) => e.expense_type_id === filterTypeId)
-    : expenses;
-  const filteredTotal = filterTypeId
+  const filteredExpenses = expenses.filter((e) => {
+    if (filterTypeId && e.expense_type_id !== filterTypeId) return false;
+    if (filterAccountId && e.account_id !== filterAccountId) return false;
+    if (filterDate && e.date !== filterDate) return false;
+    return true;
+  });
+  const hasFilter = filterTypeId || filterAccountId || filterDate;
+  const filteredTotal = hasFilter
     ? filteredExpenses.reduce((sum, e) => sum + e.amount, 0)
     : total;
 
@@ -80,6 +86,22 @@ export default function Expenses() {
                     <option key={t.id} value={t.id}>{t.name}</option>
                   ))}
                 </select>
+                <select
+                  value={filterAccountId ?? ""}
+                  onChange={(e) => setFilterAccountId(e.target.value ? Number(e.target.value) : null)}
+                  className="px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">All Accounts</option>
+                  {accounts.map((a) => (
+                    <option key={a.id} value={a.id}>{a.name}</option>
+                  ))}
+                </select>
+                <input
+                  type="date"
+                  value={filterDate}
+                  onChange={(e) => setFilterDate(e.target.value)}
+                  className="px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
               </div>
               <button
                 onClick={() => { setEditing(null); setShowForm(true); }}
