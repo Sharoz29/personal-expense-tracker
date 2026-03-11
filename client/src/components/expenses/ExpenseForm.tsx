@@ -17,6 +17,8 @@ interface ExpenseFormProps {
     month: number;
     year: number;
     breakdowns?: ExpenseBreakdown[] | null;
+    create_payable?: boolean;
+    payable_from?: string;
   }) => Promise<void>;
   onCancel: () => void;
 }
@@ -30,6 +32,9 @@ export default function ExpenseForm({ expenseTypes, accounts, expense, onSubmit,
   const [date, setDate] = useState(expense?.date ?? todayISO());
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const [createPayable, setCreatePayable] = useState(false);
+  const [payableFrom, setPayableFrom] = useState("");
 
   const hasExistingBreakdowns = expense?.breakdowns && expense.breakdowns.length > 0;
   const [showBreakdown, setShowBreakdown] = useState(!!hasExistingBreakdowns);
@@ -118,6 +123,7 @@ export default function ExpenseForm({ expenseTypes, accounts, expense, onSubmit,
         month: d.getMonth() + 1,
         year: d.getFullYear(),
         breakdowns: validBreakdowns,
+        ...(createPayable ? { create_payable: true, payable_from: payableFrom.trim() } : {}),
       });
     } catch (err: any) {
       setError(err.response?.data?.error || "Failed to save");
@@ -254,6 +260,36 @@ export default function ExpenseForm({ expenseTypes, accounts, expense, onSubmit,
           className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
+
+      {!expense && (
+        <>
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="createPayable"
+              checked={createPayable}
+              onChange={(e) => setCreatePayable(e.target.checked)}
+              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
+            <label htmlFor="createPayable" className="text-sm font-medium text-gray-700">
+              Mark as payable
+            </label>
+          </div>
+
+          {createPayable && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">From (person/company)</label>
+              <input
+                type="text"
+                value={payableFrom}
+                onChange={(e) => setPayableFrom(e.target.value)}
+                placeholder="Who owes you..."
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          )}
+        </>
+      )}
 
       <div className="flex justify-end gap-3 pt-2">
         <button

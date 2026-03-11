@@ -11,6 +11,8 @@ interface CreateExpensePayload {
   month: number;
   year: number;
   breakdowns?: ExpenseBreakdown[] | null;
+  create_payable?: boolean;
+  payable_from?: string;
 }
 
 export function useExpenses(month: number, year: number) {

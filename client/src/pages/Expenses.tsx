@@ -12,6 +12,7 @@ import ConfirmDialog from "../components/common/ConfirmDialog";
 import { Plus, Filter } from "lucide-react";
 import type { Expense } from "../types";
 import { formatPKR } from "../utils/format";
+import { payablesApi } from "../api/payables.api";
 
 export default function Expenses() {
   const { month, year } = useMonthYear();
@@ -53,6 +54,13 @@ export default function Expenses() {
       await update(editing.id, data);
     } else {
       await create(data);
+      if (data.create_payable) {
+        await payablesApi.create({
+          description: data.description,
+          amount: data.amount,
+          from_person: data.payable_from || "",
+        });
+      }
     }
     setShowForm(false);
     setEditing(null);
