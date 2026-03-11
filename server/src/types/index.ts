@@ -204,6 +204,9 @@ export interface CreatePayableDto {
   from_person: string;
   due_date?: string;
   payable_type_id?: number;
+  status?: "pending" | "paid";
+  account_id?: number;
+  paid_date?: string;
 }
 
 export type UpdatePayableDto = CreatePayableDto;

@@ -108,6 +108,7 @@ export default function Payables() {
         <PayableForm
           payable={editing}
           payableTypes={payableTypes}
+          accounts={accounts}
           onSubmit={handleSubmit}
           onCancel={() => { setShowForm(false); setEditing(null); }}
         />

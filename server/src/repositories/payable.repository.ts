@@ -33,9 +33,18 @@ export class PayableRepository {
 
   async create(dto: CreatePayableDto): Promise<Payable> {
     const result = await this.db.execute({
-      sql: `INSERT INTO payables (description, amount, from_person, due_date, payable_type_id)
-            VALUES (?, ?, ?, ?, ?) RETURNING *`,
-      args: [dto.description, dto.amount, dto.from_person, dto.due_date ?? null, dto.payable_type_id ?? null],
+      sql: `INSERT INTO payables (description, amount, from_person, due_date, payable_type_id, status, account_id, paid_date)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`,
+      args: [
+        dto.description,
+        dto.amount,
+        dto.from_person,
+        dto.due_date ?? null,
+        dto.payable_type_id ?? null,
+        dto.status ?? "pending",
+        dto.account_id ?? null,
+        dto.paid_date ?? null,
+      ],
     });
     return mapRow<Payable>(result.rows[0]);
   }
