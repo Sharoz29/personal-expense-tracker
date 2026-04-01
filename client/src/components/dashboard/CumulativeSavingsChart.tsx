@@ -41,8 +41,8 @@ export default function CumulativeSavingsChart({ data }: CumulativeSavingsChartP
         <XAxis dataKey="label" tick={{ fontSize: 12 }} />
         <YAxis tick={{ fontSize: 12 }} />
         <Tooltip
-          formatter={(value: number, name: string) => [
-            formatPKR(value),
+          formatter={(value, name) => [
+            formatPKR(Number(value)),
             name === "cumulativeSavings" ? "Cumulative Savings" : "Monthly Savings",
           ]}
         />
