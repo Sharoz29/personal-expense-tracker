@@ -8,5 +8,6 @@ const router = Router();
 const controller = new DashboardController();
 
 router.get("/summary", validate(monthYearQuerySchema, "query"), asyncHandler(controller.getSummary));
+router.get("/savings-history", asyncHandler(controller.getSavingsHistory));
 
 export default router;

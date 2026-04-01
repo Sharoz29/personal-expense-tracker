@@ -235,6 +235,15 @@ export interface CreateSavingsCertificateDto {
 
 export type UpdateSavingsCertificateDto = CreateSavingsCertificateDto;
 
+export interface MonthlySavingsRecord {
+  month: number;
+  year: number;
+  monthlyIncome: number;
+  monthlyExpenses: number;
+  monthlySavings: number;
+  cumulativeSavings: number;
+}
+
 export interface DashboardSummary {
   totalIncome: number;
   totalExpenses: number;

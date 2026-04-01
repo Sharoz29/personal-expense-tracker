@@ -132,6 +132,15 @@ export interface SavingsCertificate {
   updated_at: string;
 }
 
+export interface MonthlySavingsRecord {
+  month: number;
+  year: number;
+  monthlyIncome: number;
+  monthlyExpenses: number;
+  monthlySavings: number;
+  cumulativeSavings: number;
+}
+
 export interface DashboardSummary {
   totalIncome: number;
   totalExpenses: number;

@@ -9,4 +9,9 @@ export class DashboardController {
     const data = await service.getSummary(Number(month), Number(year));
     res.json({ data });
   }
+
+  async getSavingsHistory(_req: Request, res: Response) {
+    const data = await service.getSavingsHistory();
+    res.json({ data });
+  }
 }

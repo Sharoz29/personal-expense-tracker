@@ -5,12 +5,16 @@ import { dashboardApi } from "../api/dashboard.api";
 import SummaryCards from "../components/dashboard/SummaryCards";
 import ExpenseBreakdownChart from "../components/dashboard/ExpenseBreakdownChart";
 import IncomeBreakdownChart from "../components/dashboard/IncomeBreakdownChart";
-import type { DashboardSummary } from "../types";
+import CumulativeSavingsChart from "../components/dashboard/CumulativeSavingsChart";
+import SavingsHistoryTable from "../components/dashboard/SavingsHistoryTable";
+import type { DashboardSummary, MonthlySavingsRecord } from "../types";
 
 export default function Dashboard() {
   const { month, year } = useMonthYear();
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [loading, setLoading] = useState(true);
+  const [savingsHistory, setSavingsHistory] = useState<MonthlySavingsRecord[]>([]);
+  const [savingsLoading, setSavingsLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
@@ -20,6 +24,15 @@ export default function Dashboard() {
       .catch(() => setSummary(null))
       .finally(() => setLoading(false));
   }, [month, year]);
+
+  useEffect(() => {
+    setSavingsLoading(true);
+    dashboardApi
+      .getSavingsHistory()
+      .then(setSavingsHistory)
+      .catch(() => setSavingsHistory([]))
+      .finally(() => setSavingsLoading(false));
+  }, []);
 
   return (
     <>
@@ -50,6 +63,25 @@ export default function Dashboard() {
             No data available for this month. Start by adding income and expenses.
           </div>
         )}
+
+        {savingsLoading ? (
+          <div className="text-gray-500">Loading savings history...</div>
+        ) : savingsHistory.length > 0 ? (
+          <>
+            <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                Cumulative Savings Over Time
+              </h3>
+              <CumulativeSavingsChart data={savingsHistory} />
+            </div>
+            <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                Monthly Savings History
+              </h3>
+              <SavingsHistoryTable data={savingsHistory} />
+            </div>
+          </>
+        ) : null}
       </div>
     </>
   );

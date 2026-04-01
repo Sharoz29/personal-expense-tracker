@@ -88,6 +88,16 @@ export class ExpenseRepository {
     return Number(result.rows[0].total);
   }
 
+  async sumAllMonths(): Promise<{ month: number; year: number; total: number }[]> {
+    const result = await this.db.execute(
+      `SELECT month, year, COALESCE(SUM(amount), 0) as total
+       FROM expenses
+       GROUP BY year, month
+       ORDER BY year ASC, month ASC`
+    );
+    return mapRows<{ month: number; year: number; total: number }>(result.rows);
+  }
+
   async sumByTypeForMonth(month: number, year: number): Promise<{ name: string; total: number }[]> {
     const result = await this.db.execute({
       sql: `SELECT et.name, COALESCE(SUM(e.amount), 0) as total
