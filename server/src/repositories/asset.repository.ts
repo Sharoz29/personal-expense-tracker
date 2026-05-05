@@ -7,9 +7,10 @@ export class AssetRepository {
 
   async findAll(): Promise<Asset[]> {
     const result = await this.db.execute({
-      sql: `SELECT a.*, at.name as asset_type_name
+      sql: `SELECT a.*, at.name as asset_type_name, acc.name as account_name
             FROM assets a
             JOIN asset_types at ON a.asset_type_id = at.id
+            LEFT JOIN accounts acc ON a.account_id = acc.id
             ORDER BY a.created_at DESC`,
       args: [],
     });
@@ -18,9 +19,10 @@ export class AssetRepository {
 
   async findById(id: number): Promise<Asset | null> {
     const result = await this.db.execute({
-      sql: `SELECT a.*, at.name as asset_type_name
+      sql: `SELECT a.*, at.name as asset_type_name, acc.name as account_name
             FROM assets a
             JOIN asset_types at ON a.asset_type_id = at.id
+            LEFT JOIN accounts acc ON a.account_id = acc.id
             WHERE a.id = ?`,
       args: [id],
     });
@@ -29,9 +31,9 @@ export class AssetRepository {
 
   async create(dto: CreateAssetDto): Promise<Asset> {
     const result = await this.db.execute({
-      sql: `INSERT INTO assets (name, asset_type_id, current_value)
-            VALUES (?, ?, ?) RETURNING *`,
-      args: [dto.name, dto.asset_type_id, dto.current_value],
+      sql: `INSERT INTO assets (name, asset_type_id, current_value, account_id)
+            VALUES (?, ?, ?, ?) RETURNING *`,
+      args: [dto.name, dto.asset_type_id, dto.current_value, dto.account_id ?? null],
     });
     return mapRow<Asset>(result.rows[0]);
   }

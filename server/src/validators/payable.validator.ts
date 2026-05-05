@@ -16,3 +16,9 @@ export const updatePayableSchema = createPayableSchema;
 export const markPaidSchema = z.object({
   account_id: z.number().int().positive(),
 });
+
+export const lumpSumSchema = z.object({
+  from_person: z.string().min(1, "From person is required"),
+  amount: z.number().positive("Amount must be positive"),
+  account_id: z.number().int().positive("Account is required"),
+});

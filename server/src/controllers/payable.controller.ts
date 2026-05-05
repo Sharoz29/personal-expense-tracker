@@ -36,6 +36,19 @@ export class PayableController {
     }
   }
 
+  async receiveLumpSum(req: Request, res: Response) {
+    try {
+      const data = await service.receiveLumpSum(
+        req.body.from_person,
+        req.body.amount,
+        req.body.account_id
+      );
+      res.json({ data });
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  }
+
   async delete(req: Request, res: Response) {
     const deleted = await service.delete(Number(req.params.id));
     if (!deleted) {

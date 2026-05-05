@@ -93,6 +93,7 @@ export interface Payable {
   id: number;
   description: string;
   amount: number;
+  amount_paid: number;
   from_person: string;
   status: "pending" | "paid";
   due_date: string | null;
@@ -119,6 +120,8 @@ export interface Asset {
   asset_type_id: number;
   asset_type_name?: string;
   current_value: number;
+  account_id: number | null;
+  account_name?: string;
   created_at: string;
   updated_at: string;
 }
@@ -130,6 +133,8 @@ export interface SavingsCertificate {
   profit_rate: number;
   purchase_date: string;
   maturity_date: string;
+  account_id: number | null;
+  account_name?: string;
   created_at: string;
   updated_at: string;
 }
@@ -221,6 +226,7 @@ export interface CreateAssetDto {
   name: string;
   asset_type_id: number;
   current_value: number;
+  account_id?: number;
 }
 
 export type UpdateAssetDto = CreateAssetDto;
@@ -231,6 +237,7 @@ export interface CreateSavingsCertificateDto {
   profit_rate: number;
   purchase_date: string;
   maturity_date: string;
+  account_id?: number;
 }
 
 export type UpdateSavingsCertificateDto = CreateSavingsCertificateDto;

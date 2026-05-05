@@ -51,6 +51,12 @@ export function usePayables() {
     return updated;
   };
 
+  const receiveLumpSum = async (fromPerson: string, amount: number, accountId: number) => {
+    const result = await payablesApi.receiveLumpSum(fromPerson, amount, accountId);
+    await fetch();
+    return result;
+  };
+
   const remove = async (id: number) => {
     await payablesApi.delete(id);
     setPayables((prev) => prev.filter((p) => p.id !== id));
@@ -58,7 +64,7 @@ export function usePayables() {
 
   const totalPending = payables
     .filter((p) => p.status === "pending")
-    .reduce((sum, p) => sum + p.amount, 0);
+    .reduce((sum, p) => sum + (p.amount - p.amount_paid), 0);
 
-  return { payables, loading, error, totalPending, create, update, markPaid, remove, refetch: fetch };
+  return { payables, loading, error, totalPending, create, update, markPaid, receiveLumpSum, remove, refetch: fetch };
 }

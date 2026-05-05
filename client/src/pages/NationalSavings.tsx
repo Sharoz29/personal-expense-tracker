@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useSavingsCertificates } from "../hooks/useSavingsCertificates";
+import { useAccounts } from "../hooks/useAccounts";
 import SavingsCertificateList from "../components/national-savings/SavingsCertificateList";
 import SavingsCertificateForm from "../components/national-savings/SavingsCertificateForm";
 import Modal from "../components/common/Modal";
@@ -10,6 +11,7 @@ import { formatPKR } from "../utils/format";
 
 export default function NationalSavings() {
   const { certificates, loading, totalInvested, create, update, remove } = useSavingsCertificates();
+  const { accounts } = useAccounts();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<SavingsCertificate | null>(null);
   const [deleting, setDeleting] = useState<SavingsCertificate | null>(null);
@@ -69,6 +71,7 @@ export default function NationalSavings() {
       >
         <SavingsCertificateForm
           certificate={editing}
+          accounts={accounts}
           onSubmit={handleSubmit}
           onCancel={() => { setShowForm(false); setEditing(null); }}
         />

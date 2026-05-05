@@ -62,9 +62,41 @@ export class PayableRepository {
   async markPaid(id: number, accountId: number, incomeId: number, paidDate: string): Promise<Payable | null> {
     const result = await this.db.execute({
       sql: `UPDATE payables
-            SET status = 'paid', account_id = ?, income_id = ?, paid_date = ?, updated_at = datetime('now')
+            SET status = 'paid', amount_paid = amount, account_id = ?, income_id = ?, paid_date = ?, updated_at = datetime('now')
             WHERE id = ? AND status = 'pending' RETURNING *`,
       args: [accountId, incomeId, paidDate, id],
+    });
+    return result.rows.length ? mapRow<Payable>(result.rows[0]) : null;
+  }
+
+  async findPendingByPerson(fromPerson: string): Promise<Payable[]> {
+    const result = await this.db.execute({
+      sql: `SELECT p.*, a.name as account_name, pt.name as payable_type_name
+            FROM payables p
+            LEFT JOIN accounts a ON p.account_id = a.id
+            LEFT JOIN payable_types pt ON p.payable_type_id = pt.id
+            WHERE p.from_person = ? AND p.status = 'pending'
+            ORDER BY p.created_at ASC`,
+      args: [fromPerson],
+    });
+    return mapRows<Payable>(result.rows);
+  }
+
+  async updateAmountPaid(
+    id: number,
+    amountPaid: number,
+    status: "pending" | "paid",
+    accountId?: number,
+    incomeId?: number,
+    paidDate?: string
+  ): Promise<Payable | null> {
+    const result = await this.db.execute({
+      sql: `UPDATE payables
+            SET amount_paid = ?, status = ?, account_id = COALESCE(?, account_id),
+                income_id = COALESCE(?, income_id), paid_date = COALESCE(?, paid_date),
+                updated_at = datetime('now')
+            WHERE id = ? RETURNING *`,
+      args: [amountPaid, status, accountId ?? null, incomeId ?? null, paidDate ?? null, id],
     });
     return result.rows.length ? mapRow<Payable>(result.rows[0]) : null;
   }

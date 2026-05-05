@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAssets } from "../hooks/useAssets";
 import { useAssetTypes } from "../hooks/useAssetTypes";
+import { useAccounts } from "../hooks/useAccounts";
 import AssetList from "../components/assets/AssetList";
 import AssetForm from "../components/assets/AssetForm";
 import Modal from "../components/common/Modal";
@@ -12,6 +13,7 @@ import { formatPKR } from "../utils/format";
 export default function Assets() {
   const { assets, loading, totalValue, create, update, remove } = useAssets();
   const { assetTypes } = useAssetTypes();
+  const { accounts } = useAccounts();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Asset | null>(null);
   const [deleting, setDeleting] = useState<Asset | null>(null);
@@ -71,6 +73,7 @@ export default function Assets() {
       >
         <AssetForm
           assetTypes={assetTypes}
+          accounts={accounts}
           asset={editing}
           onSubmit={handleSubmit}
           onCancel={() => { setShowForm(false); setEditing(null); }}

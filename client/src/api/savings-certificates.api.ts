@@ -7,6 +7,7 @@ interface CreateSavingsCertificatePayload {
   profit_rate: number;
   purchase_date: string;
   maturity_date: string;
+  account_id?: number;
 }
 
 export const savingsCertificatesApi = {

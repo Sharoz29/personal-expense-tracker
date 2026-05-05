@@ -1,23 +1,28 @@
 import { useState } from "react";
-import type { Asset, AssetType } from "../../types";
+import type { Asset, AssetType, Account } from "../../types";
 
 interface AssetFormProps {
   assetTypes: AssetType[];
+  accounts: Account[];
   asset?: Asset | null;
   onSubmit: (data: {
     name: string;
     asset_type_id: number;
     current_value: number;
+    account_id?: number;
   }) => Promise<void>;
   onCancel: () => void;
 }
 
-export default function AssetForm({ assetTypes, asset, onSubmit, onCancel }: AssetFormProps) {
+export default function AssetForm({ assetTypes, accounts, asset, onSubmit, onCancel }: AssetFormProps) {
   const [name, setName] = useState(asset?.name ?? "");
   const [assetTypeId, setAssetTypeId] = useState(asset?.asset_type_id ?? (assetTypes[0]?.id ?? 0));
   const [currentValue, setCurrentValue] = useState(asset?.current_value?.toString() ?? "");
+  const [accountId, setAccountId] = useState<number>(0);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const isEditing = !!asset;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,6 +35,7 @@ export default function AssetForm({ assetTypes, asset, onSubmit, onCancel }: Ass
         name: name.trim(),
         asset_type_id: assetTypeId,
         current_value: Number(currentValue),
+        ...(accountId && !isEditing ? { account_id: accountId } : {}),
       });
     } catch (err: any) {
       setError(err.response?.data?.error || "Failed to save");
@@ -79,6 +85,27 @@ export default function AssetForm({ assetTypes, asset, onSubmit, onCancel }: Ass
           required
         />
       </div>
+
+      {!isEditing && (
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Deduct from Account</label>
+          <select
+            value={accountId}
+            onChange={(e) => setAccountId(Number(e.target.value))}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value={0}>None (don't deduct)</option>
+            {accounts.map((a) => (
+              <option key={a.id} value={a.id}>{a.name}</option>
+            ))}
+          </select>
+          {accountId > 0 && (
+            <p className="text-xs text-amber-600 mt-1">
+              The asset value will be deducted from this account's balance.
+            </p>
+          )}
+        </div>
+      )}
 
       <div className="flex justify-end gap-3 pt-2">
         <button

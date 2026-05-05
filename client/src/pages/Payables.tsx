@@ -5,20 +5,22 @@ import { usePayableTypes } from "../hooks/usePayableTypes";
 import { PendingPayableList, PaidPayableList } from "../components/payables/PayableList";
 import PayableForm from "../components/payables/PayableForm";
 import MarkPaidDialog from "../components/payables/MarkPaidDialog";
+import LumpSumDialog from "../components/payables/LumpSumDialog";
 import Modal from "../components/common/Modal";
 import ConfirmDialog from "../components/common/ConfirmDialog";
-import { Plus, Filter, ChevronDown, ChevronUp } from "lucide-react";
+import { Plus, Filter, ChevronDown, ChevronUp, Banknote } from "lucide-react";
 import type { Payable } from "../types";
 import { formatPKR } from "../utils/format";
 
 export default function Payables() {
-  const { payables, loading, create, update, markPaid, remove } = usePayables();
+  const { payables, loading, create, update, markPaid, receiveLumpSum, remove } = usePayables();
   const { accounts } = useAccounts();
   const { payableTypes } = usePayableTypes();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Payable | null>(null);
   const [deleting, setDeleting] = useState<Payable | null>(null);
   const [markingPaid, setMarkingPaid] = useState<Payable | null>(null);
+  const [showLumpSum, setShowLumpSum] = useState(false);
   const [filterTypeId, setFilterTypeId] = useState<number>(0);
   const [pendingOpen, setPendingOpen] = useState(true);
   const [paidOpen, setPaidOpen] = useState(true);
@@ -30,7 +32,7 @@ export default function Payables() {
   const pendingPayables = filteredPayables.filter((p) => p.status === "pending");
   const paidPayables = filteredPayables.filter((p) => p.status === "paid");
 
-  const totalPending = pendingPayables.reduce((sum, p) => sum + p.amount, 0);
+  const totalPending = pendingPayables.reduce((sum, p) => sum + (p.amount - p.amount_paid), 0);
   const totalPaid = paidPayables.reduce((sum, p) => sum + p.amount, 0);
 
   const handleSubmit = async (data: Parameters<typeof create>[0]) => {
@@ -54,6 +56,11 @@ export default function Payables() {
     setMarkingPaid(null);
   };
 
+  const handleLumpSum = async (fromPerson: string, amount: number, accountId: number) => {
+    await receiveLumpSum(fromPerson, amount, accountId);
+    setShowLumpSum(false);
+  };
+
   return (
     <>
       <header className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4 bg-white border-b border-gray-200">
@@ -72,6 +79,12 @@ export default function Payables() {
               ))}
             </select>
           </div>
+          <button
+            onClick={() => setShowLumpSum(true)}
+            className="px-3 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-colors flex items-center gap-1"
+          >
+            <Banknote size={16} /> Lump Sum
+          </button>
           <button
             onClick={() => { setEditing(null); setShowForm(true); }}
             className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors flex items-center gap-1"
@@ -165,6 +178,14 @@ export default function Payables() {
         accounts={accounts}
         onClose={() => setMarkingPaid(null)}
         onConfirm={handleMarkPaid}
+      />
+
+      <LumpSumDialog
+        open={showLumpSum}
+        payables={payables}
+        accounts={accounts}
+        onClose={() => setShowLumpSum(false)}
+        onConfirm={handleLumpSum}
       />
 
       <ConfirmDialog

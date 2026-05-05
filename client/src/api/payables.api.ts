@@ -29,6 +29,14 @@ export const payablesApi = {
     const res = await api.post(`/payables/${id}/mark-paid`, { account_id: accountId });
     return res.data.data;
   },
+  receiveLumpSum: async (fromPerson: string, amount: number, accountId: number) => {
+    const res = await api.post("/payables/lump-sum", {
+      from_person: fromPerson,
+      amount,
+      account_id: accountId,
+    });
+    return res.data.data;
+  },
   delete: async (id: number): Promise<void> => {
     await api.delete(`/payables/${id}`);
   },

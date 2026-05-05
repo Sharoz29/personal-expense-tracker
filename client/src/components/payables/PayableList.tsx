@@ -36,7 +36,14 @@ export function PendingPayableList({ payables, total, onEdit, onDelete, onMarkPa
               <td className="py-3 px-3 md:px-4 text-gray-600">{p.payable_type_name || "-"}</td>
               <td className="py-3 px-3 md:px-4 text-gray-600">{p.description}</td>
               <td className="py-3 px-3 md:px-4 text-gray-600">{p.due_date ? formatDate(p.due_date) : "-"}</td>
-              <td className="py-3 px-3 md:px-4 text-right font-medium text-gray-900">{formatPKR(p.amount)}</td>
+              <td className="py-3 px-3 md:px-4 text-right">
+                <div className="font-medium text-gray-900">{formatPKR(p.amount)}</div>
+                {p.amount_paid > 0 && (
+                  <div className="text-xs text-green-600 mt-0.5">
+                    Paid: {formatPKR(p.amount_paid)} / Remaining: {formatPKR(p.amount - p.amount_paid)}
+                  </div>
+                )}
+              </td>
               <td className="py-3 px-3 md:px-4 text-right">
                 <div className="flex justify-end gap-1">
                   <button
