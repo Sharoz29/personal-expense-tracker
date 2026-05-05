@@ -38,7 +38,7 @@ export default function LumpSumDialog({ open, payables, accounts, onClose, onCon
   }, [payables, fromPerson]);
 
   const totalPendingFromPerson = useMemo(
-    () => personPayables.reduce((sum, p) => sum + (p.amount - p.amount_paid), 0),
+    () => personPayables.reduce((sum, p) => sum + (p.amount - (p.amount_paid ?? 0)), 0),
     [personPayables]
   );
 
@@ -47,17 +47,18 @@ export default function LumpSumDialog({ open, payables, accounts, onClose, onCon
     if (!fromPerson || !amount || Number(amount) <= 0) return [];
     let remaining = Number(amount);
     return personPayables.map((p) => {
-      const payableRemaining = p.amount - p.amount_paid;
+      const paid = p.amount_paid ?? 0;
+      const payableRemaining = p.amount - paid;
       const applied = Math.min(remaining, payableRemaining);
       remaining -= applied;
       return {
         id: p.id,
         description: p.description,
         total: p.amount,
-        alreadyPaid: p.amount_paid,
+        alreadyPaid: paid,
         applied,
-        newPaid: p.amount_paid + applied,
-        fullyPaid: p.amount_paid + applied >= p.amount,
+        newPaid: paid + applied,
+        fullyPaid: paid + applied >= p.amount,
       };
     });
   }, [fromPerson, amount, personPayables]);

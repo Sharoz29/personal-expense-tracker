@@ -32,7 +32,7 @@ export default function Payables() {
   const pendingPayables = filteredPayables.filter((p) => p.status === "pending");
   const paidPayables = filteredPayables.filter((p) => p.status === "paid");
 
-  const totalPending = pendingPayables.reduce((sum, p) => sum + (p.amount - p.amount_paid), 0);
+  const totalPending = pendingPayables.reduce((sum, p) => sum + (p.amount - (p.amount_paid ?? 0)), 0);
   const totalPaid = paidPayables.reduce((sum, p) => sum + p.amount, 0);
 
   const handleSubmit = async (data: Parameters<typeof create>[0]) => {

@@ -64,7 +64,7 @@ export function usePayables() {
 
   const totalPending = payables
     .filter((p) => p.status === "pending")
-    .reduce((sum, p) => sum + (p.amount - p.amount_paid), 0);
+    .reduce((sum, p) => sum + (p.amount - (p.amount_paid ?? 0)), 0);
 
   return { payables, loading, error, totalPending, create, update, markPaid, receiveLumpSum, remove, refetch: fetch };
 }
