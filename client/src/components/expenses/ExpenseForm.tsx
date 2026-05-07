@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { Expense, ExpenseType, Account, ExpenseBreakdown } from "../../types";
+import type { Expense, ExpenseType, Account, ExpenseBreakdown, PayableType } from "../../types";
 import { useMonthYear } from "../../context/MonthYearContext";
 import { formatPKR, todayISO } from "../../utils/format";
 import { Plus, Trash2, ChevronDown, ChevronUp } from "lucide-react";
@@ -7,6 +7,7 @@ import { Plus, Trash2, ChevronDown, ChevronUp } from "lucide-react";
 interface ExpenseFormProps {
   expenseTypes: ExpenseType[];
   accounts: Account[];
+  payableTypes: PayableType[];
   expense?: Expense | null;
   onSubmit: (data: {
     expense_type_id: number;
@@ -19,11 +20,12 @@ interface ExpenseFormProps {
     breakdowns?: ExpenseBreakdown[] | null;
     create_payable?: boolean;
     payable_from?: string;
+    payable_type_id?: number;
   }) => Promise<void>;
   onCancel: () => void;
 }
 
-export default function ExpenseForm({ expenseTypes, accounts, expense, onSubmit, onCancel }: ExpenseFormProps) {
+export default function ExpenseForm({ expenseTypes, accounts, payableTypes, expense, onSubmit, onCancel }: ExpenseFormProps) {
   const { month, year } = useMonthYear();
   const [expenseTypeId, setExpenseTypeId] = useState(expense?.expense_type_id ?? (expenseTypes[0]?.id ?? 0));
   const [accountId, setAccountId] = useState(expense?.account_id ?? (accounts[0]?.id ?? 0));
@@ -35,6 +37,7 @@ export default function ExpenseForm({ expenseTypes, accounts, expense, onSubmit,
 
   const [createPayable, setCreatePayable] = useState(false);
   const [payableFrom, setPayableFrom] = useState("");
+  const [payableTypeId, setPayableTypeId] = useState<number>(0);
 
   const hasExistingBreakdowns = expense?.breakdowns && expense.breakdowns.length > 0;
   const [showBreakdown, setShowBreakdown] = useState(!!hasExistingBreakdowns);
@@ -123,7 +126,7 @@ export default function ExpenseForm({ expenseTypes, accounts, expense, onSubmit,
         month: d.getMonth() + 1,
         year: d.getFullYear(),
         breakdowns: validBreakdowns,
-        ...(createPayable ? { create_payable: true, payable_from: payableFrom.trim() } : {}),
+        ...(createPayable ? { create_payable: true, payable_from: payableFrom.trim(), ...(payableTypeId ? { payable_type_id: payableTypeId } : {}) } : {}),
       });
     } catch (err: any) {
       setError(err.response?.data?.error || "Failed to save");
@@ -277,16 +280,33 @@ export default function ExpenseForm({ expenseTypes, accounts, expense, onSubmit,
           </div>
 
           {createPayable && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">From (person/company)</label>
-              <input
-                type="text"
-                value={payableFrom}
-                onChange={(e) => setPayableFrom(e.target.value)}
-                placeholder="Who owes you..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
+            <>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">From (person/company)</label>
+                <input
+                  type="text"
+                  value={payableFrom}
+                  onChange={(e) => setPayableFrom(e.target.value)}
+                  placeholder="Who owes you..."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              {payableTypes.length > 0 && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Payable Type</label>
+                  <select
+                    value={payableTypeId}
+                    onChange={(e) => setPayableTypeId(Number(e.target.value))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value={0}>None</option>
+                    {payableTypes.map((t) => (
+                      <option key={t.id} value={t.id}>{t.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </>
           )}
         </>
       )}

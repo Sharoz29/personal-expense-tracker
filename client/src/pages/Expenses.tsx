@@ -5,6 +5,7 @@ import { useMonthYear } from "../context/MonthYearContext";
 import { useExpenses } from "../hooks/useExpenses";
 import { useExpenseTypes } from "../hooks/useExpenseTypes";
 import { useAccounts } from "../hooks/useAccounts";
+import { usePayableTypes } from "../hooks/usePayableTypes";
 import ExpenseList from "../components/expenses/ExpenseList";
 import ExpenseForm from "../components/expenses/ExpenseForm";
 import Modal from "../components/common/Modal";
@@ -19,6 +20,7 @@ export default function Expenses() {
   const { expenses, loading, total, create, update, remove } = useExpenses(month, year);
   const { expenseTypes } = useExpenseTypes();
   const { accounts } = useAccounts();
+  const { payableTypes } = usePayableTypes();
   const [searchParams, setSearchParams] = useSearchParams();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Expense | null>(null);
@@ -59,6 +61,7 @@ export default function Expenses() {
           description: data.description,
           amount: data.amount,
           from_person: data.payable_from || "",
+          ...(data.payable_type_id ? { payable_type_id: data.payable_type_id } : {}),
         });
       }
     }
@@ -136,6 +139,7 @@ export default function Expenses() {
         <ExpenseForm
           expenseTypes={expenseTypes}
           accounts={accounts}
+          payableTypes={payableTypes}
           expense={editing}
           onSubmit={handleSubmit}
           onCancel={() => { setShowForm(false); setEditing(null); }}
