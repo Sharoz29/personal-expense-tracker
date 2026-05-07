@@ -7,6 +7,8 @@ interface CreateSavingsCertificatePayload {
   profit_rate: number;
   purchase_date: string;
   maturity_date: string;
+  duration: string;
+  tax_rate: number;
   account_id?: number;
 }
 

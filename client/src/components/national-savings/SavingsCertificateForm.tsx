@@ -11,6 +11,14 @@ const CERTIFICATE_TYPES = [
   "Short Term Savings Certificate",
 ];
 
+const DURATION_OPTIONS = [
+  "Monthly",
+  "6 Months",
+  "1 Year",
+  "5 Years",
+  "10 Years",
+];
+
 interface SavingsCertificateFormProps {
   certificate?: SavingsCertificate | null;
   accounts: Account[];
@@ -20,6 +28,8 @@ interface SavingsCertificateFormProps {
     profit_rate: number;
     purchase_date: string;
     maturity_date: string;
+    duration: string;
+    tax_rate: number;
     account_id?: number;
   }) => Promise<void>;
   onCancel: () => void;
@@ -31,6 +41,8 @@ export default function SavingsCertificateForm({ certificate, accounts, onSubmit
   const [profitRate, setProfitRate] = useState(certificate?.profit_rate?.toString() ?? "");
   const [purchaseDate, setPurchaseDate] = useState(certificate?.purchase_date ?? todayISO());
   const [maturityDate, setMaturityDate] = useState(certificate?.maturity_date ?? "");
+  const [duration, setDuration] = useState(certificate?.duration ?? "");
+  const [taxRate, setTaxRate] = useState(certificate?.tax_rate?.toString() ?? "0");
   const [accountId, setAccountId] = useState<number>(0);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,6 +63,8 @@ export default function SavingsCertificateForm({ certificate, accounts, onSubmit
         profit_rate: Number(profitRate),
         purchase_date: purchaseDate,
         maturity_date: maturityDate,
+        duration,
+        tax_rate: Number(taxRate) || 0,
         ...(accountId && !isEditing ? { account_id: accountId } : {}),
       });
     } catch (err: any) {
@@ -101,6 +115,34 @@ export default function SavingsCertificateForm({ certificate, accounts, onSubmit
           className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           required
         />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Duration</label>
+        <select
+          value={duration}
+          onChange={(e) => setDuration(e.target.value)}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">Select duration</option>
+          {DURATION_OPTIONS.map((d) => (
+            <option key={d} value={d}>{d}</option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Tax Rate (%)</label>
+        <input
+          type="number"
+          step="0.01"
+          min="0"
+          max="100"
+          value={taxRate}
+          onChange={(e) => setTaxRate(e.target.value)}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <p className="text-xs text-gray-500 mt-1">Withholding tax rate on profit (0 if none)</p>
       </div>
 
       <div>
