@@ -8,6 +8,7 @@ export const createSavingsCertificateSchema = z.object({
   maturity_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD"),
   duration: z.string().default(""),
   tax_rate: z.number().nonnegative("Tax rate must be >= 0").default(0),
+  profit_tracking_start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD").optional(),
   account_id: z.number().int().positive().optional(),
 });
 
@@ -19,4 +20,9 @@ export const updateSavingsCertificateSchema = z.object({
   maturity_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD"),
   duration: z.string().default(""),
   tax_rate: z.number().nonnegative("Tax rate must be >= 0").default(0),
+  profit_tracking_start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD").optional(),
+});
+
+export const redeemProfitSchema = z.object({
+  account_id: z.number().int().positive(),
 });

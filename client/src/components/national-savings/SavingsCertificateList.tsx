@@ -1,14 +1,16 @@
 import { useState } from "react";
-import type { SavingsCertificate } from "../../types";
-import { Pencil, Trash2, ChevronDown, ChevronRight } from "lucide-react";
+import type { SavingsCertificate, Account } from "../../types";
+import { Pencil, Trash2, ChevronDown, ChevronRight, Banknote } from "lucide-react";
 import EmptyState from "../common/EmptyState";
 import { formatPKR, formatDate } from "../../utils/format";
 
 interface SavingsCertificateListProps {
   certificates: SavingsCertificate[];
   totalInvested: number;
+  accounts: Account[];
   onEdit: (cert: SavingsCertificate) => void;
   onDelete: (cert: SavingsCertificate) => void;
+  onRedeemProfit: (certId: number, accountId: number) => Promise<void>;
 }
 
 function getPeriodMultiplier(duration: string): { multiplier: number; label: string } {
@@ -22,6 +24,23 @@ function getPeriodMultiplier(duration: string): { multiplier: number; label: str
   }
 }
 
+function getPeriodMonths(duration: string): number {
+  switch (duration) {
+    case "Monthly": return 1;
+    case "6 Months": return 6;
+    case "1 Year": return 12;
+    case "5 Years": return 60;
+    case "10 Years": return 120;
+    default: return 0;
+  }
+}
+
+function monthsBetween(from: string, to: string): number {
+  const d1 = new Date(from);
+  const d2 = new Date(to);
+  return (d2.getFullYear() - d1.getFullYear()) * 12 + (d2.getMonth() - d1.getMonth());
+}
+
 function computeProfit(cert: SavingsCertificate) {
   const { multiplier, label } = getPeriodMultiplier(cert.duration);
   if (multiplier === 0) return null;
@@ -32,14 +51,53 @@ function computeProfit(cert: SavingsCertificate) {
   return { grossProfit, taxAmount, netProfit, taxRate, label };
 }
 
-export default function SavingsCertificateList({ certificates, totalInvested, onEdit, onDelete }: SavingsCertificateListProps) {
+function computeUnredeemed(cert: SavingsCertificate) {
+  const periodMonths = getPeriodMonths(cert.duration);
+  if (periodMonths === 0) return null;
+  const trackingStart = cert.profit_tracking_start_date ?? cert.purchase_date;
+  const today = new Date().toISOString().split("T")[0];
+  const totalMonthsElapsed = monthsBetween(trackingStart, today);
+  const elapsedPeriods = Math.floor(totalMonthsElapsed / periodMonths);
+
+  if (elapsedPeriods <= 0) return { periods: 0, amount: 0 };
+
+  const periodMultiplier = periodMonths / 12;
+  const grossPerPeriod = cert.principal_amount * (cert.profit_rate / 100) * periodMultiplier;
+  const taxRate = cert.tax_rate ?? 0;
+  const taxPerPeriod = grossPerPeriod * (taxRate / 100);
+  const netPerPeriod = grossPerPeriod - taxPerPeriod;
+
+  return {
+    periods: elapsedPeriods,
+    amount: Math.round(netPerPeriod * elapsedPeriods * 100) / 100,
+  };
+}
+
+export default function SavingsCertificateList({ certificates, totalInvested, accounts, onEdit, onDelete, onRedeemProfit }: SavingsCertificateListProps) {
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [redeemingId, setRedeemingId] = useState<number | null>(null);
+  const [redeemAccountId, setRedeemAccountId] = useState<number>(0);
+  const [redeeming, setRedeeming] = useState(false);
 
   if (certificates.length === 0) {
     return <EmptyState message="No savings certificates yet. Click 'Add Certificate' to get started." />;
   }
 
   const totalColumns = 8;
+
+  const handleRedeem = async (certId: number) => {
+    if (!redeemAccountId) return;
+    setRedeeming(true);
+    try {
+      await onRedeemProfit(certId, redeemAccountId);
+      setRedeemingId(null);
+      setRedeemAccountId(0);
+    } catch {
+      // error handled by parent
+    } finally {
+      setRedeeming(false);
+    }
+  };
 
   return (
     <div className="overflow-x-auto">
@@ -59,6 +117,7 @@ export default function SavingsCertificateList({ certificates, totalInvested, on
         <tbody>
           {certificates.map((cert) => {
             const profit = computeProfit(cert);
+            const unredeemed = computeUnredeemed(cert);
             const isExpanded = expandedId === cert.id;
 
             return (
@@ -72,9 +131,16 @@ export default function SavingsCertificateList({ certificates, totalInvested, on
                     {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                   </td>
                   <td className="py-3 px-3 md:px-4">
-                    <span className="px-2 py-1 bg-emerald-50 text-emerald-700 rounded text-xs font-medium">
-                      {cert.certificate_type}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="px-2 py-1 bg-emerald-50 text-emerald-700 rounded text-xs font-medium">
+                        {cert.certificate_type}
+                      </span>
+                      {unredeemed && unredeemed.periods > 0 && (
+                        <span className="px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded text-xs font-medium">
+                          {unredeemed.periods} due
+                        </span>
+                      )}
+                    </div>
                   </td>
                   <td className="py-3 px-3 md:px-4 text-right font-medium text-gray-900">
                     {formatPKR(cert.principal_amount)}
@@ -113,37 +179,95 @@ export default function SavingsCertificateList({ certificates, totalInvested, on
                   <tr key={`${cert.id}-detail`} className="bg-gray-50 border-b border-gray-100">
                     <td colSpan={totalColumns} className="px-6 md:px-10 py-4">
                       {profit ? (
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                          <div>
-                            <p className="text-gray-500 text-xs mb-1">Payout Frequency</p>
-                            <p className="font-medium text-gray-800">{profit.label}</p>
-                          </div>
-                          <div>
-                            <p className="text-gray-500 text-xs mb-1">Gross Profit ({profit.label})</p>
-                            <p className="font-medium text-gray-800">{formatPKR(profit.grossProfit)}</p>
-                          </div>
-                          <div>
-                            <p className="text-gray-500 text-xs mb-1">Tax ({profit.taxRate}%)</p>
-                            <p className="font-medium text-red-600">- {formatPKR(profit.taxAmount)}</p>
-                          </div>
-                          <div>
-                            <p className="text-gray-500 text-xs mb-1">Net Profit ({profit.label})</p>
-                            <p className="font-bold text-emerald-700">{formatPKR(profit.netProfit)}</p>
-                          </div>
-                          <div>
-                            <p className="text-gray-500 text-xs mb-1">Purchase Date</p>
-                            <p className="font-medium text-gray-800">{formatDate(cert.purchase_date)}</p>
-                          </div>
-                          <div>
-                            <p className="text-gray-500 text-xs mb-1">Maturity Date</p>
-                            <p className="font-medium text-gray-800">{formatDate(cert.maturity_date)}</p>
-                          </div>
-                          {cert.account_name && (
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                             <div>
-                              <p className="text-gray-500 text-xs mb-1">Deducted From</p>
-                              <p className="font-medium text-gray-800">{cert.account_name}</p>
+                              <p className="text-gray-500 text-xs mb-1">Payout Frequency</p>
+                              <p className="font-medium text-gray-800">{profit.label}</p>
                             </div>
-                          )}
+                            <div>
+                              <p className="text-gray-500 text-xs mb-1">Gross Profit ({profit.label})</p>
+                              <p className="font-medium text-gray-800">{formatPKR(profit.grossProfit)}</p>
+                            </div>
+                            <div>
+                              <p className="text-gray-500 text-xs mb-1">Tax ({profit.taxRate}%)</p>
+                              <p className="font-medium text-red-600">- {formatPKR(profit.taxAmount)}</p>
+                            </div>
+                            <div>
+                              <p className="text-gray-500 text-xs mb-1">Net Profit ({profit.label})</p>
+                              <p className="font-bold text-emerald-700">{formatPKR(profit.netProfit)}</p>
+                            </div>
+                            <div>
+                              <p className="text-gray-500 text-xs mb-1">Purchase Date</p>
+                              <p className="font-medium text-gray-800">{formatDate(cert.purchase_date)}</p>
+                            </div>
+                            <div>
+                              <p className="text-gray-500 text-xs mb-1">Maturity Date</p>
+                              <p className="font-medium text-gray-800">{formatDate(cert.maturity_date)}</p>
+                            </div>
+                            <div>
+                              <p className="text-gray-500 text-xs mb-1">Tracking Since</p>
+                              <p className="font-medium text-gray-800">{formatDate(cert.profit_tracking_start_date ?? cert.purchase_date)}</p>
+                            </div>
+                            {cert.account_name && (
+                              <div>
+                                <p className="text-gray-500 text-xs mb-1">Deducted From</p>
+                                <p className="font-medium text-gray-800">{cert.account_name}</p>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Profit Redemption Section */}
+                          {unredeemed && unredeemed.periods > 0 ? (
+                            <div className="border-t border-gray-200 pt-3">
+                              <div className="flex items-center justify-between flex-wrap gap-3">
+                                <div>
+                                  <p className="text-sm font-medium text-amber-700">
+                                    {unredeemed.periods} unredeemed period{unredeemed.periods !== 1 ? "s" : ""}
+                                  </p>
+                                  <p className="text-lg font-bold text-emerald-700">{formatPKR(unredeemed.amount)}</p>
+                                </div>
+                                {redeemingId === cert.id ? (
+                                  <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                                    <select
+                                      value={redeemAccountId}
+                                      onChange={(e) => setRedeemAccountId(Number(e.target.value))}
+                                      className="px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                                    >
+                                      <option value={0}>Select account</option>
+                                      {accounts.map((a) => (
+                                        <option key={a.id} value={a.id}>{a.name}</option>
+                                      ))}
+                                    </select>
+                                    <button
+                                      onClick={() => handleRedeem(cert.id)}
+                                      disabled={!redeemAccountId || redeeming}
+                                      className="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-sm hover:bg-emerald-700 disabled:opacity-50 transition-colors"
+                                    >
+                                      {redeeming ? "Redeeming..." : "Confirm"}
+                                    </button>
+                                    <button
+                                      onClick={() => { setRedeemingId(null); setRedeemAccountId(0); }}
+                                      className="px-2 py-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors"
+                                    >
+                                      Cancel
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); setRedeemingId(cert.id); setRedeemAccountId(0); }}
+                                    className="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-sm hover:bg-emerald-700 transition-colors flex items-center gap-1"
+                                  >
+                                    <Banknote size={14} /> Redeem Profit
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          ) : unredeemed ? (
+                            <div className="border-t border-gray-200 pt-3">
+                              <p className="text-sm text-gray-500">No profit due yet</p>
+                            </div>
+                          ) : null}
                         </div>
                       ) : (
                         <p className="text-gray-500 text-sm">Select a duration to see profit calculations.</p>

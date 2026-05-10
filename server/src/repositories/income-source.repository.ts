@@ -18,6 +18,14 @@ export class IncomeSourceRepository {
     return result.rows.length ? mapRow<IncomeSource>(result.rows[0]) : null;
   }
 
+  async findByName(name: string): Promise<IncomeSource | null> {
+    const result = await this.db.execute({
+      sql: "SELECT * FROM income_sources WHERE name = ?",
+      args: [name],
+    });
+    return result.rows.length ? mapRow<IncomeSource>(result.rows[0]) : null;
+  }
+
   async create(dto: CreateIncomeSourceDto): Promise<IncomeSource> {
     const result = await this.db.execute({
       sql: "INSERT INTO income_sources (name) VALUES (?) RETURNING *",

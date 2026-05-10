@@ -30,6 +30,7 @@ interface SavingsCertificateFormProps {
     maturity_date: string;
     duration: string;
     tax_rate: number;
+    profit_tracking_start_date?: string;
     account_id?: number;
   }) => Promise<void>;
   onCancel: () => void;
@@ -43,6 +44,9 @@ export default function SavingsCertificateForm({ certificate, accounts, onSubmit
   const [maturityDate, setMaturityDate] = useState(certificate?.maturity_date ?? "");
   const [duration, setDuration] = useState(certificate?.duration ?? "");
   const [taxRate, setTaxRate] = useState(certificate?.tax_rate?.toString() ?? "0");
+  const [profitTrackingStartDate, setProfitTrackingStartDate] = useState(
+    certificate?.profit_tracking_start_date ?? ""
+  );
   const [accountId, setAccountId] = useState<number>(0);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -65,6 +69,7 @@ export default function SavingsCertificateForm({ certificate, accounts, onSubmit
         maturity_date: maturityDate,
         duration,
         tax_rate: Number(taxRate) || 0,
+        profit_tracking_start_date: profitTrackingStartDate || purchaseDate,
         ...(accountId && !isEditing ? { account_id: accountId } : {}),
       });
     } catch (err: any) {
@@ -165,6 +170,17 @@ export default function SavingsCertificateForm({ certificate, accounts, onSubmit
           className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           required
         />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Profit Tracking Start Date</label>
+        <input
+          type="date"
+          value={profitTrackingStartDate || purchaseDate}
+          onChange={(e) => setProfitTrackingStartDate(e.target.value)}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <p className="text-xs text-gray-500 mt-1">Profits before this date are assumed already collected</p>
       </div>
 
       {!isEditing && (

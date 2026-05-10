@@ -10,7 +10,7 @@ import type { SavingsCertificate } from "../types";
 import { formatPKR } from "../utils/format";
 
 export default function NationalSavings() {
-  const { certificates, loading, totalInvested, create, update, remove } = useSavingsCertificates();
+  const { certificates, loading, totalInvested, create, update, remove, redeemProfit } = useSavingsCertificates();
   const { accounts } = useAccounts();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<SavingsCertificate | null>(null);
@@ -58,8 +58,10 @@ export default function NationalSavings() {
           <SavingsCertificateList
             certificates={certificates}
             totalInvested={totalInvested}
+            accounts={accounts}
             onEdit={(c) => { setEditing(c); setShowForm(true); }}
             onDelete={setDeleting}
+            onRedeemProfit={redeemProfit}
           />
         </div>
       </div>

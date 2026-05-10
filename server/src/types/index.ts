@@ -135,6 +135,7 @@ export interface SavingsCertificate {
   maturity_date: string;
   duration: string;
   tax_rate: number;
+  profit_tracking_start_date: string | null;
   account_id: number | null;
   account_name?: string;
   created_at: string;
@@ -241,6 +242,7 @@ export interface CreateSavingsCertificateDto {
   maturity_date: string;
   duration: string;
   tax_rate: number;
+  profit_tracking_start_date?: string;
   account_id?: number;
 }
 

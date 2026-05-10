@@ -11,3 +11,5 @@ ALTER TABLE savings_certificates ADD COLUMN account_id INTEGER REFERENCES accoun
 ALTER TABLE savings_certificates ADD COLUMN duration TEXT NOT NULL DEFAULT '';
 
 ALTER TABLE savings_certificates ADD COLUMN tax_rate REAL NOT NULL DEFAULT 0;
+
+ALTER TABLE savings_certificates ADD COLUMN profit_tracking_start_date TEXT;

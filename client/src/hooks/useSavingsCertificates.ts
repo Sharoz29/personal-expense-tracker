@@ -10,6 +10,7 @@ interface CreateSavingsCertificatePayload {
   maturity_date: string;
   duration: string;
   tax_rate: number;
+  profit_tracking_start_date?: string;
   account_id?: number;
 }
 
@@ -50,7 +51,13 @@ export function useSavingsCertificates() {
     setCertificates((prev) => prev.filter((c) => c.id !== id));
   };
 
+  const redeemProfit = async (id: number, accountId: number) => {
+    const result = await savingsCertificatesApi.redeemProfit(id, accountId);
+    await fetch();
+    return result;
+  };
+
   const totalInvested = certificates.reduce((sum, c) => sum + c.principal_amount, 0);
 
-  return { certificates, loading, error, totalInvested, create, update, remove, refetch: fetch };
+  return { certificates, loading, error, totalInvested, create, update, remove, redeemProfit, refetch: fetch };
 }

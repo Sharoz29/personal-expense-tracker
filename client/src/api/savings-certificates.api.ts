@@ -9,6 +9,7 @@ interface CreateSavingsCertificatePayload {
   maturity_date: string;
   duration: string;
   tax_rate: number;
+  profit_tracking_start_date?: string;
   account_id?: number;
 }
 
@@ -27,5 +28,9 @@ export const savingsCertificatesApi = {
   },
   delete: async (id: number): Promise<void> => {
     await api.delete(`/savings-certificates/${id}`);
+  },
+  redeemProfit: async (id: number, accountId: number) => {
+    const res = await api.post(`/savings-certificates/${id}/redeem-profit`, { account_id: accountId });
+    return res.data.data;
   },
 };
