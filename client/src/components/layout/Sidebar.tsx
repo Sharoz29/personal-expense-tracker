@@ -14,7 +14,11 @@ const links = [
   { to: "/settings", label: "Settings", icon: Settings },
 ];
 
-export function DesktopSidebar() {
+interface SidebarProps {
+  profitDueBadge: number | null;
+}
+
+export function DesktopSidebar({ profitDueBadge }: SidebarProps) {
   return (
     <aside className="hidden md:flex w-64 bg-white border-r border-gray-200 min-h-screen p-4 flex-col">
       <div className="mb-8">
@@ -33,7 +37,12 @@ export function DesktopSidebar() {
             }
           >
             <Icon size={20} />
-            {label}
+            <span className="flex-1">{label}</span>
+            {to === "/national-savings" && profitDueBadge !== null && (
+              <span className="px-1.5 py-0.5 bg-amber-500 text-white rounded-full text-xs font-bold min-w-5 text-center">
+                {profitDueBadge <= 0 ? "!" : `${profitDueBadge}d`}
+              </span>
+            )}
           </NavLink>
         ))}
       </nav>
@@ -41,7 +50,7 @@ export function DesktopSidebar() {
   );
 }
 
-export function MobileBottomNav() {
+export function MobileBottomNav({ profitDueBadge }: SidebarProps) {
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40">
       <div className="flex justify-around items-center py-1">
@@ -56,7 +65,14 @@ export function MobileBottomNav() {
               }`
             }
           >
-            <Icon size={20} />
+            <div className="relative">
+              <Icon size={20} />
+              {to === "/national-savings" && profitDueBadge !== null && (
+                <span className="absolute -top-1.5 -right-2.5 px-1 bg-amber-500 text-white rounded-full text-[8px] font-bold min-w-3.5 text-center leading-3.5">
+                  {profitDueBadge <= 0 ? "!" : profitDueBadge}
+                </span>
+              )}
+            </div>
             {label}
           </NavLink>
         ))}
