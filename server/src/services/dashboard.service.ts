@@ -1,7 +1,7 @@
 import { ExpenseRepository } from "../repositories/expense.repository.js";
 import { IncomeRepository } from "../repositories/income.repository.js";
 import { SavingsRepository } from "../repositories/savings.repository.js";
-import type { DashboardSummary, MonthlySavingsRecord } from "../types/index.js";
+import type { DashboardSummary, MonthlySavingsRecord, AnnualSummary } from "../types/index.js";
 
 const expenseRepo = new ExpenseRepository();
 const incomeRepo = new IncomeRepository();
@@ -76,5 +76,39 @@ export class DashboardService {
     }
 
     return result;
+  }
+
+  async getAnnualSummary(year: number): Promise<AnnualSummary> {
+    const [expensesByType, incomesBySource, expenseMonthly, incomeMonthly] =
+      await Promise.all([
+        expenseRepo.sumByTypeForYear(year),
+        incomeRepo.sumBySourceForYear(year),
+        expenseRepo.monthlyTotalsForYear(year),
+        incomeRepo.monthlyTotalsForYear(year),
+      ]);
+
+    const totalExpenses = expensesByType.reduce((sum, e) => sum + Number(e.total), 0);
+    const totalIncome = incomesBySource.reduce((sum, i) => sum + Number(i.total), 0);
+
+    const expenseMap = new Map(expenseMonthly.map((e) => [e.month, Number(e.total)]));
+    const incomeMap = new Map(incomeMonthly.map((i) => [i.month, Number(i.total)]));
+
+    const monthlyBreakdown = [];
+    for (let m = 1; m <= 12; m++) {
+      monthlyBreakdown.push({
+        month: m,
+        income: incomeMap.get(m) ?? 0,
+        expenses: expenseMap.get(m) ?? 0,
+      });
+    }
+
+    return {
+      totalIncome,
+      totalExpenses,
+      netSavings: totalIncome - totalExpenses,
+      expensesByType,
+      incomesBySource,
+      monthlyBreakdown,
+    };
   }
 }

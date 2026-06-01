@@ -88,4 +88,29 @@ export class IncomeRepository {
     });
     return mapRows<{ name: string; total: number }>(result.rows);
   }
+
+  async sumBySourceForYear(year: number): Promise<{ name: string; total: number }[]> {
+    const result = await this.db.execute({
+      sql: `SELECT s.name, COALESCE(SUM(i.amount), 0) as total
+            FROM incomes i
+            JOIN income_sources s ON i.income_source_id = s.id
+            WHERE i.year = ?
+            GROUP BY s.name
+            ORDER BY total DESC`,
+      args: [year],
+    });
+    return mapRows<{ name: string; total: number }>(result.rows);
+  }
+
+  async monthlyTotalsForYear(year: number): Promise<{ month: number; total: number }[]> {
+    const result = await this.db.execute({
+      sql: `SELECT month, COALESCE(SUM(amount), 0) as total
+            FROM incomes
+            WHERE year = ?
+            GROUP BY month
+            ORDER BY month ASC`,
+      args: [year],
+    });
+    return mapRows<{ month: number; total: number }>(result.rows);
+  }
 }

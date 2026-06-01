@@ -13,6 +13,7 @@ import Settings from "./pages/Settings";
 import Payables from "./pages/Payables";
 import Assets from "./pages/Assets";
 import NationalSavings from "./pages/NationalSavings";
+import AnnualStats from "./pages/AnnualStats";
 
 function AuthGate() {
   const { isAuthenticated, loading } = useAuth();
@@ -40,6 +41,7 @@ function AuthGate() {
           <Route path="/car-loan" element={<CarLoan />} />
           <Route path="/assets" element={<Assets />} />
           <Route path="/national-savings" element={<NationalSavings />} />
+          <Route path="/annual-stats" element={<AnnualStats />} />
           <Route path="/settings" element={<Settings />} />
         </Route>
       </Routes>

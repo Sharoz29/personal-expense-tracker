@@ -264,3 +264,12 @@ export interface DashboardSummary {
   expensesByType: { name: string; total: number }[];
   incomeBySource: { name: string; total: number }[];
 }
+
+export interface AnnualSummary {
+  totalIncome: number;
+  totalExpenses: number;
+  netSavings: number;
+  expensesByType: { name: string; total: number }[];
+  incomesBySource: { name: string; total: number }[];
+  monthlyBreakdown: { month: number; income: number; expenses: number }[];
+}

@@ -110,4 +110,29 @@ export class ExpenseRepository {
     });
     return mapRows<{ name: string; total: number }>(result.rows);
   }
+
+  async sumByTypeForYear(year: number): Promise<{ name: string; total: number }[]> {
+    const result = await this.db.execute({
+      sql: `SELECT et.name, COALESCE(SUM(e.amount), 0) as total
+            FROM expenses e
+            JOIN expense_types et ON e.expense_type_id = et.id
+            WHERE e.year = ?
+            GROUP BY et.name
+            ORDER BY total DESC`,
+      args: [year],
+    });
+    return mapRows<{ name: string; total: number }>(result.rows);
+  }
+
+  async monthlyTotalsForYear(year: number): Promise<{ month: number; total: number }[]> {
+    const result = await this.db.execute({
+      sql: `SELECT month, COALESCE(SUM(amount), 0) as total
+            FROM expenses
+            WHERE year = ?
+            GROUP BY month
+            ORDER BY month ASC`,
+      args: [year],
+    });
+    return mapRows<{ month: number; total: number }>(result.rows);
+  }
 }
