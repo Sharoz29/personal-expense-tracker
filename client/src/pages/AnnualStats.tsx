@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { dashboardApi } from "../api/dashboard.api";
 import SummaryCards from "../components/dashboard/SummaryCards";
 import ExpenseBreakdownChart from "../components/dashboard/ExpenseBreakdownChart";
@@ -21,6 +21,8 @@ export default function AnnualStats() {
   const [summary, setSummary] = useState<AnnualSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [drilldown, setDrilldown] = useState<Drilldown | null>(null);
+  const [drilldownLoading, setDrilldownLoading] = useState(false);
+  const drilldownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -33,8 +35,16 @@ export default function AnnualStats() {
   }, [year]);
 
   const handleCategoryClick = async (category: string, type: "expense" | "income") => {
-    const data = await dashboardApi.getCategoryBreakdown(year, category, type);
-    setDrilldown({ category, type, data });
+    setDrilldownLoading(true);
+    try {
+      const data = await dashboardApi.getCategoryBreakdown(year, category, type);
+      setDrilldown({ category, type, data });
+      setTimeout(() => drilldownRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
+    } catch {
+      setDrilldown(null);
+    } finally {
+      setDrilldownLoading(false);
+    }
   };
 
   return (
@@ -81,14 +91,19 @@ export default function AnnualStats() {
                 />
               </div>
             </div>
-            {drilldown && (
-              <CategoryDrilldownChart
-                data={drilldown.data}
-                categoryName={drilldown.category}
-                type={drilldown.type}
-                onClose={() => setDrilldown(null)}
-              />
-            )}
+            <div ref={drilldownRef}>
+              {drilldownLoading && (
+                <div className="text-gray-500 py-4">Loading breakdown...</div>
+              )}
+              {drilldown && !drilldownLoading && (
+                <CategoryDrilldownChart
+                  data={drilldown.data}
+                  categoryName={drilldown.category}
+                  type={drilldown.type}
+                  onClose={() => setDrilldown(null)}
+                />
+              )}
+            </div>
           </>
         ) : (
           <div className="text-center text-gray-500 py-12">
