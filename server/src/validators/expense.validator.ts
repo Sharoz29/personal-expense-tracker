@@ -26,3 +26,9 @@ export const monthYearQuerySchema = z.object({
 export const yearQuerySchema = z.object({
   year: z.coerce.number().int().min(2000),
 });
+
+export const categoryBreakdownSchema = z.object({
+  year: z.coerce.number().int().min(2000),
+  category: z.string().min(1),
+  type: z.enum(["expense", "income"]),
+});

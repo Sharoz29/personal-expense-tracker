@@ -4,19 +4,25 @@ import { formatPKR } from "../../utils/format";
 
 interface ExpenseBreakdownChartProps {
   data: { name: string; total: number }[];
+  onItemClick?: (name: string) => void;
 }
 
 const COLORS = ["#ef4444", "#f97316", "#eab308", "#22c55e", "#3b82f6", "#8b5cf6", "#ec4899", "#6b7280"];
 
-export default function ExpenseBreakdownChart({ data }: ExpenseBreakdownChartProps) {
+export default function ExpenseBreakdownChart({ data, onItemClick }: ExpenseBreakdownChartProps) {
   const navigate = useNavigate();
 
   if (data.length === 0) {
-    return <div className="text-center text-gray-500 py-8">No expense data for this month</div>;
+    return <div className="text-center text-gray-500 py-8">No expense data</div>;
   }
 
   const handleClick = (entry: { name?: string }) => {
-    if (entry.name) navigate(`/expenses?type=${encodeURIComponent(entry.name)}`);
+    if (!entry.name) return;
+    if (onItemClick) {
+      onItemClick(entry.name);
+    } else {
+      navigate(`/expenses?type=${encodeURIComponent(entry.name)}`);
+    }
   };
 
   return (

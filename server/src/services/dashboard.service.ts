@@ -111,4 +111,17 @@ export class DashboardService {
       monthlyBreakdown,
     };
   }
+
+  async getCategoryBreakdown(year: number, category: string, type: "expense" | "income"): Promise<{ month: number; total: number }[]> {
+    const rows = type === "expense"
+      ? await expenseRepo.monthlyTotalsByTypeNameForYear(year, category)
+      : await incomeRepo.monthlyTotalsBySourceNameForYear(year, category);
+
+    const map = new Map(rows.map((r) => [r.month, Number(r.total)]));
+    const result = [];
+    for (let m = 1; m <= 12; m++) {
+      result.push({ month: m, total: map.get(m) ?? 0 });
+    }
+    return result;
+  }
 }

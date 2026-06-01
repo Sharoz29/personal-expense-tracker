@@ -16,4 +16,9 @@ export const dashboardApi = {
     const res = await api.get("/dashboard/annual-summary", { params: { year } });
     return res.data.data;
   },
+
+  getCategoryBreakdown: async (year: number, category: string, type: "expense" | "income"): Promise<{ month: number; total: number }[]> => {
+    const res = await api.get("/dashboard/category-breakdown", { params: { year, category, type } });
+    return res.data.data;
+  },
 };

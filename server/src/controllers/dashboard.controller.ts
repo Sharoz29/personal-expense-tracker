@@ -20,4 +20,10 @@ export class DashboardController {
     const data = await service.getAnnualSummary(Number(year));
     res.json({ data });
   }
+
+  async getCategoryBreakdown(req: Request, res: Response) {
+    const { year, category, type } = req.query;
+    const data = await service.getCategoryBreakdown(Number(year), String(category), type as "expense" | "income");
+    res.json({ data });
+  }
 }

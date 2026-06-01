@@ -135,4 +135,17 @@ export class ExpenseRepository {
     });
     return mapRows<{ month: number; total: number }>(result.rows);
   }
+
+  async monthlyTotalsByTypeNameForYear(year: number, typeName: string): Promise<{ month: number; total: number }[]> {
+    const result = await this.db.execute({
+      sql: `SELECT e.month, COALESCE(SUM(e.amount), 0) as total
+            FROM expenses e
+            JOIN expense_types et ON e.expense_type_id = et.id
+            WHERE e.year = ? AND et.name = ?
+            GROUP BY e.month
+            ORDER BY e.month ASC`,
+      args: [year, typeName],
+    });
+    return mapRows<{ month: number; total: number }>(result.rows);
+  }
 }

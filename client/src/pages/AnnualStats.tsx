@@ -4,24 +4,38 @@ import SummaryCards from "../components/dashboard/SummaryCards";
 import ExpenseBreakdownChart from "../components/dashboard/ExpenseBreakdownChart";
 import IncomeBreakdownChart from "../components/dashboard/IncomeBreakdownChart";
 import MonthlyTrendChart from "../components/annual-stats/MonthlyTrendChart";
+import CategoryDrilldownChart from "../components/annual-stats/CategoryDrilldownChart";
 import type { AnnualSummary } from "../types";
 
 const currentYear = new Date().getFullYear();
 const yearOptions = Array.from({ length: currentYear - 2019 }, (_, i) => currentYear - i);
 
+interface Drilldown {
+  category: string;
+  type: "expense" | "income";
+  data: { month: number; total: number }[];
+}
+
 export default function AnnualStats() {
   const [year, setYear] = useState(currentYear);
   const [summary, setSummary] = useState<AnnualSummary | null>(null);
   const [loading, setLoading] = useState(true);
+  const [drilldown, setDrilldown] = useState<Drilldown | null>(null);
 
   useEffect(() => {
     setLoading(true);
+    setDrilldown(null);
     dashboardApi
       .getAnnualSummary(year)
       .then(setSummary)
       .catch(() => setSummary(null))
       .finally(() => setLoading(false));
   }, [year]);
+
+  const handleCategoryClick = async (category: string, type: "expense" | "income") => {
+    const data = await dashboardApi.getCategoryBreakdown(year, category, type);
+    setDrilldown({ category, type, data });
+  };
 
   return (
     <>
@@ -54,13 +68,27 @@ export default function AnnualStats() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
               <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Expenses by Type</h3>
-                <ExpenseBreakdownChart data={summary.expensesByType} />
+                <ExpenseBreakdownChart
+                  data={summary.expensesByType}
+                  onItemClick={(name) => handleCategoryClick(name, "expense")}
+                />
               </div>
               <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Income by Source</h3>
-                <IncomeBreakdownChart data={summary.incomesBySource} />
+                <IncomeBreakdownChart
+                  data={summary.incomesBySource}
+                  onItemClick={(name) => handleCategoryClick(name, "income")}
+                />
               </div>
             </div>
+            {drilldown && (
+              <CategoryDrilldownChart
+                data={drilldown.data}
+                categoryName={drilldown.category}
+                type={drilldown.type}
+                onClose={() => setDrilldown(null)}
+              />
+            )}
           </>
         ) : (
           <div className="text-center text-gray-500 py-12">

@@ -4,17 +4,23 @@ import { formatPKR } from "../../utils/format";
 
 interface IncomeBreakdownChartProps {
   data: { name: string; total: number }[];
+  onItemClick?: (name: string) => void;
 }
 
-export default function IncomeBreakdownChart({ data }: IncomeBreakdownChartProps) {
+export default function IncomeBreakdownChart({ data, onItemClick }: IncomeBreakdownChartProps) {
   const navigate = useNavigate();
 
   if (data.length === 0) {
-    return <div className="text-center text-gray-500 py-8">No income data for this month</div>;
+    return <div className="text-center text-gray-500 py-8">No income data</div>;
   }
 
   const handleClick = (entry: { name?: string }) => {
-    if (entry.name) navigate(`/income?source=${encodeURIComponent(entry.name)}`);
+    if (!entry.name) return;
+    if (onItemClick) {
+      onItemClick(entry.name);
+    } else {
+      navigate(`/income?source=${encodeURIComponent(entry.name)}`);
+    }
   };
 
   return (
