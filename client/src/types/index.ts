@@ -51,6 +51,7 @@ export interface Expense {
   month: number;
   year: number;
   breakdowns: ExpenseBreakdown[] | null;
+  loan_id: number | null;
   created_at: string;
   updated_at: string;
 }
@@ -87,12 +88,21 @@ export interface PayableType {
   updated_at: string;
 }
 
+export interface Payee {
+  id: number;
+  name: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Payable {
   id: number;
   description: string;
   amount: number;
   amount_paid: number;
   from_person: string;
+  payee_id: number | null;
+  payee_name?: string;
   status: "pending" | "paid";
   due_date: string | null;
   paid_date: string | null;
@@ -101,6 +111,16 @@ export interface Payable {
   income_id: number | null;
   payable_type_id: number | null;
   payable_type_name?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Loan {
+  id: number;
+  name: string;
+  total_amount: number;
+  description: string;
+  start_date: string | null;
   created_at: string;
   updated_at: string;
 }

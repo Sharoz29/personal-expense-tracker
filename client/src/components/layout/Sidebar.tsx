@@ -8,7 +8,7 @@ const links = [
   { to: "/income", label: "Income", icon: Wallet },
   { to: "/payables", label: "Payables", icon: HandCoins },
   { to: "/savings", label: "Savings", icon: PiggyBank },
-  { to: "/car-loan", label: "Car Loan", icon: Car },
+  { to: "/loans", label: "Loans", icon: Car },
   { to: "/assets", label: "Assets", icon: Building2 },
   { to: "/national-savings", label: "Nat. Savings", icon: Shield },
   { to: "/annual-stats", label: "Statistics", icon: BarChart3 },

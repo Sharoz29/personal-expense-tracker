@@ -1,14 +1,15 @@
 import { useState } from "react";
-import type { Payable, PayableType, Account } from "../../types";
+import type { Payable, PayableType, Account, Payee } from "../../types";
 
 interface PayableFormProps {
   payable?: Payable | null;
   payableTypes: PayableType[];
+  payees: Payee[];
   accounts: Account[];
   onSubmit: (data: {
     description: string;
     amount: number;
-    from_person: string;
+    payee_id?: number;
     due_date?: string;
     payable_type_id?: number;
     status?: "pending" | "paid";
@@ -18,10 +19,10 @@ interface PayableFormProps {
   onCancel: () => void;
 }
 
-export default function PayableForm({ payable, payableTypes, accounts, onSubmit, onCancel }: PayableFormProps) {
+export default function PayableForm({ payable, payableTypes, payees, accounts, onSubmit, onCancel }: PayableFormProps) {
   const [description, setDescription] = useState(payable?.description ?? "");
   const [amount, setAmount] = useState(payable?.amount?.toString() ?? "");
-  const [fromPerson, setFromPerson] = useState(payable?.from_person ?? "");
+  const [payeeId, setPayeeId] = useState<number | "">(payable?.payee_id ?? "");
   const [dueDate, setDueDate] = useState(payable?.due_date ?? "");
   const [payableTypeId, setPayableTypeId] = useState<number | "">(payable?.payable_type_id ?? "");
   const [alreadyPaid, setAlreadyPaid] = useState(false);
@@ -44,7 +45,7 @@ export default function PayableForm({ payable, payableTypes, accounts, onSubmit,
       await onSubmit({
         description: description.trim(),
         amount: Number(amount),
-        from_person: fromPerson.trim(),
+        ...(payeeId ? { payee_id: Number(payeeId) } : {}),
         ...(dueDate ? { due_date: dueDate } : {}),
         ...(payableTypeId ? { payable_type_id: Number(payableTypeId) } : {}),
         ...(alreadyPaid ? { status: "paid" as const, account_id: Number(accountId), paid_date: paidDate } : {}),
@@ -86,14 +87,17 @@ export default function PayableForm({ payable, payableTypes, accounts, onSubmit,
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">From (person/company)</label>
-        <input
-          type="text"
-          value={fromPerson}
-          onChange={(e) => setFromPerson(e.target.value)}
-          placeholder="Who owes you..."
+        <label className="block text-sm font-medium text-gray-700 mb-1">Payee (person/company)</label>
+        <select
+          value={payeeId}
+          onChange={(e) => setPayeeId(e.target.value ? Number(e.target.value) : "")}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+        >
+          <option value="">No payee</option>
+          {payees.map((p) => (
+            <option key={p.id} value={p.id}>{p.name}</option>
+          ))}
+        </select>
       </div>
 
       <div>

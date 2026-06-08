@@ -6,6 +6,7 @@ import { useExpenses } from "../hooks/useExpenses";
 import { useExpenseTypes } from "../hooks/useExpenseTypes";
 import { useAccounts } from "../hooks/useAccounts";
 import { usePayableTypes } from "../hooks/usePayableTypes";
+import { usePayees } from "../hooks/usePayees";
 import ExpenseList from "../components/expenses/ExpenseList";
 import ExpenseForm from "../components/expenses/ExpenseForm";
 import Modal from "../components/common/Modal";
@@ -21,6 +22,7 @@ export default function Expenses() {
   const { expenseTypes } = useExpenseTypes();
   const { accounts } = useAccounts();
   const { payableTypes } = usePayableTypes();
+  const { payees } = usePayees();
   const [searchParams, setSearchParams] = useSearchParams();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Expense | null>(null);
@@ -60,7 +62,7 @@ export default function Expenses() {
         await payablesApi.create({
           description: data.description,
           amount: data.amount,
-          from_person: data.payable_from || "",
+          ...(data.payee_id ? { payee_id: data.payee_id } : {}),
           ...(data.payable_type_id ? { payable_type_id: data.payable_type_id } : {}),
         });
       }
@@ -140,6 +142,7 @@ export default function Expenses() {
           expenseTypes={expenseTypes}
           accounts={accounts}
           payableTypes={payableTypes}
+          payees={payees}
           expense={editing}
           onSubmit={handleSubmit}
           onCancel={() => { setShowForm(false); setEditing(null); }}

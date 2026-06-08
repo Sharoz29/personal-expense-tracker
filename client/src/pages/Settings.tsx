@@ -1,6 +1,7 @@
 import ExpenseTypeManager from "../components/settings/ExpenseTypeManager";
 import IncomeSourceManager from "../components/settings/IncomeSourceManager";
 import PayableTypeManager from "../components/settings/PayableTypeManager";
+import PayeeManager from "../components/settings/PayeeManager";
 import AssetTypeManager from "../components/settings/AssetTypeManager";
 
 export default function Settings() {
@@ -19,6 +20,9 @@ export default function Settings() {
           </div>
           <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
             <PayableTypeManager />
+          </div>
+          <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
+            <PayeeManager />
           </div>
           <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
             <AssetTypeManager />

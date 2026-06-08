@@ -2,6 +2,7 @@ import { useState } from "react";
 import { usePayables } from "../hooks/usePayables";
 import { useAccounts } from "../hooks/useAccounts";
 import { usePayableTypes } from "../hooks/usePayableTypes";
+import { usePayees } from "../hooks/usePayees";
 import { PendingPayableList, PaidPayableList } from "../components/payables/PayableList";
 import PayableForm from "../components/payables/PayableForm";
 import MarkPaidDialog from "../components/payables/MarkPaidDialog";
@@ -16,18 +17,22 @@ export default function Payables() {
   const { payables, loading, create, update, markPaid, receiveLumpSum, remove } = usePayables();
   const { accounts } = useAccounts();
   const { payableTypes } = usePayableTypes();
+  const { payees } = usePayees();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Payable | null>(null);
   const [deleting, setDeleting] = useState<Payable | null>(null);
   const [markingPaid, setMarkingPaid] = useState<Payable | null>(null);
   const [showLumpSum, setShowLumpSum] = useState(false);
   const [filterTypeId, setFilterTypeId] = useState<number>(0);
+  const [filterPayeeId, setFilterPayeeId] = useState<number>(0);
   const [pendingOpen, setPendingOpen] = useState(true);
   const [paidOpen, setPaidOpen] = useState(true);
 
-  const filteredPayables = filterTypeId
-    ? payables.filter((p) => p.payable_type_id === filterTypeId)
-    : payables;
+  const filteredPayables = payables.filter((p) => {
+    if (filterTypeId && p.payable_type_id !== filterTypeId) return false;
+    if (filterPayeeId && p.payee_id !== filterPayeeId) return false;
+    return true;
+  });
 
   const pendingPayables = filteredPayables.filter((p) => p.status === "pending");
   const paidPayables = filteredPayables.filter((p) => p.status === "paid");
@@ -56,8 +61,8 @@ export default function Payables() {
     setMarkingPaid(null);
   };
 
-  const handleLumpSum = async (fromPerson: string, amount: number, accountId: number) => {
-    await receiveLumpSum(fromPerson, amount, accountId);
+  const handleLumpSum = async (payeeId: number, amount: number, accountId: number) => {
+    await receiveLumpSum(payeeId, amount, accountId);
     setShowLumpSum(false);
   };
 
@@ -76,6 +81,16 @@ export default function Payables() {
               <option value={0}>All Types</option>
               {payableTypes.map((t) => (
                 <option key={t.id} value={t.id}>{t.name}</option>
+              ))}
+            </select>
+            <select
+              value={filterPayeeId}
+              onChange={(e) => setFilterPayeeId(Number(e.target.value))}
+              className="px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value={0}>All Payees</option>
+              {payees.map((p) => (
+                <option key={p.id} value={p.id}>{p.name}</option>
               ))}
             </select>
           </div>
@@ -166,6 +181,7 @@ export default function Payables() {
         <PayableForm
           payable={editing}
           payableTypes={payableTypes}
+          payees={payees}
           accounts={accounts}
           onSubmit={handleSubmit}
           onCancel={() => { setShowForm(false); setEditing(null); }}

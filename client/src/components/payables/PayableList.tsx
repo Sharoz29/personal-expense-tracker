@@ -21,7 +21,7 @@ export function PendingPayableList({ payables, total, onEdit, onDelete, onMarkPa
       <table className="w-full text-sm min-w-150">
         <thead>
           <tr className="border-b border-gray-200">
-            <th className="text-left py-3 px-3 md:px-4 font-medium text-gray-500">From</th>
+            <th className="text-left py-3 px-3 md:px-4 font-medium text-gray-500">Payee</th>
             <th className="text-left py-3 px-3 md:px-4 font-medium text-gray-500">Type</th>
             <th className="text-left py-3 px-3 md:px-4 font-medium text-gray-500">Description</th>
             <th className="text-left py-3 px-3 md:px-4 font-medium text-gray-500">Due Date</th>
@@ -32,7 +32,7 @@ export function PendingPayableList({ payables, total, onEdit, onDelete, onMarkPa
         <tbody>
           {payables.map((p) => (
             <tr key={p.id} className="border-b border-gray-100 hover:bg-gray-50">
-              <td className="py-3 px-3 md:px-4 text-gray-700">{p.from_person || "-"}</td>
+              <td className="py-3 px-3 md:px-4 text-gray-700">{p.payee_name || "-"}</td>
               <td className="py-3 px-3 md:px-4 text-gray-600">{p.payable_type_name || "-"}</td>
               <td className="py-3 px-3 md:px-4 text-gray-600">{p.description}</td>
               <td className="py-3 px-3 md:px-4 text-gray-600">{p.due_date ? formatDate(p.due_date) : "-"}</td>
@@ -99,7 +99,7 @@ export function PaidPayableList({ payables, total }: PaidPayableListProps) {
       <table className="w-full text-sm min-w-150">
         <thead>
           <tr className="border-b border-gray-200">
-            <th className="text-left py-3 px-3 md:px-4 font-medium text-gray-500">From</th>
+            <th className="text-left py-3 px-3 md:px-4 font-medium text-gray-500">Payee</th>
             <th className="text-left py-3 px-3 md:px-4 font-medium text-gray-500">Type</th>
             <th className="text-left py-3 px-3 md:px-4 font-medium text-gray-500">Description</th>
             <th className="text-left py-3 px-3 md:px-4 font-medium text-gray-500">Account</th>
@@ -110,7 +110,7 @@ export function PaidPayableList({ payables, total }: PaidPayableListProps) {
         <tbody>
           {payables.map((p) => (
             <tr key={p.id} className="border-b border-gray-100 hover:bg-gray-50">
-              <td className="py-3 px-3 md:px-4 text-gray-700">{p.from_person || "-"}</td>
+              <td className="py-3 px-3 md:px-4 text-gray-700">{p.payee_name || "-"}</td>
               <td className="py-3 px-3 md:px-4 text-gray-600">{p.payable_type_name || "-"}</td>
               <td className="py-3 px-3 md:px-4 text-gray-600">{p.description}</td>
               <td className="py-3 px-3 md:px-4">

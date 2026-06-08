@@ -46,9 +46,9 @@ export default function MarkPaidDialog({ open, payable, accounts, onClose, onCon
             <p className="text-sm text-gray-600 mb-1">
               <strong>Description:</strong> {payable.description}
             </p>
-            {payable.from_person && (
+            {payable.payee_name && (
               <p className="text-sm text-gray-600">
-                <strong>From:</strong> {payable.from_person}
+                <strong>Payee:</strong> {payable.payee_name}
               </p>
             )}
           </div>

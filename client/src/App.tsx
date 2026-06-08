@@ -8,7 +8,7 @@ import Accounts from "./pages/Accounts";
 import Expenses from "./pages/Expenses";
 import Income from "./pages/Income";
 import Savings from "./pages/Savings";
-import CarLoan from "./pages/CarLoan";
+import Loans from "./pages/Loans";
 import Settings from "./pages/Settings";
 import Payables from "./pages/Payables";
 import Assets from "./pages/Assets";
@@ -38,7 +38,7 @@ function AuthGate() {
           <Route path="/income" element={<Income />} />
           <Route path="/payables" element={<Payables />} />
           <Route path="/savings" element={<Savings />} />
-          <Route path="/car-loan" element={<CarLoan />} />
+          <Route path="/loans" element={<Loans />} />
           <Route path="/assets" element={<Assets />} />
           <Route path="/national-savings" element={<NationalSavings />} />
           <Route path="/annual-stats" element={<AnnualStats />} />

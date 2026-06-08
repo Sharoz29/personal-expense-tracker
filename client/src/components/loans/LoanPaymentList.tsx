@@ -3,16 +3,16 @@ import { Pencil, Trash2 } from "lucide-react";
 import EmptyState from "../common/EmptyState";
 import { formatPKR, formatDate } from "../../utils/format";
 
-interface CarPaymentListProps {
+interface LoanPaymentListProps {
   payments: Expense[];
   total: number;
   onEdit: (payment: Expense) => void;
   onDelete: (payment: Expense) => void;
 }
 
-export default function CarPaymentList({ payments, total, onEdit, onDelete }: CarPaymentListProps) {
+export default function LoanPaymentList({ payments, total, onEdit, onDelete }: LoanPaymentListProps) {
   if (payments.length === 0) {
-    return <EmptyState message="No car payments recorded yet. Click 'Add Payment' to get started." />;
+    return <EmptyState message="No payments recorded yet." />;
   }
 
   return (

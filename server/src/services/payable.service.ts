@@ -59,10 +59,10 @@ export class PayableService {
     return repo.markPaid(id, accountId, income.id, dateStr);
   }
 
-  async receiveLumpSum(fromPerson: string, totalAmount: number, accountId: number) {
-    const pendingPayables = await repo.findPendingByPerson(fromPerson);
+  async receiveLumpSum(payeeId: number, totalAmount: number, accountId: number) {
+    const pendingPayables = await repo.findPendingByPayee(payeeId);
     if (pendingPayables.length === 0) {
-      throw new Error(`No pending payables found from "${fromPerson}"`);
+      throw new Error("No pending payables found for this payee");
     }
 
     // Look up the "Reimbursement" income source

@@ -8,45 +8,49 @@ interface LumpSumDialogProps {
   payables: Payable[];
   accounts: Account[];
   onClose: () => void;
-  onConfirm: (fromPerson: string, amount: number, accountId: number) => Promise<void>;
+  onConfirm: (payeeId: number, amount: number, accountId: number) => Promise<void>;
 }
 
 export default function LumpSumDialog({ open, payables, accounts, onClose, onConfirm }: LumpSumDialogProps) {
-  const [fromPerson, setFromPerson] = useState("");
+  const [selectedPayeeId, setSelectedPayeeId] = useState<number>(0);
   const [amount, setAmount] = useState("");
   const [accountId, setAccountId] = useState<number>(accounts[0]?.id ?? 0);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Get distinct from_person values from pending payables
-  const persons = useMemo(() => {
-    const set = new Set<string>();
+  // Get distinct payees from pending payables
+  const payeesWithPending = useMemo(() => {
+    const map = new Map<number, string>();
     payables
-      .filter((p) => p.status === "pending")
+      .filter((p) => p.status === "pending" && p.payee_id)
       .forEach((p) => {
-        if (p.from_person) set.add(p.from_person);
+        if (p.payee_id && p.payee_name && !map.has(p.payee_id)) {
+          map.set(p.payee_id, p.payee_name);
+        }
       });
-    return Array.from(set).sort();
+    return Array.from(map.entries())
+      .map(([id, name]) => ({ id, name }))
+      .sort((a, b) => a.name.localeCompare(b.name));
   }, [payables]);
 
-  // Get pending payables for selected person
-  const personPayables = useMemo(() => {
-    if (!fromPerson) return [];
+  // Get pending payables for selected payee
+  const payeePayables = useMemo(() => {
+    if (!selectedPayeeId) return [];
     return payables
-      .filter((p) => p.status === "pending" && p.from_person === fromPerson)
+      .filter((p) => p.status === "pending" && p.payee_id === selectedPayeeId)
       .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
-  }, [payables, fromPerson]);
+  }, [payables, selectedPayeeId]);
 
-  const totalPendingFromPerson = useMemo(
-    () => personPayables.reduce((sum, p) => sum + (p.amount - (p.amount_paid ?? 0)), 0),
-    [personPayables]
+  const totalPendingFromPayee = useMemo(
+    () => payeePayables.reduce((sum, p) => sum + (p.amount - (p.amount_paid ?? 0)), 0),
+    [payeePayables]
   );
 
   // Preview distribution
   const preview = useMemo(() => {
-    if (!fromPerson || !amount || Number(amount) <= 0) return [];
+    if (!selectedPayeeId || !amount || Number(amount) <= 0) return [];
     let remaining = Number(amount);
-    return personPayables.map((p) => {
+    return payeePayables.map((p) => {
       const paid = p.amount_paid ?? 0;
       const payableRemaining = p.amount - paid;
       const applied = Math.min(remaining, payableRemaining);
@@ -61,13 +65,13 @@ export default function LumpSumDialog({ open, payables, accounts, onClose, onCon
         fullyPaid: paid + applied >= p.amount,
       };
     });
-  }, [fromPerson, amount, personPayables]);
+  }, [selectedPayeeId, amount, payeePayables]);
 
   useEffect(() => {
-    if (persons.length > 0 && !fromPerson) {
-      setFromPerson(persons[0]);
+    if (payeesWithPending.length > 0 && !selectedPayeeId) {
+      setSelectedPayeeId(payeesWithPending[0].id);
     }
-  }, [persons, fromPerson]);
+  }, [payeesWithPending, selectedPayeeId]);
 
   useEffect(() => {
     if (accounts.length > 0 && !accounts.some((a) => a.id === accountId)) {
@@ -80,18 +84,18 @@ export default function LumpSumDialog({ open, payables, accounts, onClose, onCon
     if (open) {
       setAmount("");
       setError(null);
-      if (persons.length > 0) setFromPerson(persons[0]);
+      if (payeesWithPending.length > 0) setSelectedPayeeId(payeesWithPending[0].id);
     }
-  }, [open, persons]);
+  }, [open, payeesWithPending]);
 
   const handleConfirm = async () => {
-    if (!fromPerson) { setError("Select a person"); return; }
+    if (!selectedPayeeId) { setError("Select a payee"); return; }
     if (!amount || Number(amount) <= 0) { setError("Amount must be positive"); return; }
     if (!accountId) { setError("Select an account"); return; }
     setSubmitting(true);
     setError(null);
     try {
-      await onConfirm(fromPerson, Number(amount), accountId);
+      await onConfirm(selectedPayeeId, Number(amount), accountId);
     } catch (err: any) {
       setError(err.response?.data?.error || "Failed to process lump sum");
     } finally {
@@ -104,24 +108,24 @@ export default function LumpSumDialog({ open, payables, accounts, onClose, onCon
       <div className="space-y-4">
         {error && <div className="text-red-600 text-sm p-2 bg-red-50 rounded">{error}</div>}
 
-        {persons.length === 0 ? (
-          <p className="text-sm text-gray-500">No pending payables with a person assigned.</p>
+        {payeesWithPending.length === 0 ? (
+          <p className="text-sm text-gray-500">No pending payables with a payee assigned.</p>
         ) : (
           <>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">From Person</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Payee</label>
               <select
-                value={fromPerson}
-                onChange={(e) => setFromPerson(e.target.value)}
+                value={selectedPayeeId}
+                onChange={(e) => setSelectedPayeeId(Number(e.target.value))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                {persons.map((p) => (
-                  <option key={p} value={p}>{p}</option>
+                {payeesWithPending.map((p) => (
+                  <option key={p.id} value={p.id}>{p.name}</option>
                 ))}
               </select>
-              {fromPerson && (
+              {selectedPayeeId > 0 && (
                 <p className="text-xs text-gray-500 mt-1">
-                  Total pending: {formatPKR(totalPendingFromPerson)} across {personPayables.length} payable{personPayables.length !== 1 ? "s" : ""}
+                  Total pending: {formatPKR(totalPendingFromPayee)} across {payeePayables.length} payable{payeePayables.length !== 1 ? "s" : ""}
                 </p>
               )}
             </div>
@@ -168,9 +172,9 @@ export default function LumpSumDialog({ open, payables, accounts, onClose, onCon
                     </div>
                   ))}
                 </div>
-                {Number(amount) > totalPendingFromPerson && (
+                {Number(amount) > totalPendingFromPayee && (
                   <p className="text-xs text-amber-700 mt-2">
-                    Note: {formatPKR(Number(amount) - totalPendingFromPerson)} exceeds total pending and will not be applied to payables (but will still be credited to account as income).
+                    Note: {formatPKR(Number(amount) - totalPendingFromPayee)} exceeds total pending and will not be applied to payables (but will still be credited to account as income).
                   </p>
                 )}
               </div>
@@ -191,7 +195,7 @@ export default function LumpSumDialog({ open, payables, accounts, onClose, onCon
               </button>
               <button
                 onClick={handleConfirm}
-                disabled={submitting || !fromPerson || !amount || Number(amount) <= 0}
+                disabled={submitting || !selectedPayeeId || !amount || Number(amount) <= 0}
                 className="px-4 py-2 text-sm rounded-lg bg-green-600 text-white hover:bg-green-700 disabled:opacity-50 transition-colors"
               >
                 {submitting ? "Processing..." : "Confirm Payment"}

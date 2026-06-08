@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import type { Expense, Account } from "../../types";
 
-interface CarPaymentFormProps {
+interface LoanPaymentFormProps {
   accounts: Account[];
   payment?: Expense | null;
   onSubmit: (data: {
@@ -15,7 +15,7 @@ interface CarPaymentFormProps {
   onCancel: () => void;
 }
 
-export default function CarPaymentForm({ accounts, payment, onSubmit, onCancel }: CarPaymentFormProps) {
+export default function LoanPaymentForm({ accounts, payment, onSubmit, onCancel }: LoanPaymentFormProps) {
   const today = new Date().toISOString().split("T")[0];
   const [accountId, setAccountId] = useState(payment?.account_id ?? (accounts[0]?.id ?? 0));
   const [amount, setAmount] = useState(payment?.amount?.toString() ?? "");

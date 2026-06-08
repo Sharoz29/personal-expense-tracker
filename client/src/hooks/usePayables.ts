@@ -5,7 +5,8 @@ import type { Payable } from "../types";
 interface CreatePayablePayload {
   description: string;
   amount: number;
-  from_person: string;
+  from_person?: string;
+  payee_id?: number;
   due_date?: string;
   payable_type_id?: number;
   status?: "pending" | "paid";
@@ -51,8 +52,8 @@ export function usePayables() {
     return updated;
   };
 
-  const receiveLumpSum = async (fromPerson: string, amount: number, accountId: number) => {
-    const result = await payablesApi.receiveLumpSum(fromPerson, amount, accountId);
+  const receiveLumpSum = async (payeeId: number, amount: number, accountId: number) => {
+    const result = await payablesApi.receiveLumpSum(payeeId, amount, accountId);
     await fetch();
     return result;
   };

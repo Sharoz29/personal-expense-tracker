@@ -39,7 +39,7 @@ export class PayableController {
   async receiveLumpSum(req: Request, res: Response) {
     try {
       const data = await service.receiveLumpSum(
-        req.body.from_person,
+        req.body.payee_id,
         req.body.amount,
         req.body.account_id
       );

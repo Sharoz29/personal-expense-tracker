@@ -53,6 +53,7 @@ export interface Expense {
   month: number;
   year: number;
   breakdowns: ExpenseBreakdown[] | null;
+  loan_id: number | null;
   created_at: string;
   updated_at: string;
 }
@@ -89,12 +90,21 @@ export interface PayableType {
   updated_at: string;
 }
 
+export interface Payee {
+  id: number;
+  name: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Payable {
   id: number;
   description: string;
   amount: number;
   amount_paid: number;
   from_person: string;
+  payee_id: number | null;
+  payee_name?: string;
   status: "pending" | "paid";
   due_date: string | null;
   paid_date: string | null;
@@ -103,6 +113,16 @@ export interface Payable {
   income_id: number | null;
   payable_type_id: number | null;
   payable_type_name?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Loan {
+  id: number;
+  name: string;
+  total_amount: number;
+  description: string;
+  start_date: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -153,6 +173,7 @@ export interface CreateExpenseDto {
   month: number;
   year: number;
   breakdowns?: ExpenseBreakdown[] | null;
+  loan_id?: number | null;
 }
 
 export type UpdateExpenseDto = CreateExpenseDto;
@@ -206,10 +227,17 @@ export interface CreatePayableTypeDto {
 
 export type UpdatePayableTypeDto = CreatePayableTypeDto;
 
+export interface CreatePayeeDto {
+  name: string;
+}
+
+export type UpdatePayeeDto = CreatePayeeDto;
+
 export interface CreatePayableDto {
   description: string;
   amount: number;
-  from_person: string;
+  from_person?: string;
+  payee_id?: number;
   due_date?: string;
   payable_type_id?: number;
   status?: "pending" | "paid";
@@ -218,6 +246,15 @@ export interface CreatePayableDto {
 }
 
 export type UpdatePayableDto = CreatePayableDto;
+
+export interface CreateLoanDto {
+  name: string;
+  total_amount: number;
+  description?: string;
+  start_date?: string;
+}
+
+export type UpdateLoanDto = CreateLoanDto;
 
 export interface CreateAssetTypeDto {
   name: string;

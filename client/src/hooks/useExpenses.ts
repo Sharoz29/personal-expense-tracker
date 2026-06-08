@@ -12,7 +12,7 @@ interface CreateExpensePayload {
   year: number;
   breakdowns?: ExpenseBreakdown[] | null;
   create_payable?: boolean;
-  payable_from?: string;
+  payee_id?: number;
   payable_type_id?: number;
 }
 

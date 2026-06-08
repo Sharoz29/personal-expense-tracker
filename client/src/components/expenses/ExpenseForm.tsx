@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { Expense, ExpenseType, Account, ExpenseBreakdown, PayableType } from "../../types";
+import type { Expense, ExpenseType, Account, ExpenseBreakdown, PayableType, Payee } from "../../types";
 import { useMonthYear } from "../../context/MonthYearContext";
 import { formatPKR, todayISO } from "../../utils/format";
 import { Plus, Trash2, ChevronDown, ChevronUp } from "lucide-react";
@@ -8,6 +8,7 @@ interface ExpenseFormProps {
   expenseTypes: ExpenseType[];
   accounts: Account[];
   payableTypes: PayableType[];
+  payees: Payee[];
   expense?: Expense | null;
   onSubmit: (data: {
     expense_type_id: number;
@@ -19,13 +20,13 @@ interface ExpenseFormProps {
     year: number;
     breakdowns?: ExpenseBreakdown[] | null;
     create_payable?: boolean;
-    payable_from?: string;
+    payee_id?: number;
     payable_type_id?: number;
   }) => Promise<void>;
   onCancel: () => void;
 }
 
-export default function ExpenseForm({ expenseTypes, accounts, payableTypes, expense, onSubmit, onCancel }: ExpenseFormProps) {
+export default function ExpenseForm({ expenseTypes, accounts, payableTypes, payees, expense, onSubmit, onCancel }: ExpenseFormProps) {
   const { month, year } = useMonthYear();
   const [expenseTypeId, setExpenseTypeId] = useState(expense?.expense_type_id ?? (expenseTypes[0]?.id ?? 0));
   const [accountId, setAccountId] = useState(expense?.account_id ?? (accounts[0]?.id ?? 0));
@@ -36,7 +37,7 @@ export default function ExpenseForm({ expenseTypes, accounts, payableTypes, expe
   const [error, setError] = useState<string | null>(null);
 
   const [createPayable, setCreatePayable] = useState(false);
-  const [payableFrom, setPayableFrom] = useState("");
+  const [payablePayeeId, setPayablePayeeId] = useState<number>(0);
   const [payableTypeId, setPayableTypeId] = useState<number>(0);
 
   const hasExistingBreakdowns = expense?.breakdowns && expense.breakdowns.length > 0;
@@ -126,7 +127,7 @@ export default function ExpenseForm({ expenseTypes, accounts, payableTypes, expe
         month: d.getMonth() + 1,
         year: d.getFullYear(),
         breakdowns: validBreakdowns,
-        ...(createPayable ? { create_payable: true, payable_from: payableFrom.trim(), ...(payableTypeId ? { payable_type_id: payableTypeId } : {}) } : {}),
+        ...(createPayable ? { create_payable: true, ...(payablePayeeId ? { payee_id: payablePayeeId } : {}), ...(payableTypeId ? { payable_type_id: payableTypeId } : {}) } : {}),
       });
     } catch (err: any) {
       setError(err.response?.data?.error || "Failed to save");
@@ -282,14 +283,17 @@ export default function ExpenseForm({ expenseTypes, accounts, payableTypes, expe
           {createPayable && (
             <>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">From (person/company)</label>
-                <input
-                  type="text"
-                  value={payableFrom}
-                  onChange={(e) => setPayableFrom(e.target.value)}
-                  placeholder="Who owes you..."
+                <label className="block text-sm font-medium text-gray-700 mb-1">Payee (person/company)</label>
+                <select
+                  value={payablePayeeId}
+                  onChange={(e) => setPayablePayeeId(Number(e.target.value))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                >
+                  <option value={0}>No payee</option>
+                  {payees.map((p) => (
+                    <option key={p.id} value={p.id}>{p.name}</option>
+                  ))}
+                </select>
               </div>
               {payableTypes.length > 0 && (
                 <div>
