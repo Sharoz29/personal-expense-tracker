@@ -8,6 +8,7 @@ const router = Router();
 const controller = new IncomeController();
 
 router.get("/summary", validate(monthYearQuerySchema, "query"), asyncHandler(controller.getSummary));
+router.get("/by-installment-plan", asyncHandler(controller.getByInstallmentPlanId));
 router.get("/", validate(monthYearQuerySchema, "query"), asyncHandler(controller.getByMonthYear));
 router.get("/:id", asyncHandler(controller.getById));
 router.post("/", validate(createIncomeSchema), asyncHandler(controller.create));

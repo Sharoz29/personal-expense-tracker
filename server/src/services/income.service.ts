@@ -43,6 +43,10 @@ export class IncomeService {
     return deleted;
   }
 
+  async getByInstallmentPlanId(installmentPlanId: number) {
+    return repo.findByInstallmentPlanId(installmentPlanId);
+  }
+
   async getSummary(month: number, year: number) {
     return repo.sumByMonthYear(month, year);
   }

@@ -13,6 +13,7 @@ import assetRoutes from "./asset.routes.js";
 import savingsCertificateRoutes from "./savings-certificate.routes.js";
 import payeeRoutes from "./payee.routes.js";
 import loanRoutes from "./loan.routes.js";
+import installmentPlanRoutes from "./installment-plan.routes.js";
 
 const router = Router();
 
@@ -30,5 +31,6 @@ router.use("/assets", assetRoutes);
 router.use("/savings-certificates", savingsCertificateRoutes);
 router.use("/payees", payeeRoutes);
 router.use("/loans", loanRoutes);
+router.use("/installment-plans", installmentPlanRoutes);
 
 export default router;

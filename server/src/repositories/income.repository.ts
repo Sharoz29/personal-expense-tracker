@@ -32,9 +32,9 @@ export class IncomeRepository {
 
   async create(dto: CreateIncomeDto): Promise<Income> {
     const result = await this.db.execute({
-      sql: `INSERT INTO incomes (income_source_id, account_id, amount, description, date, month, year)
-            VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING *`,
-      args: [dto.income_source_id, dto.account_id, dto.amount, dto.description, dto.date, dto.month, dto.year],
+      sql: `INSERT INTO incomes (income_source_id, account_id, amount, description, date, month, year, installment_plan_id, reference_number)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`,
+      args: [dto.income_source_id, dto.account_id, dto.amount, dto.description, dto.date, dto.month, dto.year, dto.installment_plan_id ?? null, dto.reference_number ?? ""],
     });
     return mapRow<Income>(result.rows[0]);
   }
@@ -43,11 +43,24 @@ export class IncomeRepository {
     const result = await this.db.execute({
       sql: `UPDATE incomes
             SET income_source_id = ?, account_id = ?, amount = ?, description = ?, date = ?,
-                month = ?, year = ?, updated_at = datetime('now')
+                month = ?, year = ?, installment_plan_id = ?, reference_number = ?, updated_at = datetime('now')
             WHERE id = ? RETURNING *`,
-      args: [dto.income_source_id, dto.account_id, dto.amount, dto.description, dto.date, dto.month, dto.year, id],
+      args: [dto.income_source_id, dto.account_id, dto.amount, dto.description, dto.date, dto.month, dto.year, dto.installment_plan_id ?? null, dto.reference_number ?? "", id],
     });
     return result.rows.length ? mapRow<Income>(result.rows[0]) : null;
+  }
+
+  async findByInstallmentPlanId(installmentPlanId: number): Promise<Income[]> {
+    const result = await this.db.execute({
+      sql: `SELECT i.*, s.name as income_source_name, a.name as account_name
+            FROM incomes i
+            JOIN income_sources s ON i.income_source_id = s.id
+            JOIN accounts a ON i.account_id = a.id
+            WHERE i.installment_plan_id = ?
+            ORDER BY i.date DESC`,
+      args: [installmentPlanId],
+    });
+    return mapRows<Income>(result.rows);
   }
 
   async delete(id: number): Promise<boolean> {

@@ -67,6 +67,8 @@ export interface Income {
   date: string;
   month: number;
   year: number;
+  installment_plan_id: number | null;
+  reference_number: string;
   created_at: string;
   updated_at: string;
 }
@@ -111,6 +113,16 @@ export interface Payable {
   income_id: number | null;
   payable_type_id: number | null;
   payable_type_name?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface InstallmentPlan {
+  id: number;
+  name: string;
+  total_amount: number;
+  buyer_name: string;
+  description: string;
   created_at: string;
   updated_at: string;
 }

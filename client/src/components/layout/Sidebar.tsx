@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, Receipt, Wallet, PiggyBank, Car, Settings, Landmark, HandCoins, Building2, Shield, BarChart3 } from "lucide-react";
+import { LayoutDashboard, Receipt, Wallet, PiggyBank, Car, Settings, Landmark, HandCoins, Building2, Shield, BarChart3, Banknote } from "lucide-react";
 
 const links = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -9,6 +9,7 @@ const links = [
   { to: "/payables", label: "Payables", icon: HandCoins },
   { to: "/savings", label: "Savings", icon: PiggyBank },
   { to: "/loans", label: "Loans", icon: Car },
+  { to: "/installments", label: "Installments", icon: Banknote },
   { to: "/assets", label: "Assets", icon: Building2 },
   { to: "/national-savings", label: "Nat. Savings", icon: Shield },
   { to: "/annual-stats", label: "Statistics", icon: BarChart3 },

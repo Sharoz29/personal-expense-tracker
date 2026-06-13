@@ -9,6 +9,8 @@ interface CreateIncomePayload {
   date: string;
   month: number;
   year: number;
+  installment_plan_id?: number;
+  reference_number?: string;
 }
 
 export const incomesApi = {
@@ -26,6 +28,10 @@ export const incomesApi = {
   },
   delete: async (id: number): Promise<void> => {
     await api.delete(`/incomes/${id}`);
+  },
+  getByInstallmentPlanId: async (installmentPlanId: number): Promise<Income[]> => {
+    const res = await api.get("/incomes/by-installment-plan", { params: { installmentPlanId } });
+    return res.data.data;
   },
   getSummary: async (month: number, year: number): Promise<number> => {
     const res = await api.get("/incomes/summary", { params: { month, year } });

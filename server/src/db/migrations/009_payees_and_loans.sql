@@ -21,6 +21,8 @@ CREATE TABLE IF NOT EXISTS loans (
   updated_at TEXT DEFAULT (datetime('now'))
 );
 
+DELETE FROM expense_types WHERE name = 'Car Payment' AND EXISTS (SELECT 1 FROM expense_types WHERE name = 'Loan Payment');
+
 UPDATE expense_types SET name = 'Loan Payment' WHERE name = 'Car Payment';
 
 ALTER TABLE expenses ADD COLUMN loan_id INTEGER REFERENCES loans(id);
