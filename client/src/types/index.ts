@@ -17,6 +17,7 @@ export interface Account {
   name: string;
   account_number: string;
   balance: number;
+  track_installments: boolean;
   created_at: string;
   updated_at: string;
 }

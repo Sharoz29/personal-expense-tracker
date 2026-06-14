@@ -33,6 +33,10 @@ export const incomesApi = {
     const res = await api.get("/incomes/by-installment-plan", { params: { installmentPlanId } });
     return res.data.data;
   },
+  getInstallmentTotals: async (): Promise<{ account_id: number; total: number }[]> => {
+    const res = await api.get("/incomes/installment-totals");
+    return res.data.data;
+  },
   getSummary: async (month: number, year: number): Promise<number> => {
     const res = await api.get("/incomes/summary", { params: { month, year } });
     return res.data.data.total;

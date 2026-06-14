@@ -38,9 +38,9 @@ export class AccountRepository {
   async update(id: number, dto: UpdateAccountDto): Promise<Account | null> {
     const result = await this.db.execute({
       sql: `UPDATE accounts
-            SET name = ?, account_number = ?, updated_at = datetime('now')
+            SET name = ?, account_number = ?, track_installments = ?, updated_at = datetime('now')
             WHERE id = ? RETURNING *`,
-      args: [dto.name, dto.account_number, id],
+      args: [dto.name, dto.account_number, dto.track_installments ? 1 : 0, id],
     });
     return result.rows.length ? mapRow<Account>(result.rows[0]) : null;
   }

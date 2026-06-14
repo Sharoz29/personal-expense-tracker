@@ -10,6 +10,7 @@ interface CreateAccountPayload {
 interface UpdateAccountPayload {
   name: string;
   account_number: string;
+  track_installments?: boolean;
 }
 
 interface CreateTransferPayload {

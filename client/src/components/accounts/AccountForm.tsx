@@ -3,7 +3,7 @@ import type { Account } from "../../types";
 
 interface AccountFormProps {
   account?: Account | null;
-  onSubmit: (data: { name: string; account_number: string; balance: number }) => Promise<void>;
+  onSubmit: (data: { name: string; account_number: string; balance: number; track_installments?: boolean }) => Promise<void>;
   onCancel: () => void;
 }
 
@@ -11,6 +11,7 @@ export default function AccountForm({ account, onSubmit, onCancel }: AccountForm
   const [name, setName] = useState(account?.name ?? "");
   const [accountNumber, setAccountNumber] = useState(account?.account_number ?? "");
   const [balance, setBalance] = useState(account?.balance?.toString() ?? "0");
+  const [trackInstallments, setTrackInstallments] = useState(account?.track_installments ?? false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,6 +25,7 @@ export default function AccountForm({ account, onSubmit, onCancel }: AccountForm
         name: name.trim(),
         account_number: accountNumber.trim(),
         balance: Number(balance),
+        track_installments: trackInstallments,
       });
     } catch (err: any) {
       setError(err.response?.data?.error || "Failed to save");
@@ -57,6 +59,22 @@ export default function AccountForm({ account, onSubmit, onCancel }: AccountForm
           placeholder="Optional account number"
           className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
+      </div>
+
+      <div className="flex items-center gap-3">
+        <label className="relative inline-flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            checked={trackInstallments}
+            onChange={(e) => setTrackInstallments(e.target.checked)}
+            className="sr-only peer"
+          />
+          <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600" />
+        </label>
+        <div>
+          <span className="text-sm font-medium text-gray-700">Track Installments</span>
+          <p className="text-xs text-gray-500">Show installment vs available balance breakdown</p>
+        </div>
       </div>
 
       {!account && (

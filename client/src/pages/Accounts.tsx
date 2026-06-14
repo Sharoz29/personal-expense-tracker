@@ -12,15 +12,15 @@ import type { Account } from "../types";
 import { formatPKR } from "../utils/format";
 
 export default function Accounts() {
-  const { accounts, transfers, loading, totalBalance, create, update, remove, transfer, refetch } = useAccounts();
+  const { accounts, transfers, installmentTotals, loading, totalBalance, create, update, remove, transfer, refetch } = useAccounts();
   const [showForm, setShowForm] = useState(false);
   const [showTransfer, setShowTransfer] = useState(false);
   const [editing, setEditing] = useState<Account | null>(null);
   const [deleting, setDeleting] = useState<Account | null>(null);
 
-  const handleSubmit = async (data: { name: string; account_number: string; balance: number }) => {
+  const handleSubmit = async (data: { name: string; account_number: string; balance: number; track_installments?: boolean }) => {
     if (editing) {
-      await update(editing.id, { name: data.name, account_number: data.account_number });
+      await update(editing.id, { name: data.name, account_number: data.account_number, track_installments: data.track_installments });
     } else {
       await create(data);
     }
@@ -76,6 +76,7 @@ export default function Accounts() {
           </div>
           <AccountList
             accounts={accounts}
+            installmentTotals={installmentTotals}
             onEdit={(a) => { setEditing(a); setShowForm(true); }}
             onDelete={setDeleting}
           />

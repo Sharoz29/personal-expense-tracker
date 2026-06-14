@@ -127,6 +127,16 @@ export class IncomeRepository {
     return mapRows<{ month: number; total: number }>(result.rows);
   }
 
+  async installmentTotalsByAccount(): Promise<{ account_id: number; total: number }[]> {
+    const result = await this.db.execute(
+      `SELECT account_id, COALESCE(SUM(amount), 0) as total
+       FROM incomes
+       WHERE installment_plan_id IS NOT NULL
+       GROUP BY account_id`
+    );
+    return mapRows<{ account_id: number; total: number }>(result.rows);
+  }
+
   async monthlyTotalsBySourceNameForYear(year: number, sourceName: string): Promise<{ month: number; total: number }[]> {
     const result = await this.db.execute({
       sql: `SELECT i.month, COALESCE(SUM(i.amount), 0) as total

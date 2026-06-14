@@ -47,6 +47,10 @@ export class IncomeService {
     return repo.findByInstallmentPlanId(installmentPlanId);
   }
 
+  async getInstallmentTotalsByAccount() {
+    return repo.installmentTotalsByAccount();
+  }
+
   async getSummary(month: number, year: number) {
     return repo.sumByMonthYear(month, year);
   }

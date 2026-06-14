@@ -9,6 +9,7 @@ export const createAccountSchema = z.object({
 export const updateAccountSchema = z.object({
   name: z.string().min(1).max(100),
   account_number: z.string().default(""),
+  track_installments: z.boolean().optional(),
 });
 
 export const createTransferSchema = z.object({

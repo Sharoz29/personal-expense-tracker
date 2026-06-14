@@ -48,6 +48,11 @@ export class IncomeController {
     res.json({ data });
   }
 
+  async getInstallmentTotalsByAccount(_req: Request, res: Response) {
+    const data = await service.getInstallmentTotalsByAccount();
+    res.json({ data });
+  }
+
   async getSummary(req: Request, res: Response) {
     const { month, year } = req.query;
     const total = await service.getSummary(Number(month), Number(year));
