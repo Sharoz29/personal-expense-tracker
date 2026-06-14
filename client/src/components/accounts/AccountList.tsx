@@ -20,7 +20,7 @@ export default function AccountList({ accounts, installmentTotals, onEdit, onDel
       {accounts.map((account) => {
         const installmentAmount = account.track_installments ? (installmentTotals[account.id] ?? 0) : 0;
         const availableBalance = account.balance - installmentAmount;
-        const showBreakdown = account.track_installments && installmentAmount > 0;
+        const showBreakdown = !!account.track_installments && installmentAmount > 0;
 
         return (
           <div
