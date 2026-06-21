@@ -9,6 +9,7 @@ interface AssetFormProps {
     name: string;
     asset_type_id: number;
     current_value: number;
+    weight_tolas?: number | null;
     account_id?: number;
   }) => Promise<void>;
   onCancel: () => void;
@@ -18,11 +19,14 @@ export default function AssetForm({ assetTypes, accounts, asset, onSubmit, onCan
   const [name, setName] = useState(asset?.name ?? "");
   const [assetTypeId, setAssetTypeId] = useState(asset?.asset_type_id ?? (assetTypes[0]?.id ?? 0));
   const [currentValue, setCurrentValue] = useState(asset?.current_value?.toString() ?? "");
+  const [weightTolas, setWeightTolas] = useState(asset?.weight_tolas?.toString() ?? "");
   const [accountId, setAccountId] = useState<number>(0);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const isEditing = !!asset;
+  const selectedAssetType = assetTypes.find((t) => t.id === assetTypeId);
+  const isGoldJewelry = selectedAssetType?.name?.toLowerCase().includes("gold");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,6 +39,7 @@ export default function AssetForm({ assetTypes, accounts, asset, onSubmit, onCan
         name: name.trim(),
         asset_type_id: assetTypeId,
         current_value: Number(currentValue),
+        weight_tolas: weightTolas ? Number(weightTolas) : null,
         ...(accountId && !isEditing ? { account_id: accountId } : {}),
       });
     } catch (err: any) {
@@ -85,6 +90,21 @@ export default function AssetForm({ assetTypes, accounts, asset, onSubmit, onCan
           required
         />
       </div>
+
+      {isGoldJewelry && (
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Weight (Tolas)</label>
+          <input
+            type="number"
+            step="0.01"
+            min="0"
+            value={weightTolas}
+            onChange={(e) => setWeightTolas(e.target.value)}
+            placeholder="Optional weight in tolas"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+      )}
 
       {!isEditing && (
         <div>

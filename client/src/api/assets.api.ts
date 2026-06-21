@@ -5,6 +5,7 @@ interface CreateAssetPayload {
   name: string;
   asset_type_id: number;
   current_value: number;
+  weight_tolas?: number | null;
   account_id?: number;
 }
 

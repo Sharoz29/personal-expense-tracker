@@ -151,6 +151,7 @@ export interface Asset {
   asset_type_id: number;
   asset_type_name?: string;
   current_value: number;
+  weight_tolas: number | null;
   account_id: number | null;
   account_name?: string;
   created_at: string;

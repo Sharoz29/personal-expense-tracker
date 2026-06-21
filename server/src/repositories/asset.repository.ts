@@ -31,9 +31,9 @@ export class AssetRepository {
 
   async create(dto: CreateAssetDto): Promise<Asset> {
     const result = await this.db.execute({
-      sql: `INSERT INTO assets (name, asset_type_id, current_value, account_id)
-            VALUES (?, ?, ?, ?) RETURNING *`,
-      args: [dto.name, dto.asset_type_id, dto.current_value, dto.account_id ?? null],
+      sql: `INSERT INTO assets (name, asset_type_id, current_value, weight_tolas, account_id)
+            VALUES (?, ?, ?, ?, ?) RETURNING *`,
+      args: [dto.name, dto.asset_type_id, dto.current_value, dto.weight_tolas ?? null, dto.account_id ?? null],
     });
     return mapRow<Asset>(result.rows[0]);
   }
@@ -41,9 +41,9 @@ export class AssetRepository {
   async update(id: number, dto: UpdateAssetDto): Promise<Asset | null> {
     const result = await this.db.execute({
       sql: `UPDATE assets
-            SET name = ?, asset_type_id = ?, current_value = ?, updated_at = datetime('now')
+            SET name = ?, asset_type_id = ?, current_value = ?, weight_tolas = ?, updated_at = datetime('now')
             WHERE id = ? RETURNING *`,
-      args: [dto.name, dto.asset_type_id, dto.current_value, id],
+      args: [dto.name, dto.asset_type_id, dto.current_value, dto.weight_tolas ?? null, id],
     });
     return result.rows.length ? mapRow<Asset>(result.rows[0]) : null;
   }

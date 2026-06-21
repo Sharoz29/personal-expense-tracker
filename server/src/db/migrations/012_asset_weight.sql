@@ -1,0 +1,1 @@
+ALTER TABLE assets ADD COLUMN weight_tolas REAL DEFAULT NULL;
