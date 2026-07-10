@@ -176,6 +176,51 @@ export interface SavingsCertificate {
   updated_at: string;
 }
 
+export interface MutualFundCompany {
+  id: number;
+  name: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MutualFund {
+  id: number;
+  name: string;
+  company_id: number;
+  company_name?: string;
+  category: string;
+  risk_level: string;
+  front_end_load_value: number;
+  front_end_load_type: "percentage" | "fixed";
+  back_end_load_value: number;
+  back_end_load_type: "percentage" | "fixed";
+  other_fees_value: number;
+  other_fees_type: "percentage" | "fixed";
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MutualFundTransaction {
+  id: number;
+  fund_id: number;
+  fund_name?: string;
+  company_name?: string;
+  account_id: number | null;
+  account_name?: string;
+  amount: number;
+  nav_at_purchase: number;
+  units_allocated: number;
+  front_end_load_amount: number;
+  back_end_load_amount: number;
+  other_fees_amount: number;
+  net_invested_amount: number;
+  investment_date: string;
+  portal_reflection_date: string | null;
+  description: string;
+  created_at: string;
+  updated_at: string;
+}
+
 // ---- DTOs ----
 
 export interface CreateExpenseDto {
@@ -311,6 +356,40 @@ export interface CreateSavingsCertificateDto {
 }
 
 export type UpdateSavingsCertificateDto = CreateSavingsCertificateDto;
+
+export interface CreateMutualFundCompanyDto {
+  name: string;
+}
+
+export type UpdateMutualFundCompanyDto = CreateMutualFundCompanyDto;
+
+export interface CreateMutualFundDto {
+  name: string;
+  company_id: number;
+  category: string;
+  risk_level: string;
+  front_end_load_value: number;
+  front_end_load_type: "percentage" | "fixed";
+  back_end_load_value: number;
+  back_end_load_type: "percentage" | "fixed";
+  other_fees_value: number;
+  other_fees_type: "percentage" | "fixed";
+}
+
+export type UpdateMutualFundDto = CreateMutualFundDto;
+
+export interface CreateMutualFundTransactionDto {
+  fund_id: number;
+  account_id?: number;
+  amount: number;
+  nav_at_purchase: number;
+  units_allocated: number;
+  investment_date: string;
+  portal_reflection_date?: string;
+  description?: string;
+}
+
+export type UpdateMutualFundTransactionDto = CreateMutualFundTransactionDto;
 
 export interface MonthlySavingsRecord {
   month: number;

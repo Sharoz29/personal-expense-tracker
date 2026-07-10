@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, Receipt, Wallet, PiggyBank, Car, Settings, Landmark, HandCoins, Building2, Shield, BarChart3, Banknote } from "lucide-react";
+import { LayoutDashboard, Receipt, Wallet, PiggyBank, Car, Settings, Landmark, HandCoins, Building2, TrendingUp, BarChart3, Banknote } from "lucide-react";
 
 const links = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -11,7 +11,7 @@ const links = [
   { to: "/loans", label: "Loans", icon: Car },
   { to: "/installments", label: "Installments", icon: Banknote },
   { to: "/assets", label: "Assets", icon: Building2 },
-  { to: "/national-savings", label: "Nat. Savings", icon: Shield },
+  { to: "/investments", label: "Investments", icon: TrendingUp },
   { to: "/annual-stats", label: "Statistics", icon: BarChart3 },
   { to: "/settings", label: "Settings", icon: Settings },
 ];
@@ -40,7 +40,7 @@ export function DesktopSidebar({ profitDueBadge }: SidebarProps) {
           >
             <Icon size={20} />
             <span className="flex-1">{label}</span>
-            {to === "/national-savings" && profitDueBadge !== null && (
+            {to === "/investments" && profitDueBadge !== null && (
               <span className="px-1.5 py-0.5 bg-amber-500 text-white rounded-full text-xs font-bold min-w-5 text-center">
                 {profitDueBadge <= 0 ? "!" : `${profitDueBadge}d`}
               </span>
@@ -69,7 +69,7 @@ export function MobileBottomNav({ profitDueBadge }: SidebarProps) {
           >
             <div className="relative">
               <Icon size={20} />
-              {to === "/national-savings" && profitDueBadge !== null && (
+              {to === "/investments" && profitDueBadge !== null && (
                 <span className="absolute -top-1.5 -right-2.5 px-1 bg-amber-500 text-white rounded-full text-[8px] font-bold min-w-3.5 text-center leading-3.5">
                   {profitDueBadge <= 0 ? "!" : profitDueBadge}
                 </span>

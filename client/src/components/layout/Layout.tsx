@@ -20,7 +20,7 @@ export default function Layout() {
       <main className="flex-1 flex flex-col pb-16 md:pb-0">
         {hasDueSoon && (
           <div
-            onClick={() => navigate("/national-savings")}
+            onClick={() => navigate("/investments")}
             className="bg-amber-50 border-b border-amber-200 px-4 py-2.5 flex items-center gap-2 cursor-pointer hover:bg-amber-100 transition-colors"
           >
             <Bell size={16} className="text-amber-600" />

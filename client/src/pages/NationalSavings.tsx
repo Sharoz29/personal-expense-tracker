@@ -34,19 +34,18 @@ export default function NationalSavings() {
 
   return (
     <>
-      <header className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4 bg-white border-b border-gray-200">
-        <h2 className="text-xl md:text-2xl font-bold text-gray-800">National Savings</h2>
-        <button
-          onClick={() => { setEditing(null); setShowForm(true); }}
-          className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors flex items-center gap-1"
-        >
-          <Plus size={16} /> Add Certificate
-        </button>
-      </header>
       <div className="p-4 md:p-6 space-y-4 md:space-y-6">
-        <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
-          <p className="text-sm text-gray-500 mb-1">Total Invested</p>
-          <p className="text-2xl font-bold text-emerald-600">{formatPKR(totalInvested)}</p>
+        <div className="flex items-center gap-3">
+          <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6 flex-1">
+            <p className="text-sm text-gray-500 mb-1">Total Invested</p>
+            <p className="text-2xl font-bold text-emerald-600">{formatPKR(totalInvested)}</p>
+          </div>
+          <button
+            onClick={() => { setEditing(null); setShowForm(true); }}
+            className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors flex items-center gap-1 shrink-0 self-start"
+          >
+            <Plus size={16} /> Add Certificate
+          </button>
         </div>
 
         <div className="bg-white rounded-xl border border-gray-200">
