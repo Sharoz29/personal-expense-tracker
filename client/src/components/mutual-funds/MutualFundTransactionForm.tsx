@@ -31,15 +31,6 @@ export default function MutualFundTransactionForm({
   const isEditing = !!transaction;
   const selectedFund = funds.find((f) => f.id === fundId);
 
-  // Auto-calculate units when amount or NAV changes
-  useEffect(() => {
-    const amt = Number(amount);
-    const navVal = Number(nav);
-    if (amt > 0 && navVal > 0) {
-      setUnits((amt / navVal).toFixed(4));
-    }
-  }, [amount, nav]);
-
   // Fee preview based on selected fund's structure
   const calcFee = (value: number, type: "percentage" | "fixed", amt: number) =>
     type === "percentage" ? amt * (value / 100) : value;
@@ -49,6 +40,19 @@ export default function MutualFundTransactionForm({
   const belAmount = selectedFund ? calcFee(selectedFund.back_end_load_value, selectedFund.back_end_load_type, amtNum) : 0;
   const otherAmount = selectedFund ? calcFee(selectedFund.other_fees_value, selectedFund.other_fees_type, amtNum) : 0;
   const netAmount = amtNum - felAmount - belAmount - otherAmount;
+
+  // Auto-calculate units from (amount - front-end load) / NAV
+  useEffect(() => {
+    const amt = Number(amount);
+    const navVal = Number(nav);
+    if (amt > 0 && navVal > 0) {
+      const fel = selectedFund
+        ? calcFee(selectedFund.front_end_load_value, selectedFund.front_end_load_type, amt)
+        : 0;
+      const afterFel = amt - fel;
+      setUnits((afterFel / navVal).toFixed(4));
+    }
+  }, [amount, nav, selectedFund]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
