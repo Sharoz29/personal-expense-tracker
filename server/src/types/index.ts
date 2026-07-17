@@ -214,6 +214,7 @@ export interface MutualFundTransaction {
   back_end_load_amount: number;
   other_fees_amount: number;
   net_invested_amount: number;
+  is_online: boolean;
   investment_date: string;
   portal_reflection_date: string | null;
   description: string;
@@ -384,6 +385,7 @@ export interface CreateMutualFundTransactionDto {
   amount: number;
   nav_at_purchase: number;
   units_allocated: number;
+  is_online?: boolean;
   investment_date: string;
   portal_reflection_date?: string;
   description?: string;

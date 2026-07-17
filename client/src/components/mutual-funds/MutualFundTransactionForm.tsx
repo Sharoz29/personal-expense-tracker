@@ -23,6 +23,7 @@ export default function MutualFundTransactionForm({
     transaction?.investment_date ?? new Date().toISOString().split("T")[0]
   );
   const [portalDate, setPortalDate] = useState(transaction?.portal_reflection_date ?? "");
+  const [isOnline, setIsOnline] = useState(transaction ? !!transaction.is_online : false);
   const [accountId, setAccountId] = useState<number>(0);
   const [description, setDescription] = useState(transaction?.description ?? "");
   const [submitting, setSubmitting] = useState(false);
@@ -36,7 +37,7 @@ export default function MutualFundTransactionForm({
     type === "percentage" ? amt * (value / 100) : value;
 
   const amtNum = Number(amount) || 0;
-  const felAmount = selectedFund ? calcFee(selectedFund.front_end_load_value, selectedFund.front_end_load_type, amtNum) : 0;
+  const felAmount = isOnline ? 0 : selectedFund ? calcFee(selectedFund.front_end_load_value, selectedFund.front_end_load_type, amtNum) : 0;
   const belAmount = selectedFund ? calcFee(selectedFund.back_end_load_value, selectedFund.back_end_load_type, amtNum) : 0;
   const otherAmount = selectedFund ? calcFee(selectedFund.other_fees_value, selectedFund.other_fees_type, amtNum) : 0;
   const netAmount = amtNum - felAmount - belAmount - otherAmount;
@@ -46,13 +47,13 @@ export default function MutualFundTransactionForm({
     const amt = Number(amount);
     const navVal = Number(nav);
     if (amt > 0 && navVal > 0) {
-      const fel = selectedFund
+      const fel = isOnline ? 0 : selectedFund
         ? calcFee(selectedFund.front_end_load_value, selectedFund.front_end_load_type, amt)
         : 0;
       const afterFel = amt - fel;
       setUnits((afterFel / navVal).toFixed(4));
     }
-  }, [amount, nav, selectedFund]);
+  }, [amount, nav, selectedFund, isOnline]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,6 +69,7 @@ export default function MutualFundTransactionForm({
         amount: Number(amount),
         nav_at_purchase: Number(nav),
         units_allocated: Number(units),
+        is_online: isOnline,
         investment_date: investmentDate,
         ...(portalDate ? { portal_reflection_date: portalDate } : {}),
         ...(accountId && !isEditing ? { account_id: accountId } : {}),
@@ -112,6 +114,18 @@ export default function MutualFundTransactionForm({
           required
         />
       </div>
+
+      {selectedFund && selectedFund.front_end_load_value > 0 && (
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={isOnline}
+            onChange={(e) => setIsOnline(e.target.checked)}
+            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+          />
+          <span className="text-sm text-gray-700">Online transaction (no front-end load)</span>
+        </label>
+      )}
 
       <div className="grid grid-cols-2 gap-3">
         <div>
@@ -194,10 +208,14 @@ export default function MutualFundTransactionForm({
       {amtNum > 0 && selectedFund && (
         <div className="bg-gray-50 rounded-lg p-3 space-y-1 text-sm">
           <p className="font-medium text-gray-700 mb-2">Fee Summary</p>
-          {felAmount > 0 && (
+          {selectedFund.front_end_load_value > 0 && (
             <div className="flex justify-between text-gray-600">
               <span>Front-End Load ({selectedFund.front_end_load_type === "percentage" ? `${selectedFund.front_end_load_value}%` : "fixed"})</span>
-              <span className="text-red-500">-{formatPKR(felAmount)}</span>
+              {isOnline ? (
+                <span className="text-gray-400 line-through">Waived (online)</span>
+              ) : (
+                <span className="text-red-500">-{formatPKR(felAmount)}</span>
+              )}
             </div>
           )}
           {belAmount > 0 && (

@@ -7,6 +7,7 @@ export interface CreateMutualFundTransactionPayload {
   amount: number;
   nav_at_purchase: number;
   units_allocated: number;
+  is_online?: boolean;
   investment_date: string;
   portal_reflection_date?: string;
   description?: string;

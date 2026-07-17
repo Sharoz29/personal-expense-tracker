@@ -16,10 +16,11 @@ export class MutualFundTransactionService {
     const fund = await fundRepo.findById(dto.fund_id);
     if (!fund) throw new Error("Fund not found");
 
-    // Calculate fees based on fund's structure
-    const frontEndLoad = fund.front_end_load_type === "percentage"
-      ? dto.amount * (fund.front_end_load_value / 100)
-      : fund.front_end_load_value;
+    // Calculate fees based on fund's structure (skip front-end load for online transactions)
+    const frontEndLoad = dto.is_online ? 0
+      : fund.front_end_load_type === "percentage"
+        ? dto.amount * (fund.front_end_load_value / 100)
+        : fund.front_end_load_value;
     const backEndLoad = fund.back_end_load_type === "percentage"
       ? dto.amount * (fund.back_end_load_value / 100)
       : fund.back_end_load_value;
@@ -49,9 +50,10 @@ export class MutualFundTransactionService {
     const fund = await fundRepo.findById(dto.fund_id);
     if (!fund) throw new Error("Fund not found");
 
-    const frontEndLoad = fund.front_end_load_type === "percentage"
-      ? dto.amount * (fund.front_end_load_value / 100)
-      : fund.front_end_load_value;
+    const frontEndLoad = dto.is_online ? 0
+      : fund.front_end_load_type === "percentage"
+        ? dto.amount * (fund.front_end_load_value / 100)
+        : fund.front_end_load_value;
     const backEndLoad = fund.back_end_load_type === "percentage"
       ? dto.amount * (fund.back_end_load_value / 100)
       : fund.back_end_load_value;

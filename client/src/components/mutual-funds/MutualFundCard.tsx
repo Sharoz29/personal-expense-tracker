@@ -132,7 +132,10 @@ export default function MutualFundCard({
                 <tbody>
                   {transactions.map((tx) => (
                     <tr key={tx.id} className="border-b border-gray-100 hover:bg-gray-50">
-                      <td className="py-2 px-3 text-gray-700">{tx.investment_date}</td>
+                      <td className="py-2 px-3 text-gray-700">
+                        {tx.investment_date}
+                        {!!tx.is_online && <span className="ml-1 px-1 py-0.5 bg-green-50 text-green-700 rounded text-[10px] font-medium">Online</span>}
+                      </td>
                       <td className="py-2 px-3 text-right text-gray-800 font-medium">{formatPKR(tx.amount)}</td>
                       <td className="py-2 px-3 text-right text-gray-600">{tx.nav_at_purchase}</td>
                       <td className="py-2 px-3 text-right text-gray-600">{tx.units_allocated.toFixed(4)}</td>

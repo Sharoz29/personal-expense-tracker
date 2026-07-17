@@ -50,8 +50,8 @@ export class MutualFundTransactionRepository {
     fees: { front_end_load_amount: number; back_end_load_amount: number; other_fees_amount: number; net_invested_amount: number }
   ): Promise<MutualFundTransaction> {
     const result = await this.db.execute({
-      sql: `INSERT INTO mutual_fund_transactions (fund_id, account_id, amount, nav_at_purchase, units_allocated, front_end_load_amount, back_end_load_amount, other_fees_amount, net_invested_amount, investment_date, portal_reflection_date, description)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`,
+      sql: `INSERT INTO mutual_fund_transactions (fund_id, account_id, amount, nav_at_purchase, units_allocated, front_end_load_amount, back_end_load_amount, other_fees_amount, net_invested_amount, is_online, investment_date, portal_reflection_date, description)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`,
       args: [
         dto.fund_id,
         dto.account_id ?? null,
@@ -62,6 +62,7 @@ export class MutualFundTransactionRepository {
         fees.back_end_load_amount,
         fees.other_fees_amount,
         fees.net_invested_amount,
+        dto.is_online ? 1 : 0,
         dto.investment_date,
         dto.portal_reflection_date ?? null,
         dto.description ?? "",
@@ -77,7 +78,7 @@ export class MutualFundTransactionRepository {
   ): Promise<MutualFundTransaction | null> {
     const result = await this.db.execute({
       sql: `UPDATE mutual_fund_transactions
-            SET fund_id = ?, account_id = ?, amount = ?, nav_at_purchase = ?, units_allocated = ?, front_end_load_amount = ?, back_end_load_amount = ?, other_fees_amount = ?, net_invested_amount = ?, investment_date = ?, portal_reflection_date = ?, description = ?, updated_at = datetime('now')
+            SET fund_id = ?, account_id = ?, amount = ?, nav_at_purchase = ?, units_allocated = ?, front_end_load_amount = ?, back_end_load_amount = ?, other_fees_amount = ?, net_invested_amount = ?, is_online = ?, investment_date = ?, portal_reflection_date = ?, description = ?, updated_at = datetime('now')
             WHERE id = ? RETURNING *`,
       args: [
         dto.fund_id,
@@ -89,6 +90,7 @@ export class MutualFundTransactionRepository {
         fees.back_end_load_amount,
         fees.other_fees_amount,
         fees.net_invested_amount,
+        dto.is_online ? 1 : 0,
         dto.investment_date,
         dto.portal_reflection_date ?? null,
         dto.description ?? "",
