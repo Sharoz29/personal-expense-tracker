@@ -70,6 +70,7 @@ export default function AnnualStats() {
               totalIncome={summary.totalIncome}
               totalExpenses={summary.totalExpenses}
               savings={summary.netSavings}
+              pendingPayablesTotal={0}
             />
             <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
               <h3 className="text-lg font-semibold text-gray-800 mb-4">Monthly Income vs Expenses</h3>

@@ -46,6 +46,7 @@ export default function Dashboard() {
               totalIncome={summary.totalIncome}
               totalExpenses={summary.totalExpenses}
               savings={summary.savings}
+              pendingPayablesTotal={summary.pendingPayablesTotal}
             />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
               <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">

@@ -105,6 +105,14 @@ export class PayableRepository {
     return result.rows.length ? mapRow<Payable>(result.rows[0]) : null;
   }
 
+  async sumPending(): Promise<number> {
+    const result = await this.db.execute({
+      sql: "SELECT COALESCE(SUM(amount - amount_paid), 0) as total FROM payables WHERE status = 'pending'",
+      args: [],
+    });
+    return Number(result.rows[0]?.total ?? 0);
+  }
+
   async delete(id: number): Promise<boolean> {
     const result = await this.db.execute({
       sql: "DELETE FROM payables WHERE id = ? AND status = 'pending'",

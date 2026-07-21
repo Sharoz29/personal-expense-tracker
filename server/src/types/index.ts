@@ -406,6 +406,7 @@ export interface DashboardSummary {
   totalIncome: number;
   totalExpenses: number;
   savings: number;
+  pendingPayablesTotal: number;
   expensesByType: { name: string; total: number }[];
   incomeBySource: { name: string; total: number }[];
 }

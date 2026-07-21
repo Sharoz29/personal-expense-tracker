@@ -1,27 +1,31 @@
 import { ExpenseRepository } from "../repositories/expense.repository.js";
 import { IncomeRepository } from "../repositories/income.repository.js";
 import { SavingsRepository } from "../repositories/savings.repository.js";
+import { PayableRepository } from "../repositories/payable.repository.js";
 import type { DashboardSummary, MonthlySavingsRecord, AnnualSummary } from "../types/index.js";
 
 const expenseRepo = new ExpenseRepository();
 const incomeRepo = new IncomeRepository();
 const savingsRepo = new SavingsRepository();
+const payableRepo = new PayableRepository();
 
 export class DashboardService {
   async getSummary(month: number, year: number): Promise<DashboardSummary> {
-    const [totalExpenses, totalIncome, expensesByType, incomeBySource, savingsRecord] =
+    const [totalExpenses, totalIncome, expensesByType, incomeBySource, savingsRecord, pendingPayablesTotal] =
       await Promise.all([
         expenseRepo.sumByMonthYear(month, year),
         incomeRepo.sumByMonthYear(month, year),
         expenseRepo.sumByTypeForMonth(month, year),
         incomeRepo.sumBySourceForMonth(month, year),
         savingsRepo.findByMonthYear(month, year),
+        payableRepo.sumPending(),
       ]);
 
     return {
       totalIncome,
       totalExpenses,
       savings: savingsRecord?.amount ?? totalIncome - totalExpenses,
+      pendingPayablesTotal,
       expensesByType,
       incomeBySource,
     };

@@ -1,13 +1,16 @@
-import { TrendingUp, TrendingDown, PiggyBank } from "lucide-react";
+import { TrendingUp, TrendingDown, PiggyBank, Receipt } from "lucide-react";
 import { formatPKR } from "../../utils/format";
 
 interface SummaryCardsProps {
   totalIncome: number;
   totalExpenses: number;
   savings: number;
+  pendingPayablesTotal: number;
 }
 
-export default function SummaryCards({ totalIncome, totalExpenses, savings }: SummaryCardsProps) {
+export default function SummaryCards({ totalIncome, totalExpenses, savings, pendingPayablesTotal }: SummaryCardsProps) {
+  const expensesWithoutPayables = totalExpenses - pendingPayablesTotal;
+
   const cards = [
     {
       label: "Total Income",
@@ -26,6 +29,14 @@ export default function SummaryCards({ totalIncome, totalExpenses, savings }: Su
       iconBg: "bg-red-100",
     },
     {
+      label: "Expenses w/o Payables",
+      value: expensesWithoutPayables,
+      icon: Receipt,
+      color: "text-orange-600",
+      bg: "bg-orange-50",
+      iconBg: "bg-orange-100",
+    },
+    {
       label: "Net Savings",
       value: savings,
       icon: PiggyBank,
@@ -36,7 +47,7 @@ export default function SummaryCards({ totalIncome, totalExpenses, savings }: Su
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
       {cards.map(({ label, value, icon: Icon, color, bg, iconBg }) => (
         <div key={label} className={`${bg} rounded-xl p-5 border border-gray-100`}>
           <div className="flex items-center justify-between mb-3">
