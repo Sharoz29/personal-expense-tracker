@@ -110,6 +110,7 @@ export interface Payable {
   payee_name?: string;
   status: "pending" | "paid";
   due_date: string | null;
+  incurred_date: string | null;
   paid_date: string | null;
   account_id: number | null;
   account_name?: string;
@@ -165,6 +166,7 @@ export interface SavingsCertificate {
   certificate_type: string;
   principal_amount: number;
   profit_rate: number;
+  final_profit_rate: number | null;
   purchase_date: string;
   maturity_date: string;
   duration: string;
@@ -302,6 +304,7 @@ export interface CreatePayableDto {
   from_person?: string;
   payee_id?: number;
   due_date?: string;
+  incurred_date?: string;
   payable_type_id?: number;
   status?: "pending" | "paid";
   account_id?: number;
@@ -348,6 +351,7 @@ export interface CreateSavingsCertificateDto {
   certificate_type: string;
   principal_amount: number;
   profit_rate: number;
+  final_profit_rate?: number | null;
   purchase_date: string;
   maturity_date: string;
   duration: string;
@@ -407,6 +411,7 @@ export interface DashboardSummary {
   totalExpenses: number;
   savings: number;
   pendingPayablesTotal: number;
+  payablesTotalForMonth: number;
   expensesByType: { name: string; total: number }[];
   incomeBySource: { name: string; total: number }[];
 }

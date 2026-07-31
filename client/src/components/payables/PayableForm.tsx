@@ -11,6 +11,7 @@ interface PayableFormProps {
     amount: number;
     payee_id?: number;
     due_date?: string;
+    incurred_date?: string;
     payable_type_id?: number;
     status?: "pending" | "paid";
     account_id?: number;
@@ -24,6 +25,7 @@ export default function PayableForm({ payable, payableTypes, payees, accounts, o
   const [amount, setAmount] = useState(payable?.amount?.toString() ?? "");
   const [payeeId, setPayeeId] = useState<number | "">(payable?.payee_id ?? "");
   const [dueDate, setDueDate] = useState(payable?.due_date ?? "");
+  const [incurredDate, setIncurredDate] = useState(payable?.incurred_date ?? "");
   const [payableTypeId, setPayableTypeId] = useState<number | "">(payable?.payable_type_id ?? "");
   const [alreadyPaid, setAlreadyPaid] = useState(false);
   const [accountId, setAccountId] = useState<number | "">(accounts[0]?.id ?? "");
@@ -47,6 +49,7 @@ export default function PayableForm({ payable, payableTypes, payees, accounts, o
         amount: Number(amount),
         ...(payeeId ? { payee_id: Number(payeeId) } : {}),
         ...(dueDate ? { due_date: dueDate } : {}),
+        ...(incurredDate ? { incurred_date: incurredDate } : {}),
         ...(payableTypeId ? { payable_type_id: Number(payableTypeId) } : {}),
         ...(alreadyPaid ? { status: "paid" as const, account_id: Number(accountId), paid_date: paidDate } : {}),
       });
@@ -114,14 +117,26 @@ export default function PayableForm({ payable, payableTypes, payees, accounts, o
         </select>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Due Date (optional)</label>
-        <input
-          type="date"
-          value={dueDate}
-          onChange={(e) => setDueDate(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Incurred Date</label>
+          <input
+            type="date"
+            value={incurredDate}
+            onChange={(e) => setIncurredDate(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <p className="text-xs text-gray-500 mt-1">When the expense was incurred</p>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Due Date (optional)</label>
+          <input
+            type="date"
+            value={dueDate}
+            onChange={(e) => setDueDate(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
       </div>
 
       {!isEditing && (

@@ -61,11 +61,21 @@ export class SavingsCertificateService {
     if (elapsedPeriods <= 0) throw new Error("No profit due yet");
 
     const periodMultiplier = periodMonths / 12;
-    const grossProfitPerPeriod = cert.principal_amount * (cert.profit_rate / 100) * periodMultiplier;
     const taxRate = cert.tax_rate ?? 0;
-    const taxPerPeriod = grossProfitPerPeriod * (taxRate / 100);
-    const netProfitPerPeriod = grossProfitPerPeriod - taxPerPeriod;
-    const totalAmount = netProfitPerPeriod * elapsedPeriods;
+
+    // Determine which periods get the final rate
+    const totalPeriodsInCert = Math.floor(monthsBetween(cert.purchase_date, cert.maturity_date) / periodMonths);
+    const periodsAlreadyRedeemed = Math.floor(monthsBetween(cert.purchase_date, trackingStart) / periodMonths);
+
+    let totalAmount = 0;
+    for (let i = 0; i < elapsedPeriods; i++) {
+      const periodNumber = periodsAlreadyRedeemed + i + 1;
+      const isFinalPeriod = periodNumber >= totalPeriodsInCert;
+      const rate = (isFinalPeriod && cert.final_profit_rate != null) ? cert.final_profit_rate : cert.profit_rate;
+      const grossProfit = cert.principal_amount * (rate / 100) * periodMultiplier;
+      const tax = grossProfit * (taxRate / 100);
+      totalAmount += grossProfit - tax;
+    }
 
     // Find or create "Investment Profit" income source
     let source = await incomeSourceRepo.findByName("Investment Profit");

@@ -62,14 +62,22 @@ function computeUnredeemed(cert: SavingsCertificate) {
   if (elapsedPeriods <= 0) return { periods: 0, amount: 0 };
 
   const periodMultiplier = periodMonths / 12;
-  const grossPerPeriod = cert.principal_amount * (cert.profit_rate / 100) * periodMultiplier;
   const taxRate = cert.tax_rate ?? 0;
-  const taxPerPeriod = grossPerPeriod * (taxRate / 100);
-  const netPerPeriod = grossPerPeriod - taxPerPeriod;
+  const totalPeriodsInCert = Math.floor(monthsBetween(cert.purchase_date, cert.maturity_date) / periodMonths);
+  const periodsAlreadyRedeemed = Math.floor(monthsBetween(cert.purchase_date, trackingStart) / periodMonths);
+
+  let total = 0;
+  for (let i = 0; i < elapsedPeriods; i++) {
+    const periodNumber = periodsAlreadyRedeemed + i + 1;
+    const isFinal = periodNumber >= totalPeriodsInCert;
+    const rate = (isFinal && cert.final_profit_rate != null) ? cert.final_profit_rate : cert.profit_rate;
+    const gross = cert.principal_amount * (rate / 100) * periodMultiplier;
+    total += gross - gross * (taxRate / 100);
+  }
 
   return {
     periods: elapsedPeriods,
-    amount: Math.round(netPerPeriod * elapsedPeriods * 100) / 100,
+    amount: Math.round(total * 100) / 100,
   };
 }
 
@@ -147,6 +155,9 @@ export default function SavingsCertificateList({ certificates, totalInvested, ac
                   </td>
                   <td className="py-3 px-3 md:px-4 text-right text-gray-700">
                     {cert.profit_rate}%
+                    {cert.final_profit_rate != null && cert.final_profit_rate !== cert.profit_rate && (
+                      <span className="text-xs text-emerald-600 ml-1">({cert.final_profit_rate}% final)</span>
+                    )}
                   </td>
                   <td className="py-3 px-3 md:px-4 text-gray-600">
                     {cert.duration || "-"}
@@ -209,6 +220,12 @@ export default function SavingsCertificateList({ certificates, totalInvested, ac
                               <p className="text-gray-500 text-xs mb-1">Tracking Since</p>
                               <p className="font-medium text-gray-800">{formatDate(cert.profit_tracking_start_date ?? cert.purchase_date)}</p>
                             </div>
+                            {cert.final_profit_rate != null && (
+                              <div>
+                                <p className="text-gray-500 text-xs mb-1">Final Payment Rate</p>
+                                <p className="font-medium text-emerald-700">{cert.final_profit_rate}%</p>
+                              </div>
+                            )}
                             {cert.account_name && (
                               <div>
                                 <p className="text-gray-500 text-xs mb-1">Deducted From</p>

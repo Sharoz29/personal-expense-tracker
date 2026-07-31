@@ -7,6 +7,7 @@ interface CreatePayablePayload {
   from_person?: string;
   payee_id?: number;
   due_date?: string;
+  incurred_date?: string;
   payable_type_id?: number;
   status?: "pending" | "paid";
   account_id?: number;

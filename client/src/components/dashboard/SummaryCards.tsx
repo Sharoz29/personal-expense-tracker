@@ -5,11 +5,11 @@ interface SummaryCardsProps {
   totalIncome: number;
   totalExpenses: number;
   savings: number;
-  pendingPayablesTotal: number;
+  payablesTotalForMonth: number;
 }
 
-export default function SummaryCards({ totalIncome, totalExpenses, savings, pendingPayablesTotal }: SummaryCardsProps) {
-  const expensesWithoutPayables = totalExpenses - pendingPayablesTotal;
+export default function SummaryCards({ totalIncome, totalExpenses, savings, payablesTotalForMonth }: SummaryCardsProps) {
+  const expensesWithoutPayables = totalExpenses - payablesTotalForMonth;
 
   const cards = [
     {

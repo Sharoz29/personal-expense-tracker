@@ -35,14 +35,15 @@ export class PayableRepository {
 
   async create(dto: CreatePayableDto): Promise<Payable> {
     const result = await this.db.execute({
-      sql: `INSERT INTO payables (description, amount, from_person, payee_id, due_date, payable_type_id, status, account_id, paid_date)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`,
+      sql: `INSERT INTO payables (description, amount, from_person, payee_id, due_date, incurred_date, payable_type_id, status, account_id, paid_date)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`,
       args: [
         dto.description,
         dto.amount,
         dto.from_person ?? "",
         dto.payee_id ?? null,
         dto.due_date ?? null,
+        dto.incurred_date ?? null,
         dto.payable_type_id ?? null,
         dto.status ?? "pending",
         dto.account_id ?? null,
@@ -55,9 +56,9 @@ export class PayableRepository {
   async update(id: number, dto: UpdatePayableDto): Promise<Payable | null> {
     const result = await this.db.execute({
       sql: `UPDATE payables
-            SET description = ?, amount = ?, from_person = ?, payee_id = ?, due_date = ?, payable_type_id = ?, updated_at = datetime('now')
+            SET description = ?, amount = ?, from_person = ?, payee_id = ?, due_date = ?, incurred_date = ?, payable_type_id = ?, updated_at = datetime('now')
             WHERE id = ? AND status = 'pending' RETURNING *`,
-      args: [dto.description, dto.amount, dto.from_person ?? "", dto.payee_id ?? null, dto.due_date ?? null, dto.payable_type_id ?? null, id],
+      args: [dto.description, dto.amount, dto.from_person ?? "", dto.payee_id ?? null, dto.due_date ?? null, dto.incurred_date ?? null, dto.payable_type_id ?? null, id],
     });
     return result.rows.length ? mapRow<Payable>(result.rows[0]) : null;
   }
@@ -109,6 +110,16 @@ export class PayableRepository {
     const result = await this.db.execute({
       sql: "SELECT COALESCE(SUM(amount - amount_paid), 0) as total FROM payables WHERE status = 'pending'",
       args: [],
+    });
+    return Number(result.rows[0]?.total ?? 0);
+  }
+
+  async sumByIncurredMonth(month: number, year: number): Promise<number> {
+    const monthStr = String(month).padStart(2, "0");
+    const prefix = `${year}-${monthStr}`;
+    const result = await this.db.execute({
+      sql: "SELECT COALESCE(SUM(amount), 0) as total FROM payables WHERE incurred_date LIKE ?",
+      args: [`${prefix}%`],
     });
     return Number(result.rows[0]?.total ?? 0);
   }

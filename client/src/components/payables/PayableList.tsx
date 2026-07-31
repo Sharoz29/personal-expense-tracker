@@ -24,6 +24,7 @@ export function PendingPayableList({ payables, total, onEdit, onDelete, onMarkPa
             <th className="text-left py-3 px-3 md:px-4 font-medium text-gray-500">Payee</th>
             <th className="text-left py-3 px-3 md:px-4 font-medium text-gray-500">Type</th>
             <th className="text-left py-3 px-3 md:px-4 font-medium text-gray-500">Description</th>
+            <th className="text-left py-3 px-3 md:px-4 font-medium text-gray-500">Incurred</th>
             <th className="text-left py-3 px-3 md:px-4 font-medium text-gray-500">Due Date</th>
             <th className="text-right py-3 px-3 md:px-4 font-medium text-gray-500">Amount</th>
             <th className="text-right py-3 px-3 md:px-4 font-medium text-gray-500">Actions</th>
@@ -35,6 +36,7 @@ export function PendingPayableList({ payables, total, onEdit, onDelete, onMarkPa
               <td className="py-3 px-3 md:px-4 text-gray-700">{p.payee_name || "-"}</td>
               <td className="py-3 px-3 md:px-4 text-gray-600">{p.payable_type_name || "-"}</td>
               <td className="py-3 px-3 md:px-4 text-gray-600">{p.description}</td>
+              <td className="py-3 px-3 md:px-4 text-gray-600">{p.incurred_date ? formatDate(p.incurred_date) : "-"}</td>
               <td className="py-3 px-3 md:px-4 text-gray-600">{p.due_date ? formatDate(p.due_date) : "-"}</td>
               <td className="py-3 px-3 md:px-4 text-right">
                 <div className="font-medium text-gray-900">{formatPKR(p.amount)}</div>
@@ -74,7 +76,7 @@ export function PendingPayableList({ payables, total, onEdit, onDelete, onMarkPa
         </tbody>
         <tfoot>
           <tr className="border-t-2 border-gray-200">
-            <td colSpan={4} className="py-3 px-3 md:px-4 font-semibold text-gray-700">Total Pending</td>
+            <td colSpan={5} className="py-3 px-3 md:px-4 font-semibold text-gray-700">Total Pending</td>
             <td className="py-3 px-3 md:px-4 text-right font-bold text-yellow-600">{formatPKR(total)}</td>
             <td />
           </tr>
@@ -102,6 +104,7 @@ export function PaidPayableList({ payables, total }: PaidPayableListProps) {
             <th className="text-left py-3 px-3 md:px-4 font-medium text-gray-500">Payee</th>
             <th className="text-left py-3 px-3 md:px-4 font-medium text-gray-500">Type</th>
             <th className="text-left py-3 px-3 md:px-4 font-medium text-gray-500">Description</th>
+            <th className="text-left py-3 px-3 md:px-4 font-medium text-gray-500">Incurred</th>
             <th className="text-left py-3 px-3 md:px-4 font-medium text-gray-500">Account</th>
             <th className="text-left py-3 px-3 md:px-4 font-medium text-gray-500">Paid Date</th>
             <th className="text-right py-3 px-3 md:px-4 font-medium text-gray-500">Amount</th>
@@ -113,6 +116,7 @@ export function PaidPayableList({ payables, total }: PaidPayableListProps) {
               <td className="py-3 px-3 md:px-4 text-gray-700">{p.payee_name || "-"}</td>
               <td className="py-3 px-3 md:px-4 text-gray-600">{p.payable_type_name || "-"}</td>
               <td className="py-3 px-3 md:px-4 text-gray-600">{p.description}</td>
+              <td className="py-3 px-3 md:px-4 text-gray-600">{p.incurred_date ? formatDate(p.incurred_date) : "-"}</td>
               <td className="py-3 px-3 md:px-4">
                 {p.account_name ? (
                   <span className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded text-xs font-medium">{p.account_name}</span>
@@ -125,7 +129,7 @@ export function PaidPayableList({ payables, total }: PaidPayableListProps) {
         </tbody>
         <tfoot>
           <tr className="border-t-2 border-gray-200">
-            <td colSpan={5} className="py-3 px-3 md:px-4 font-semibold text-gray-700">Total Paid</td>
+            <td colSpan={6} className="py-3 px-3 md:px-4 font-semibold text-gray-700">Total Paid</td>
             <td className="py-3 px-3 md:px-4 text-right font-bold text-green-600">{formatPKR(total)}</td>
           </tr>
         </tfoot>

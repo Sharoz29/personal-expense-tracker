@@ -23,6 +23,8 @@ async function migrate() {
     "012_asset_weight.sql",
     "013_mutual_funds.sql",
     "014_transaction_online.sql",
+    "015_certificate_final_rate.sql",
+    "016_payable_incurred_date.sql",
   ];
 
   for (const file of migrationFiles) {

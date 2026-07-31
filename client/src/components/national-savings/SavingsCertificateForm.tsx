@@ -26,6 +26,7 @@ interface SavingsCertificateFormProps {
     certificate_type: string;
     principal_amount: number;
     profit_rate: number;
+    final_profit_rate?: number | null;
     purchase_date: string;
     maturity_date: string;
     duration: string;
@@ -40,6 +41,7 @@ export default function SavingsCertificateForm({ certificate, accounts, onSubmit
   const [certificateType, setCertificateType] = useState(certificate?.certificate_type ?? CERTIFICATE_TYPES[0]);
   const [principalAmount, setPrincipalAmount] = useState(certificate?.principal_amount?.toString() ?? "");
   const [profitRate, setProfitRate] = useState(certificate?.profit_rate?.toString() ?? "");
+  const [finalProfitRate, setFinalProfitRate] = useState(certificate?.final_profit_rate?.toString() ?? "");
   const [purchaseDate, setPurchaseDate] = useState(certificate?.purchase_date ?? todayISO());
   const [maturityDate, setMaturityDate] = useState(certificate?.maturity_date ?? "");
   const [duration, setDuration] = useState(certificate?.duration ?? "");
@@ -65,6 +67,7 @@ export default function SavingsCertificateForm({ certificate, accounts, onSubmit
         certificate_type: certificateType,
         principal_amount: Number(principalAmount),
         profit_rate: Number(profitRate),
+        final_profit_rate: finalProfitRate ? Number(finalProfitRate) : null,
         purchase_date: purchaseDate,
         maturity_date: maturityDate,
         duration,
@@ -109,17 +112,32 @@ export default function SavingsCertificateForm({ certificate, accounts, onSubmit
         />
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Profit Rate (%)</label>
-        <input
-          type="number"
-          step="0.01"
-          min="0"
-          value={profitRate}
-          onChange={(e) => setProfitRate(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        />
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Profit Rate (%)</label>
+          <input
+            type="number"
+            step="0.01"
+            min="0"
+            value={profitRate}
+            onChange={(e) => setProfitRate(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Final Payment Rate (%)</label>
+          <input
+            type="number"
+            step="0.01"
+            min="0"
+            value={finalProfitRate}
+            onChange={(e) => setFinalProfitRate(e.target.value)}
+            placeholder="Same as profit rate"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <p className="text-xs text-gray-500 mt-1">Higher rate for the final payout (optional)</p>
+        </div>
       </div>
 
       <div>

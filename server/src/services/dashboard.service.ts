@@ -11,7 +11,7 @@ const payableRepo = new PayableRepository();
 
 export class DashboardService {
   async getSummary(month: number, year: number): Promise<DashboardSummary> {
-    const [totalExpenses, totalIncome, expensesByType, incomeBySource, savingsRecord, pendingPayablesTotal] =
+    const [totalExpenses, totalIncome, expensesByType, incomeBySource, savingsRecord, pendingPayablesTotal, payablesTotalForMonth] =
       await Promise.all([
         expenseRepo.sumByMonthYear(month, year),
         incomeRepo.sumByMonthYear(month, year),
@@ -19,6 +19,7 @@ export class DashboardService {
         incomeRepo.sumBySourceForMonth(month, year),
         savingsRepo.findByMonthYear(month, year),
         payableRepo.sumPending(),
+        payableRepo.sumByIncurredMonth(month, year),
       ]);
 
     return {
@@ -26,6 +27,7 @@ export class DashboardService {
       totalExpenses,
       savings: savingsRecord?.amount ?? totalIncome - totalExpenses,
       pendingPayablesTotal,
+      payablesTotalForMonth,
       expensesByType,
       incomeBySource,
     };

@@ -1,0 +1,1 @@
+ALTER TABLE payables ADD COLUMN incurred_date TEXT DEFAULT NULL;
