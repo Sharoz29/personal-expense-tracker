@@ -222,6 +222,19 @@ export interface MutualFundTransaction {
   updated_at: string;
 }
 
+export interface Committee {
+  id: number;
+  name: string;
+  total_members: number;
+  contribution_per_month: number;
+  my_month: number;
+  start_date: string;
+  account_id: number | null;
+  account_name?: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface MonthlySavingsRecord {
   month: number;
   year: number;

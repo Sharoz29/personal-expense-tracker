@@ -17,6 +17,7 @@ import installmentPlanRoutes from "./installment-plan.routes.js";
 import mutualFundCompanyRoutes from "./mutual-fund-company.routes.js";
 import mutualFundRoutes from "./mutual-fund.routes.js";
 import mutualFundTransactionRoutes from "./mutual-fund-transaction.routes.js";
+import committeeRoutes from "./committee.routes.js";
 
 const router = Router();
 
@@ -38,5 +39,6 @@ router.use("/installment-plans", installmentPlanRoutes);
 router.use("/mutual-fund-companies", mutualFundCompanyRoutes);
 router.use("/mutual-funds", mutualFundRoutes);
 router.use("/mutual-fund-transactions", mutualFundTransactionRoutes);
+router.use("/committees", committeeRoutes);
 
 export default router;

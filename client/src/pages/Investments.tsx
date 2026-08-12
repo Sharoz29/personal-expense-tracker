@@ -1,8 +1,9 @@
 import { useState } from "react";
 import NationalSavings from "./NationalSavings";
 import MutualFundsContent from "../components/mutual-funds/MutualFundsContent";
+import Committees from "./Committees";
 
-type Tab = "national-savings" | "mutual-funds";
+type Tab = "national-savings" | "mutual-funds" | "committees";
 
 export default function Investments() {
   const [activeTab, setActiveTab] = useState<Tab>("national-savings");
@@ -28,11 +29,15 @@ export default function Investments() {
           <button className={tabClass("mutual-funds")} onClick={() => setActiveTab("mutual-funds")}>
             Mutual Funds
           </button>
+          <button className={tabClass("committees")} onClick={() => setActiveTab("committees")}>
+            Committees
+          </button>
         </div>
       </div>
 
       {activeTab === "national-savings" && <NationalSavings />}
       {activeTab === "mutual-funds" && <MutualFundsContent />}
+      {activeTab === "committees" && <Committees />}
     </>
   );
 }
