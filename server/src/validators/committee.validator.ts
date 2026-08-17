@@ -10,3 +10,9 @@ export const createCommitteeSchema = z.object({
 });
 
 export const updateCommitteeSchema = createCommitteeSchema;
+
+export const payCommitteeSchema = z.object({
+  month_number: z.number().int().positive("Month number must be positive"),
+  account_id: z.number().int().positive("Account is required"),
+  payment_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD"),
+});

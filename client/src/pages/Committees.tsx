@@ -10,7 +10,7 @@ import type { Committee } from "../types";
 import { formatPKR } from "../utils/format";
 
 export default function Committees() {
-  const { committees, loading, totalPayout, create, update, remove } = useCommittees();
+  const { committees, loading, totalPayout, create, update, remove, payMonth, undoPayment, getPaymentsForCommittee } = useCommittees();
   const { accounts } = useAccounts();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Committee | null>(null);
@@ -56,8 +56,12 @@ export default function Committees() {
           </div>
           <CommitteeList
             committees={committees}
+            getPayments={getPaymentsForCommittee}
+            accounts={accounts}
             onEdit={(c) => { setEditing(c); setShowForm(true); }}
             onDelete={setDeleting}
+            onPay={payMonth}
+            onUndoPayment={undoPayment}
           />
         </div>
       </div>

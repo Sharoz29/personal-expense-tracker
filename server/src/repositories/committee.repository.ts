@@ -1,6 +1,6 @@
 import { getDb } from "../config/db.js";
 import { mapRow, mapRows } from "./base.repository.js";
-import type { Committee, CreateCommitteeDto, UpdateCommitteeDto } from "../types/index.js";
+import type { Committee, CreateCommitteeDto, UpdateCommitteeDto, CommitteePayment, PayCommitteeDto } from "../types/index.js";
 
 export class CommitteeRepository {
   private db = getDb();
@@ -52,5 +52,52 @@ export class CommitteeRepository {
       args: [id],
     });
     return result.rowsAffected > 0;
+  }
+
+  async findPaymentsByCommitteeId(committeeId: number): Promise<CommitteePayment[]> {
+    const result = await this.db.execute({
+      sql: `SELECT cp.*, acc.name as account_name
+            FROM committee_payments cp
+            LEFT JOIN accounts acc ON cp.account_id = acc.id
+            WHERE cp.committee_id = ?
+            ORDER BY cp.month_number ASC`,
+      args: [committeeId],
+    });
+    return mapRows<CommitteePayment>(result.rows);
+  }
+
+  async findAllPayments(): Promise<CommitteePayment[]> {
+    const result = await this.db.execute({
+      sql: `SELECT cp.*, acc.name as account_name
+            FROM committee_payments cp
+            LEFT JOIN accounts acc ON cp.account_id = acc.id
+            ORDER BY cp.committee_id, cp.month_number ASC`,
+      args: [],
+    });
+    return mapRows<CommitteePayment>(result.rows);
+  }
+
+  async createPayment(committeeId: number, dto: PayCommitteeDto): Promise<CommitteePayment> {
+    const result = await this.db.execute({
+      sql: `INSERT INTO committee_payments (committee_id, month_number, amount, payment_date, account_id)
+            VALUES (?, ?, (SELECT contribution_per_month FROM committees WHERE id = ?), ?, ?)
+            RETURNING *`,
+      args: [committeeId, dto.month_number, committeeId, dto.payment_date, dto.account_id],
+    });
+    return mapRow<CommitteePayment>(result.rows[0]);
+  }
+
+  async deletePayment(paymentId: number): Promise<CommitteePayment | null> {
+    const result = await this.db.execute({
+      sql: "SELECT * FROM committee_payments WHERE id = ?",
+      args: [paymentId],
+    });
+    if (!result.rows.length) return null;
+    const payment = mapRow<CommitteePayment>(result.rows[0]);
+    await this.db.execute({
+      sql: "DELETE FROM committee_payments WHERE id = ?",
+      args: [paymentId],
+    });
+    return payment;
   }
 }

@@ -6,7 +6,8 @@ const service = new CommitteeService();
 export class CommitteeController {
   async getAll(_req: Request, res: Response) {
     const data = await service.getAll();
-    res.json({ data });
+    const payments = await service.getAllPayments();
+    res.json({ data, payments });
   }
 
   async create(req: Request, res: Response) {
@@ -24,5 +25,23 @@ export class CommitteeController {
     const deleted = await service.delete(Number(req.params.id));
     if (!deleted) { res.status(404).json({ error: "Committee not found" }); return; }
     res.status(204).send();
+  }
+
+  async payMonth(req: Request, res: Response) {
+    try {
+      const data = await service.payMonth(Number(req.params.id), req.body);
+      res.status(201).json({ data });
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  }
+
+  async undoPayment(req: Request, res: Response) {
+    try {
+      await service.undoPayment(Number(req.params.paymentId));
+      res.status(204).send();
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
   }
 }

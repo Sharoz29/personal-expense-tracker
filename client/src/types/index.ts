@@ -235,6 +235,17 @@ export interface Committee {
   updated_at: string;
 }
 
+export interface CommitteePayment {
+  id: number;
+  committee_id: number;
+  month_number: number;
+  amount: number;
+  payment_date: string;
+  account_id: number | null;
+  account_name?: string;
+  created_at: string;
+}
+
 export interface MonthlySavingsRecord {
   month: number;
   year: number;
