@@ -62,6 +62,7 @@ export default function Expenses() {
         await payablesApi.create({
           description: data.description,
           amount: data.amount,
+          incurred_date: data.date,
           ...(data.payee_id ? { payee_id: data.payee_id } : {}),
           ...(data.payable_type_id ? { payable_type_id: data.payable_type_id } : {}),
         });
