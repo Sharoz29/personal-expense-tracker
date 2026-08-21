@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const createSavingsCertificateSchema = z.object({
   certificate_type: z.string().min(1, "Certificate type is required"),
+  registration_number: z.string().optional(),
   principal_amount: z.number().positive("Principal amount must be positive"),
   profit_rate: z.number().nonnegative("Profit rate must be >= 0"),
   final_profit_rate: z.number().nonnegative("Final profit rate must be >= 0").nullable().optional(),
@@ -15,6 +16,7 @@ export const createSavingsCertificateSchema = z.object({
 
 export const updateSavingsCertificateSchema = z.object({
   certificate_type: z.string().min(1, "Certificate type is required"),
+  registration_number: z.string().optional(),
   principal_amount: z.number().positive("Principal amount must be positive"),
   profit_rate: z.number().nonnegative("Profit rate must be >= 0"),
   final_profit_rate: z.number().nonnegative("Final profit rate must be >= 0").nullable().optional(),

@@ -24,6 +24,7 @@ interface SavingsCertificateFormProps {
   accounts: Account[];
   onSubmit: (data: {
     certificate_type: string;
+    registration_number?: string;
     principal_amount: number;
     profit_rate: number;
     final_profit_rate?: number | null;
@@ -39,6 +40,7 @@ interface SavingsCertificateFormProps {
 
 export default function SavingsCertificateForm({ certificate, accounts, onSubmit, onCancel }: SavingsCertificateFormProps) {
   const [certificateType, setCertificateType] = useState(certificate?.certificate_type ?? CERTIFICATE_TYPES[0]);
+  const [registrationNumber, setRegistrationNumber] = useState(certificate?.registration_number ?? "");
   const [principalAmount, setPrincipalAmount] = useState(certificate?.principal_amount?.toString() ?? "");
   const [profitRate, setProfitRate] = useState(certificate?.profit_rate?.toString() ?? "");
   const [finalProfitRate, setFinalProfitRate] = useState(certificate?.final_profit_rate?.toString() ?? "");
@@ -65,6 +67,7 @@ export default function SavingsCertificateForm({ certificate, accounts, onSubmit
     try {
       await onSubmit({
         certificate_type: certificateType,
+        ...(registrationNumber ? { registration_number: registrationNumber } : {}),
         principal_amount: Number(principalAmount),
         profit_rate: Number(profitRate),
         final_profit_rate: finalProfitRate ? Number(finalProfitRate) : null,
@@ -97,6 +100,17 @@ export default function SavingsCertificateForm({ certificate, accounts, onSubmit
             <option key={type} value={type}>{type}</option>
           ))}
         </select>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Registration Number</label>
+        <input
+          type="text"
+          value={registrationNumber}
+          onChange={(e) => setRegistrationNumber(e.target.value)}
+          placeholder="Optional"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
       </div>
 
       <div>

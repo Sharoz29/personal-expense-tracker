@@ -164,6 +164,7 @@ export interface Asset {
 export interface SavingsCertificate {
   id: number;
   certificate_type: string;
+  registration_number: string | null;
   principal_amount: number;
   profit_rate: number;
   final_profit_rate: number | null;
@@ -362,6 +363,7 @@ export type UpdateAssetDto = CreateAssetDto;
 
 export interface CreateSavingsCertificateDto {
   certificate_type: string;
+  registration_number?: string;
   principal_amount: number;
   profit_rate: number;
   final_profit_rate?: number | null;

@@ -226,6 +226,12 @@ export default function SavingsCertificateList({ certificates, totalInvested, ac
                                 <p className="font-medium text-emerald-700">{cert.final_profit_rate}%</p>
                               </div>
                             )}
+                            {cert.registration_number && (
+                              <div>
+                                <p className="text-gray-500 text-xs mb-1">Registration No.</p>
+                                <p className="font-medium text-gray-800">{cert.registration_number}</p>
+                              </div>
+                            )}
                             {cert.account_name && (
                               <div>
                                 <p className="text-gray-500 text-xs mb-1">Deducted From</p>

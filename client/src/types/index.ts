@@ -162,6 +162,7 @@ export interface Asset {
 export interface SavingsCertificate {
   id: number;
   certificate_type: string;
+  registration_number: string | null;
   principal_amount: number;
   profit_rate: number;
   final_profit_rate: number | null;

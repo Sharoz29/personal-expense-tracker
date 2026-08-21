@@ -1,0 +1,1 @@
+ALTER TABLE savings_certificates ADD COLUMN registration_number TEXT DEFAULT NULL;

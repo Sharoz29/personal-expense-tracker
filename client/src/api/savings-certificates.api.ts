@@ -3,6 +3,7 @@ import type { SavingsCertificate } from "../types";
 
 interface CreateSavingsCertificatePayload {
   certificate_type: string;
+  registration_number?: string;
   principal_amount: number;
   profit_rate: number;
   purchase_date: string;
