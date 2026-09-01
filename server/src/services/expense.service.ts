@@ -55,6 +55,10 @@ export class ExpenseService {
     return repo.findByInstallmentPlanId(installmentPlanId);
   }
 
+  async getInstallmentExpenseTotalsByAccount() {
+    return repo.installmentExpenseTotalsByAccount();
+  }
+
   async getSummary(month: number, year: number) {
     return repo.sumByMonthYear(month, year);
   }

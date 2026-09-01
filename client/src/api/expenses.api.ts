@@ -42,6 +42,10 @@ export const expensesApi = {
     const res = await api.get("/expenses/by-installment-plan", { params: { installmentPlanId } });
     return res.data.data;
   },
+  getInstallmentExpenseTotals: async (): Promise<{ account_id: number; total: number }[]> => {
+    const res = await api.get("/expenses/installment-expense-totals");
+    return res.data.data;
+  },
   getSummary: async (month: number, year: number): Promise<number> => {
     const res = await api.get("/expenses/summary", { params: { month, year } });
     return res.data.data.total;

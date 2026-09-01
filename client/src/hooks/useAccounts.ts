@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { accountsApi } from "../api/accounts.api";
 import { incomesApi } from "../api/incomes.api";
+import { expensesApi } from "../api/expenses.api";
 import type { Account, AccountTransfer } from "../types";
 
 interface CreateAccountPayload {
@@ -27,6 +28,7 @@ export function useAccounts() {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [transfers, setTransfers] = useState<AccountTransfer[]>([]);
   const [installmentTotals, setInstallmentTotals] = useState<Record<number, number>>({});
+  const [installmentExpenseTotals, setInstallmentExpenseTotals] = useState<Record<number, number>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,10 +36,11 @@ export function useAccounts() {
     setLoading(true);
     setError(null);
     try {
-      const [accts, xfers, totals] = await Promise.all([
+      const [accts, xfers, totals, expTotals] = await Promise.all([
         accountsApi.getAll(),
         accountsApi.getTransfers(),
         incomesApi.getInstallmentTotals(),
+        expensesApi.getInstallmentExpenseTotals(),
       ]);
       setAccounts(accts);
       setTransfers(xfers);
@@ -46,6 +49,11 @@ export function useAccounts() {
         totalsMap[t.account_id] = t.total;
       }
       setInstallmentTotals(totalsMap);
+      const expTotalsMap: Record<number, number> = {};
+      for (const t of expTotals) {
+        expTotalsMap[t.account_id] = t.total;
+      }
+      setInstallmentExpenseTotals(expTotalsMap);
     } catch {
       setError("Failed to load accounts");
     } finally {
@@ -80,5 +88,5 @@ export function useAccounts() {
 
   const totalBalance = accounts.reduce((sum, a) => sum + a.balance, 0);
 
-  return { accounts, transfers, installmentTotals, loading, error, totalBalance, create, update, remove, transfer, refetch: fetch };
+  return { accounts, transfers, installmentTotals, installmentExpenseTotals, loading, error, totalBalance, create, update, remove, transfer, refetch: fetch };
 }

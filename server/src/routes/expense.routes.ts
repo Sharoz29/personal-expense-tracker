@@ -11,6 +11,7 @@ router.get("/summary", validate(monthYearQuerySchema, "query"), asyncHandler(con
 router.get("/by-type", asyncHandler(controller.getByTypeName));
 router.get("/by-loan", asyncHandler(controller.getByLoanId));
 router.get("/by-installment-plan", asyncHandler(controller.getByInstallmentPlanId));
+router.get("/installment-expense-totals", asyncHandler(controller.getInstallmentExpenseTotalsByAccount));
 router.get("/", validate(monthYearQuerySchema, "query"), asyncHandler(controller.getByMonthYear));
 router.get("/:id", asyncHandler(controller.getById));
 router.post("/", validate(createExpenseSchema), asyncHandler(controller.create));
