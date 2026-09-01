@@ -28,6 +28,7 @@ async function migrate() {
     "017_committees.sql",
     "018_committee_payments.sql",
     "019_certificate_registration_number.sql",
+    "020_expense_installment_plan.sql",
   ];
 
   for (const file of migrationFiles) {

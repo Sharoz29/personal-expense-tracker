@@ -40,9 +40,9 @@ export class ExpenseRepository {
   async create(dto: CreateExpenseDto): Promise<Expense> {
     const breakdownsJson = dto.breakdowns ? JSON.stringify(dto.breakdowns) : null;
     const result = await this.db.execute({
-      sql: `INSERT INTO expenses (expense_type_id, account_id, amount, description, date, month, year, breakdowns, loan_id)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`,
-      args: [dto.expense_type_id, dto.account_id, dto.amount, dto.description, dto.date, dto.month, dto.year, breakdownsJson, dto.loan_id ?? null],
+      sql: `INSERT INTO expenses (expense_type_id, account_id, amount, description, date, month, year, breakdowns, loan_id, installment_plan_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`,
+      args: [dto.expense_type_id, dto.account_id, dto.amount, dto.description, dto.date, dto.month, dto.year, breakdownsJson, dto.loan_id ?? null, dto.installment_plan_id ?? null],
     });
     return mapRow<Expense>(parseBreakdowns(result.rows[0]));
   }
@@ -52,9 +52,9 @@ export class ExpenseRepository {
     const result = await this.db.execute({
       sql: `UPDATE expenses
             SET expense_type_id = ?, account_id = ?, amount = ?, description = ?, date = ?,
-                month = ?, year = ?, breakdowns = ?, loan_id = ?, updated_at = datetime('now')
+                month = ?, year = ?, breakdowns = ?, loan_id = ?, installment_plan_id = ?, updated_at = datetime('now')
             WHERE id = ? RETURNING *`,
-      args: [dto.expense_type_id, dto.account_id, dto.amount, dto.description, dto.date, dto.month, dto.year, breakdownsJson, dto.loan_id ?? null, id],
+      args: [dto.expense_type_id, dto.account_id, dto.amount, dto.description, dto.date, dto.month, dto.year, breakdownsJson, dto.loan_id ?? null, dto.installment_plan_id ?? null, id],
     });
     return result.rows.length ? mapRow<Expense>(parseBreakdowns(result.rows[0])) : null;
   }
@@ -76,6 +76,19 @@ export class ExpenseRepository {
             WHERE e.loan_id = ?
             ORDER BY e.date DESC`,
       args: [loanId],
+    });
+    return mapRows<Expense>(result.rows.map(parseBreakdowns));
+  }
+
+  async findByInstallmentPlanId(installmentPlanId: number): Promise<Expense[]> {
+    const result = await this.db.execute({
+      sql: `SELECT e.*, et.name as expense_type_name, a.name as account_name
+            FROM expenses e
+            JOIN expense_types et ON e.expense_type_id = et.id
+            JOIN accounts a ON e.account_id = a.id
+            WHERE e.installment_plan_id = ?
+            ORDER BY e.date DESC`,
+      args: [installmentPlanId],
     });
     return mapRows<Expense>(result.rows.map(parseBreakdowns));
   }

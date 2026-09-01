@@ -3,13 +3,14 @@ import { useInstallmentPlans } from "../hooks/useInstallmentPlans";
 import { useAccounts } from "../hooks/useAccounts";
 import { useIncomeSources } from "../hooks/useIncomeSources";
 import { incomesApi } from "../api/incomes.api";
+import { expensesApi } from "../api/expenses.api";
 import InstallmentPlanForm from "../components/installments/InstallmentPlanForm";
 import InstallmentPaymentForm from "../components/installments/InstallmentPaymentForm";
 import InstallmentPaymentList from "../components/installments/InstallmentPaymentList";
 import Modal from "../components/common/Modal";
 import ConfirmDialog from "../components/common/ConfirmDialog";
 import { Plus, ChevronDown, ChevronUp, Pencil, Trash2 } from "lucide-react";
-import type { InstallmentPlan, Income } from "../types";
+import type { InstallmentPlan, Income, Expense } from "../types";
 import { formatPKR } from "../utils/format";
 
 const INSTALLMENT_PAYMENT_SOURCE = "Installment Payment";
@@ -24,6 +25,7 @@ export default function Installments() {
 
   const [expandedPlanId, setExpandedPlanId] = useState<number | null>(null);
   const [planPayments, setPlanPayments] = useState<Record<number, Income[]>>({});
+  const [planExpenses, setPlanExpenses] = useState<Record<number, Expense[]>>({});
   const [paymentsLoading, setPaymentsLoading] = useState<number | null>(null);
 
   const [showPaymentForm, setShowPaymentForm] = useState(false);
@@ -36,8 +38,12 @@ export default function Installments() {
   const fetchPayments = useCallback(async (planId: number) => {
     setPaymentsLoading(planId);
     try {
-      const payments = await getPayments(planId);
+      const [payments, expenses] = await Promise.all([
+        getPayments(planId),
+        expensesApi.getByInstallmentPlanId(planId),
+      ]);
       setPlanPayments((prev) => ({ ...prev, [planId]: payments }));
+      setPlanExpenses((prev) => ({ ...prev, [planId]: expenses }));
     } catch {
       // silently fail
     } finally {
@@ -139,6 +145,12 @@ export default function Installments() {
     return payments.reduce((sum, p) => sum + p.amount, 0);
   };
 
+  const getPlanExpensesTotal = (planId: number) => {
+    const expenses = planExpenses[planId];
+    if (!expenses) return 0;
+    return expenses.reduce((sum, e) => sum + e.amount, 0);
+  };
+
   return (
     <>
       <header className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4 bg-white border-b border-gray-200">
@@ -159,7 +171,10 @@ export default function Installments() {
           plans.map((plan) => {
             const isExpanded = expandedPlanId === plan.id;
             const payments = planPayments[plan.id] ?? [];
+            const expenses = planExpenses[plan.id] ?? [];
             const receivedTotal = getPlanReceivedTotal(plan.id);
+            const expensesTotal = getPlanExpensesTotal(plan.id);
+            const netReceived = receivedTotal - expensesTotal;
             const outstanding = plan.total_amount - receivedTotal;
             const progress = plan.total_amount > 0 ? (receivedTotal / plan.total_amount) * 100 : 0;
 
@@ -177,11 +192,17 @@ export default function Installments() {
                         <span className="text-xs text-gray-400 hidden md:inline">({plan.description})</span>
                       )}
                     </div>
-                    <div className="flex items-center gap-4 mt-1 text-sm text-gray-500">
+                    <div className="flex items-center gap-4 mt-1 text-sm text-gray-500 flex-wrap">
                       <span>Expected: {formatPKR(plan.total_amount)}</span>
                       {planPayments[plan.id] && (
                         <>
                           <span>Received: {formatPKR(receivedTotal)}</span>
+                          {expensesTotal > 0 && (
+                            <>
+                              <span className="text-red-600">Expenses: {formatPKR(expensesTotal)}</span>
+                              <span className="text-emerald-600 font-medium">Net: {formatPKR(netReceived)}</span>
+                            </>
+                          )}
                           <span className={outstanding > 0 ? "text-amber-600" : "text-green-600"}>
                             {outstanding > 0 ? `Outstanding: ${formatPKR(outstanding)}` : "Fully Received"}
                           </span>
@@ -227,18 +248,57 @@ export default function Installments() {
                 {isExpanded && (
                   <div className="border-t border-gray-200">
                     {paymentsLoading === plan.id ? (
-                      <div className="p-4 text-gray-500 text-sm">Loading payments...</div>
+                      <div className="p-4 text-gray-500 text-sm">Loading...</div>
                     ) : (
-                      <InstallmentPaymentList
-                        payments={payments}
-                        total={receivedTotal}
-                        onEdit={(p) => {
-                          setEditingPayment(p);
-                          setPaymentPlanId(plan.id);
-                          setShowPaymentForm(true);
-                        }}
-                        onDelete={setDeletingPayment}
-                      />
+                      <>
+                        <InstallmentPaymentList
+                          payments={payments}
+                          total={receivedTotal}
+                          onEdit={(p) => {
+                            setEditingPayment(p);
+                            setPaymentPlanId(plan.id);
+                            setShowPaymentForm(true);
+                          }}
+                          onDelete={setDeletingPayment}
+                        />
+                        {expenses.length > 0 && (
+                          <div className="border-t border-gray-200">
+                            <div className="px-4 py-3">
+                              <h4 className="text-sm font-semibold text-gray-700 mb-2">Expenses Against This Plan</h4>
+                              <table className="w-full text-sm">
+                                <thead>
+                                  <tr className="border-b border-gray-100">
+                                    <th className="text-left py-2 px-2 font-medium text-gray-500">Date</th>
+                                    <th className="text-left py-2 px-2 font-medium text-gray-500">Description</th>
+                                    <th className="text-left py-2 px-2 font-medium text-gray-500">Type</th>
+                                    <th className="text-right py-2 px-2 font-medium text-gray-500">Amount</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {expenses.map((exp) => (
+                                    <tr key={exp.id} className="border-b border-gray-50">
+                                      <td className="py-2 px-2 text-gray-600">{exp.date}</td>
+                                      <td className="py-2 px-2 text-gray-800">{exp.description || "-"}</td>
+                                      <td className="py-2 px-2 text-gray-600">{exp.expense_type_name}</td>
+                                      <td className="py-2 px-2 text-right font-medium text-red-600">{formatPKR(exp.amount)}</td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                                <tfoot>
+                                  <tr className="border-t border-gray-200">
+                                    <td colSpan={3} className="py-2 px-2 font-semibold text-gray-700">Total Expenses</td>
+                                    <td className="py-2 px-2 text-right font-bold text-red-600">{formatPKR(expensesTotal)}</td>
+                                  </tr>
+                                  <tr>
+                                    <td colSpan={3} className="py-2 px-2 font-semibold text-gray-700">Net Received (Income - Expenses)</td>
+                                    <td className="py-2 px-2 text-right font-bold text-emerald-700">{formatPKR(netReceived)}</td>
+                                  </tr>
+                                </tfoot>
+                              </table>
+                            </div>
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 )}

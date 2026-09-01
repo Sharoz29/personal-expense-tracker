@@ -51,6 +51,10 @@ export class ExpenseService {
     return repo.findByLoanId(loanId);
   }
 
+  async getByInstallmentPlanId(installmentPlanId: number) {
+    return repo.findByInstallmentPlanId(installmentPlanId);
+  }
+
   async getSummary(month: number, year: number) {
     return repo.sumByMonthYear(month, year);
   }

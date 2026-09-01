@@ -7,6 +7,7 @@ import { useExpenseTypes } from "../hooks/useExpenseTypes";
 import { useAccounts } from "../hooks/useAccounts";
 import { usePayableTypes } from "../hooks/usePayableTypes";
 import { usePayees } from "../hooks/usePayees";
+import { useInstallmentPlans } from "../hooks/useInstallmentPlans";
 import ExpenseList from "../components/expenses/ExpenseList";
 import ExpenseForm from "../components/expenses/ExpenseForm";
 import Modal from "../components/common/Modal";
@@ -23,6 +24,7 @@ export default function Expenses() {
   const { accounts } = useAccounts();
   const { payableTypes } = usePayableTypes();
   const { payees } = usePayees();
+  const { plans: installmentPlans } = useInstallmentPlans();
   const [searchParams, setSearchParams] = useSearchParams();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Expense | null>(null);
@@ -144,6 +146,7 @@ export default function Expenses() {
           accounts={accounts}
           payableTypes={payableTypes}
           payees={payees}
+          installmentPlans={installmentPlans}
           expense={editing}
           onSubmit={handleSubmit}
           onCancel={() => { setShowForm(false); setEditing(null); }}

@@ -53,6 +53,7 @@ export interface Expense {
   year: number;
   breakdowns: ExpenseBreakdown[] | null;
   loan_id: number | null;
+  installment_plan_id: number | null;
   created_at: string;
   updated_at: string;
 }

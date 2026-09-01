@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { Expense, ExpenseType, Account, ExpenseBreakdown, PayableType, Payee } from "../../types";
+import type { Expense, ExpenseType, Account, ExpenseBreakdown, PayableType, Payee, InstallmentPlan } from "../../types";
 import { useMonthYear } from "../../context/MonthYearContext";
 import { formatPKR, todayISO } from "../../utils/format";
 import { Plus, Trash2, ChevronDown, ChevronUp } from "lucide-react";
@@ -9,6 +9,7 @@ interface ExpenseFormProps {
   accounts: Account[];
   payableTypes: PayableType[];
   payees: Payee[];
+  installmentPlans?: InstallmentPlan[];
   expense?: Expense | null;
   onSubmit: (data: {
     expense_type_id: number;
@@ -22,11 +23,12 @@ interface ExpenseFormProps {
     create_payable?: boolean;
     payee_id?: number;
     payable_type_id?: number;
+    installment_plan_id?: number;
   }) => Promise<void>;
   onCancel: () => void;
 }
 
-export default function ExpenseForm({ expenseTypes, accounts, payableTypes, payees, expense, onSubmit, onCancel }: ExpenseFormProps) {
+export default function ExpenseForm({ expenseTypes, accounts, payableTypes, payees, installmentPlans, expense, onSubmit, onCancel }: ExpenseFormProps) {
   const { month, year } = useMonthYear();
   const [expenseTypeId, setExpenseTypeId] = useState(expense?.expense_type_id ?? (expenseTypes[0]?.id ?? 0));
   const [accountId, setAccountId] = useState(expense?.account_id ?? (accounts[0]?.id ?? 0));
@@ -35,6 +37,8 @@ export default function ExpenseForm({ expenseTypes, accounts, payableTypes, paye
   const [date, setDate] = useState(expense?.date ?? todayISO());
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const [installmentPlanId, setInstallmentPlanId] = useState<number>(expense?.installment_plan_id ?? 0);
 
   const [createPayable, setCreatePayable] = useState(false);
   const [payablePayeeId, setPayablePayeeId] = useState<number>(0);
@@ -127,6 +131,7 @@ export default function ExpenseForm({ expenseTypes, accounts, payableTypes, paye
         month: d.getMonth() + 1,
         year: d.getFullYear(),
         breakdowns: validBreakdowns,
+        ...(installmentPlanId ? { installment_plan_id: installmentPlanId } : {}),
         ...(createPayable ? { create_payable: true, ...(payablePayeeId ? { payee_id: payablePayeeId } : {}), ...(payableTypeId ? { payable_type_id: payableTypeId } : {}) } : {}),
       });
     } catch (err: any) {
@@ -253,6 +258,23 @@ export default function ExpenseForm({ expenseTypes, accounts, payableTypes, paye
           required
         />
       </div>
+
+      {installmentPlans && installmentPlans.length > 0 && (
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Installment Plan</label>
+          <select
+            value={installmentPlanId}
+            onChange={(e) => setInstallmentPlanId(Number(e.target.value))}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value={0}>None</option>
+            {installmentPlans.map((p) => (
+              <option key={p.id} value={p.id}>{p.name}</option>
+            ))}
+          </select>
+          <p className="text-xs text-gray-500 mt-1">Link this expense to an installment plan (e.g. taxes)</p>
+        </div>
+      )}
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>

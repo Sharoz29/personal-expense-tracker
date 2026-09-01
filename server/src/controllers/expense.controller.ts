@@ -54,6 +54,12 @@ export class ExpenseController {
     res.json({ data });
   }
 
+  async getByInstallmentPlanId(req: Request, res: Response) {
+    const { installmentPlanId } = req.query;
+    const data = await service.getByInstallmentPlanId(Number(installmentPlanId));
+    res.json({ data });
+  }
+
   async getSummary(req: Request, res: Response) {
     const { month, year } = req.query;
     const total = await service.getSummary(Number(month), Number(year));

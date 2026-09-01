@@ -11,6 +11,7 @@ interface CreateExpensePayload {
   year: number;
   breakdowns?: ExpenseBreakdown[] | null;
   loan_id?: number;
+  installment_plan_id?: number;
 }
 
 export const expensesApi = {
@@ -35,6 +36,10 @@ export const expensesApi = {
   },
   getByLoanId: async (loanId: number): Promise<Expense[]> => {
     const res = await api.get("/expenses/by-loan", { params: { loanId } });
+    return res.data.data;
+  },
+  getByInstallmentPlanId: async (installmentPlanId: number): Promise<Expense[]> => {
+    const res = await api.get("/expenses/by-installment-plan", { params: { installmentPlanId } });
     return res.data.data;
   },
   getSummary: async (month: number, year: number): Promise<number> => {

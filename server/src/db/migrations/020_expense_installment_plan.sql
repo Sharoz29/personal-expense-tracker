@@ -1,0 +1,1 @@
+ALTER TABLE expenses ADD COLUMN installment_plan_id INTEGER REFERENCES installment_plans(id);

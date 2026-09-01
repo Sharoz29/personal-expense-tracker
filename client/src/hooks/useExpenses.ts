@@ -14,6 +14,7 @@ interface CreateExpensePayload {
   create_payable?: boolean;
   payee_id?: number;
   payable_type_id?: number;
+  installment_plan_id?: number;
 }
 
 export function useExpenses(month: number, year: number) {

@@ -15,6 +15,7 @@ export const createExpenseSchema = z.object({
   year: z.number().int().min(2000),
   breakdowns: z.array(breakdownItemSchema).nullable().optional(),
   loan_id: z.number().int().positive().optional(),
+  installment_plan_id: z.number().int().positive().optional(),
 });
 
 export const updateExpenseSchema = createExpenseSchema;
