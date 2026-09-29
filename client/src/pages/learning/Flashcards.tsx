@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, Edit, Trash, Play } from "lucide-react";
+import { Plus, Edit, Trash, Play, RefreshCw, Volume2 } from "lucide-react";
 import { flashcardsApi } from "../../api/flashcards.api";
 import type { Flashcard } from "../../types";
 import Modal from "../../components/common/Modal";
@@ -11,6 +11,7 @@ export default function Flashcards() {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Flashcard | null>(null);
   const [deleting, setDeleting] = useState<Flashcard | null>(null);
+  const [regenerating, setRegenerating] = useState<number | null>(null);
 
   useEffect(() => {
     loadFlashcards();
@@ -63,9 +64,22 @@ export default function Flashcards() {
     }
   };
 
-  const playAudio = (filename: string) => {
-    const audio = new Audio(`/uploads/audio/${filename}`);
+  const playAudio = (url: string) => {
+    const audio = new Audio(url);
     audio.play();
+  };
+
+  const handleRegenerateAudio = async (id: number) => {
+    setRegenerating(id);
+    try {
+      await flashcardsApi.generateAudio(id);
+      loadFlashcards();
+    } catch (error) {
+      console.error("Failed to regenerate audio", error);
+      alert("Failed to regenerate audio. Please check your Google Cloud TTS setup.");
+    } finally {
+      setRegenerating(null);
+    }
   };
 
   return (
@@ -79,6 +93,18 @@ export default function Flashcards() {
           <Plus size={20} />
           Add Flashcard
         </button>
+      </div>
+
+      <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+        <div className="flex items-start gap-3">
+          <Volume2 size={20} className="text-blue-600 mt-0.5" />
+          <div>
+            <h3 className="font-semibold text-blue-800 mb-1">Auto-Generated Pronunciation</h3>
+            <p className="text-sm text-blue-700">
+              French pronunciation audio is automatically generated using Google Cloud Text-to-Speech when you create or edit flashcards.
+            </p>
+          </div>
+        </div>
       </div>
 
       {loading ? (
@@ -104,9 +130,9 @@ export default function Flashcards() {
                     </span>
                   </div>
                 </div>
-                {card.audio_filename && (
+                {card.audio_url && (
                   <button
-                    onClick={() => playAudio(card.audio_filename!)}
+                    onClick={() => playAudio(card.audio_url!)}
                     className="p-2 text-blue-600 hover:bg-blue-50 rounded transition-colors"
                   >
                     <Play size={20} />
@@ -117,12 +143,22 @@ export default function Flashcards() {
                 <button
                   onClick={() => { setEditing(card); setShowForm(true); }}
                   className="text-sm text-gray-600 hover:text-blue-600 transition-colors"
+                  title="Edit"
                 >
                   <Edit size={16} />
                 </button>
                 <button
+                  onClick={() => handleRegenerateAudio(card.id)}
+                  disabled={regenerating === card.id}
+                  className="text-sm text-gray-600 hover:text-green-600 transition-colors disabled:opacity-50"
+                  title="Regenerate audio"
+                >
+                  <RefreshCw size={16} className={regenerating === card.id ? "animate-spin" : ""} />
+                </button>
+                <button
                   onClick={() => setDeleting(card)}
                   className="text-sm text-gray-600 hover:text-red-600 transition-colors"
+                  title="Delete"
                 >
                   <Trash size={16} />
                 </button>
@@ -186,6 +222,11 @@ export default function Flashcards() {
               <option value="intermediate">Intermediate</option>
               <option value="advanced">Advanced</option>
             </select>
+          </div>
+          <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+            <p className="text-sm text-green-700">
+              💡 French pronunciation audio will be automatically generated using Google TTS
+            </p>
           </div>
           <div className="flex justify-end gap-3 pt-2">
             <button

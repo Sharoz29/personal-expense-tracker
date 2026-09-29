@@ -1,8 +1,11 @@
 import { FlashcardRepository } from "../repositories/flashcard.repository.js";
+import { TTSService } from "./tts.service.js";
+import { uploadAudio, deleteAudio } from "../lib/r2.js";
 import type { CreateFlashcardDto } from "../types/index.js";
 
 export class FlashcardService {
   private repo = new FlashcardRepository();
+  private ttsService = new TTSService();
 
   async getAll() {
     return this.repo.findAll();
@@ -13,20 +16,135 @@ export class FlashcardService {
   }
 
   async create(data: CreateFlashcardDto) {
-    return this.repo.create(data);
+    // Step 1: Insert row
+    const flashcard = await this.repo.create(data);
+
+    // Step 2: Try to generate and upload audio
+    try {
+      const mp3Buffer = await this.ttsService.generateFrenchAudio(data.french_text);
+      const { url, key } = await uploadAudio(flashcard.id, mp3Buffer);
+
+      // Step 3: Update DB with audio URL and key
+      await this.repo.updateAudioR2(flashcard.id, url, key);
+
+      // Return updated flashcard
+      return this.repo.findById(flashcard.id);
+    } catch (error) {
+      console.error("Failed to generate/upload TTS audio:", error);
+      // Return flashcard without audio if TTS/upload fails
+      return flashcard;
+    }
   }
 
   async update(id: number, data: CreateFlashcardDto) {
-    return this.repo.update(id, data);
+    const existing = await this.repo.findById(id);
+    if (!existing) return null;
+
+    // Only regenerate if French text actually changed
+    const frenchTextChanged = existing.french_text !== data.french_text;
+
+    // Update flashcard data first
+    const updated = await this.repo.update(id, data);
+
+    if (frenchTextChanged) {
+      // Capture old audio_key before regeneration
+      const oldAudioKey = existing.audio_key;
+
+      try {
+        // Generate new audio
+        const mp3Buffer = await this.ttsService.generateFrenchAudio(data.french_text);
+        const { url, key } = await uploadAudio(id, mp3Buffer);
+
+        // Update DB with new audio
+        await this.repo.updateAudioR2(id, url, key);
+
+        // Delete old audio object (after DB update succeeds)
+        if (oldAudioKey) {
+          await deleteAudio(oldAudioKey);
+        }
+
+        return this.repo.findById(id);
+      } catch (error) {
+        console.error("Failed to regenerate TTS audio:", error);
+        return updated;
+      }
+    }
+
+    return updated;
   }
 
   async delete(id: number) {
-    return this.repo.delete(id);
+    // Get flashcard to retrieve audio_key
+    const flashcard = await this.repo.findById(id);
+
+    // Delete flashcard row
+    const deleted = await this.repo.delete(id);
+
+    // Delete audio object (after row deletion)
+    if (flashcard?.audio_key) {
+      await deleteAudio(flashcard.audio_key);
+    }
+
+    return deleted;
   }
 
   async uploadAudio(id: number, filename: string) {
+    // Legacy method - kept for backward compatibility
     await this.repo.updateAudioFilename(id, filename);
     return this.repo.findById(id);
+  }
+
+  async uploadManualAudio(id: number, mp3Buffer: Buffer) {
+    const flashcard = await this.repo.findById(id);
+    if (!flashcard) return null;
+
+    // Capture old audio_key
+    const oldAudioKey = flashcard.audio_key;
+
+    try {
+      // Upload manually recorded audio to R2
+      const { url, key } = await uploadAudio(id, mp3Buffer);
+
+      // Update DB with new audio
+      await this.repo.updateAudioR2(id, url, key);
+
+      // Delete old audio object (after DB update succeeds)
+      if (oldAudioKey) {
+        await deleteAudio(oldAudioKey);
+      }
+
+      return this.repo.findById(id);
+    } catch (error) {
+      console.error("Failed to upload manual audio:", error);
+      throw error;
+    }
+  }
+
+  async regenerateAudio(id: number) {
+    const flashcard = await this.repo.findById(id);
+    if (!flashcard) return null;
+
+    // Capture old audio_key
+    const oldAudioKey = flashcard.audio_key;
+
+    try {
+      // Generate new audio
+      const mp3Buffer = await this.ttsService.generateFrenchAudio(flashcard.french_text);
+      const { url, key } = await uploadAudio(id, mp3Buffer);
+
+      // Update DB with new audio
+      await this.repo.updateAudioR2(id, url, key);
+
+      // Delete old audio object (after DB update succeeds)
+      if (oldAudioKey) {
+        await deleteAudio(oldAudioKey);
+      }
+
+      return this.repo.findById(id);
+    } catch (error) {
+      console.error("Failed to regenerate TTS audio:", error);
+      throw error;
+    }
   }
 
   async getDueForReview() {

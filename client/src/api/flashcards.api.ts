@@ -44,4 +44,9 @@ export const flashcardsApi = {
     });
     return res.data.data;
   },
+
+  generateAudio: async (id: number): Promise<Flashcard> => {
+    const res = await api.post(`/flashcards/${id}/generate-audio`);
+    return res.data.data;
+  },
 };

@@ -46,8 +46,8 @@ export default function Study() {
     }
   };
 
-  const playAudio = (filename: string) => {
-    const audio = new Audio(`/uploads/audio/${filename}`);
+  const playAudio = (url: string) => {
+    const audio = new Audio(url);
     audio.play();
   };
 
@@ -101,11 +101,11 @@ export default function Study() {
           <div className="text-center">
             <div className="flex items-center justify-center gap-3 mb-4">
               <p className="text-3xl font-bold text-gray-800">{currentCard.french_text}</p>
-              {currentCard.audio_filename && (
+              {currentCard.audio_url && (
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    playAudio(currentCard.audio_filename!);
+                    playAudio(currentCard.audio_url!);
                   }}
                   className="p-2 text-green-600 hover:bg-green-50 rounded-full transition-colors"
                 >

@@ -477,6 +477,8 @@ export interface Flashcard {
   french_text: string;
   english_meaning: string;
   audio_filename: string | null;
+  audio_url: string | null;
+  audio_key: string | null;
   category: string;
   difficulty_level: string;
   created_at: string;

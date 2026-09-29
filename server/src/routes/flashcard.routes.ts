@@ -19,6 +19,7 @@ router.post("/", validate(createFlashcardSchema), asyncHandler(controller.create
 router.put("/:id", validate(updateFlashcardSchema), asyncHandler(controller.update));
 router.delete("/:id", asyncHandler(controller.delete));
 router.post("/:id/audio", audioUpload.single("audio"), asyncHandler(controller.uploadAudio));
+router.post("/:id/generate-audio", asyncHandler(controller.generateAudio));
 router.post("/:id/review", validate(reviewFlashcardSchema), asyncHandler(controller.review));
 
 export default router;

@@ -47,7 +47,8 @@ export class FlashcardController {
       res.status(400).json({ error: "No audio file provided" });
       return;
     }
-    const data = await service.uploadAudio(Number(req.params.id), file.filename);
+    // file.buffer is available because we're using memoryStorage
+    const data = await service.uploadManualAudio(Number(req.params.id), file.buffer);
     res.json({ data });
   }
 
@@ -59,6 +60,15 @@ export class FlashcardController {
   async review(req: Request, res: Response) {
     const { quality_rating } = req.body;
     const data = await service.reviewFlashcard(Number(req.params.id), quality_rating);
+    res.json({ data });
+  }
+
+  async generateAudio(req: Request, res: Response) {
+    const data = await service.regenerateAudio(Number(req.params.id));
+    if (!data) {
+      res.status(404).json({ error: "Flashcard not found" });
+      return;
+    }
     res.json({ data });
   }
 }

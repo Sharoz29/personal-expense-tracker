@@ -69,6 +69,14 @@ export class FlashcardRepository {
     });
   }
 
+  async updateAudioR2(id: number, url: string, key: string): Promise<void> {
+    const db = getDb();
+    await db.execute({
+      sql: "UPDATE flashcards SET audio_url = ?, audio_key = ?, updated_at = datetime('now') WHERE id = ?",
+      args: [url, key, id],
+    });
+  }
+
   async findDueForReview(): Promise<Flashcard[]> {
     const db = getDb();
     const result = await db.execute(`
