@@ -469,3 +469,88 @@ export interface AnnualSummary {
   incomesBySource: { name: string; total: number }[];
   monthlyBreakdown: { month: number; income: number; expenses: number }[];
 }
+
+// ---- Learning Module ----
+
+export interface Flashcard {
+  id: number;
+  french_text: string;
+  english_meaning: string;
+  audio_filename: string | null;
+  category: string;
+  difficulty_level: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface FlashcardReview {
+  id: number;
+  flashcard_id: number;
+  last_reviewed_at: string;
+  next_review_at: string;
+  ease_factor: number;
+  interval_days: number;
+  repetitions: number;
+  quality_rating: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface FrenchTestResult {
+  id: number;
+  test_name: string;
+  test_type: string;
+  score: number;
+  total_questions: number;
+  percentage: number;
+  time_taken_seconds: number | null;
+  answers_json: string | null;
+  completed_at: string;
+  created_at: string;
+}
+
+export interface FrenchQuestion {
+  id: number;
+  question: string;
+  option_a: string;
+  option_b: string;
+  option_c: string;
+  option_d: string;
+  correct_answer: string;
+  category: string;
+  difficulty: string;
+  created_at: string;
+}
+
+export interface CreateFlashcardDto {
+  french_text: string;
+  english_meaning: string;
+  category?: string;
+  difficulty_level?: string;
+}
+
+export type UpdateFlashcardDto = CreateFlashcardDto;
+
+export interface ReviewFlashcardDto {
+  quality_rating: number; // 0-5 (SM-2 algorithm)
+}
+
+export interface CreateTestResultDto {
+  test_name: string;
+  test_type: string;
+  score: number;
+  total_questions: number;
+  time_taken_seconds?: number;
+  answers_json?: string;
+}
+
+export interface CreateQuestionDto {
+  question: string;
+  option_a: string;
+  option_b: string;
+  option_c: string;
+  option_d: string;
+  correct_answer: string;
+  category?: string;
+  difficulty?: string;
+}

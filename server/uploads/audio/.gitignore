@@ -1,0 +1,9 @@
+# Ignore all audio files
+*.mp3
+*.wav
+*.ogg
+*.webm
+*.m4a
+
+# But keep this directory
+!.gitignore
