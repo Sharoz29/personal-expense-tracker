@@ -1,6 +1,6 @@
 import { getDb } from "../config/db.js";
 import type { Flashcard, FlashcardReview, CreateFlashcardDto } from "../types/index.js";
-import { mapRows } from "../utils/db.js";
+import { mapRows } from "./base.repository.js";
 
 export class FlashcardRepository {
   async findAll(): Promise<Flashcard[]> {

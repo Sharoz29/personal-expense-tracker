@@ -1,6 +1,6 @@
 import { getDb } from "../config/db.js";
 import type { FrenchTestResult, FrenchQuestion, CreateTestResultDto, CreateQuestionDto } from "../types/index.js";
-import { mapRows } from "../utils/db.js";
+import { mapRows } from "./base.repository.js";
 
 export class FrenchTestRepository {
   // Test Results

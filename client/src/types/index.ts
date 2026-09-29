@@ -275,3 +275,33 @@ export interface AnnualSummary {
   incomesBySource: { name: string; total: number }[];
   monthlyBreakdown: { month: number; income: number; expenses: number }[];
 }
+
+// Learning Module Types
+export interface Flashcard {
+  id: number;
+  french_text: string;
+  english_meaning: string;
+  audio_filename: string | null;
+  category: string;
+  difficulty_level: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreateFlashcardDto {
+  french_text: string;
+  english_meaning: string;
+  category?: string;
+  difficulty_level?: string;
+}
+
+export interface FrenchTestResult {
+  id: number;
+  test_name: string;
+  test_type: string;
+  score: number;
+  total_questions: number;
+  percentage: number;
+  time_taken_seconds: number | null;
+  completed_at: string;
+}
