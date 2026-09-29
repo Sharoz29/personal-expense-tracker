@@ -1,6 +1,3 @@
--- Learning Module: Flashcards and Spaced Repetition System
-
--- Flashcards table
 CREATE TABLE IF NOT EXISTS flashcards (
     id                INTEGER PRIMARY KEY AUTOINCREMENT,
     french_text       TEXT    NOT NULL,
@@ -12,7 +9,6 @@ CREATE TABLE IF NOT EXISTS flashcards (
     updated_at        TEXT    NOT NULL DEFAULT (datetime('now'))
 );
 
--- Flashcard reviews table
 CREATE TABLE IF NOT EXISTS flashcard_reviews (
     id                INTEGER PRIMARY KEY AUTOINCREMENT,
     flashcard_id      INTEGER NOT NULL,
@@ -27,7 +23,6 @@ CREATE TABLE IF NOT EXISTS flashcard_reviews (
     FOREIGN KEY (flashcard_id) REFERENCES flashcards(id) ON DELETE CASCADE
 );
 
--- French test results table
 CREATE TABLE IF NOT EXISTS french_test_results (
     id                  INTEGER PRIMARY KEY AUTOINCREMENT,
     test_name           TEXT    NOT NULL,
@@ -41,7 +36,7 @@ CREATE TABLE IF NOT EXISTS french_test_results (
     created_at          TEXT    NOT NULL DEFAULT (datetime('now'))
 );
 
--- French questions table
+
 CREATE TABLE IF NOT EXISTS french_questions (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
     question        TEXT    NOT NULL,
