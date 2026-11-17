@@ -20,6 +20,7 @@ import mutualFundTransactionRoutes from "./mutual-fund-transaction.routes.js";
 import committeeRoutes from "./committee.routes.js";
 import flashcardRoutes from "./flashcard.routes.js";
 import frenchTestRoutes from "./french-test.routes.js";
+import accountSnapshotRoutes from "./account-snapshot.routes.js";
 
 const router = Router();
 
@@ -44,5 +45,6 @@ router.use("/mutual-fund-transactions", mutualFundTransactionRoutes);
 router.use("/committees", committeeRoutes);
 router.use("/flashcards", flashcardRoutes);
 router.use("/french-tests", frenchTestRoutes);
+router.use("/account-snapshots", accountSnapshotRoutes);
 
 export default router;

@@ -470,6 +470,31 @@ export interface AnnualSummary {
   monthlyBreakdown: { month: number; income: number; expenses: number }[];
 }
 
+// ---- Account Balance Snapshots ----
+
+export interface AccountBalanceSnapshot {
+  id: number;
+  account_id: number;
+  month: number;
+  year: number;
+  balance: number;
+  created_at: string;
+}
+
+export interface AccountSnapshotTrajectory {
+  account_id: number;
+  account_name: string;
+  current_balance: number;
+  snapshots: { month: number; year: number; balance: number }[];
+}
+
+export interface MonthlyDelta {
+  account_id: number;
+  month: number;
+  year: number;
+  delta: number;
+}
+
 // ---- Learning Module ----
 
 export interface Flashcard {
