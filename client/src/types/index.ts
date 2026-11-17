@@ -276,6 +276,77 @@ export interface AnnualSummary {
   monthlyBreakdown: { month: number; income: number; expenses: number }[];
 }
 
+// Account Balance Snapshots
+export interface AccountSnapshotTrajectory {
+  account_id: number;
+  account_name: string;
+  current_balance: number;
+  snapshots: { month: number; year: number; balance: number }[];
+}
+
+// Health Reports Module
+export interface FamilyMember {
+  id: number;
+  name: string;
+  relationship: string;
+  date_of_birth: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface HealthReportCategory {
+  id: number;
+  name: string;
+  created_at: string;
+  updated_at: string;
+  markers?: HealthMarker[];
+}
+
+export interface HealthMarker {
+  id: number;
+  name: string;
+  unit: string;
+  category_id: number;
+  category_name?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface HealthReport {
+  id: number;
+  family_member_id: number;
+  family_member_name?: string;
+  category_id: number;
+  category_name?: string;
+  report_date: string;
+  lab_name: string;
+  notes: string;
+  created_at: string;
+  updated_at: string;
+  results?: HealthReportResult[];
+}
+
+export interface HealthReportResult {
+  id: number;
+  report_id: number;
+  marker_id: number;
+  marker_name?: string;
+  marker_unit?: string;
+  value: number;
+  min_reference: number | null;
+  max_reference: number | null;
+  created_at: string;
+}
+
+export interface HealthMarkerHistory {
+  report_id: number;
+  report_date: string;
+  lab_name: string;
+  value: number;
+  min_reference: number | null;
+  max_reference: number | null;
+}
+
 // Learning Module Types
 export interface Flashcard {
   id: number;

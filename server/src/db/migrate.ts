@@ -32,6 +32,7 @@ async function migrate() {
     "021_learning_flashcards.sql",
     "022_flashcard_r2_audio.sql",
     "023_account_balance_snapshots.sql",
+    "024_health_reports.sql",
   ];
 
   for (const file of migrationFiles) {

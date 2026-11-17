@@ -19,6 +19,7 @@ import Assets from "./pages/Assets";
 import Investments from "./pages/Investments";
 import AnnualStats from "./pages/AnnualStats";
 import Installments from "./pages/Installments";
+import BalanceHistory from "./pages/BalanceHistory";
 
 // Learning Module
 import LearningLayout from "./components/learning/LearningLayout";
@@ -26,6 +27,15 @@ import LearningDashboard from "./pages/learning/Dashboard";
 import Flashcards from "./pages/learning/Flashcards";
 import Study from "./pages/learning/Study";
 import Tests from "./pages/learning/Tests";
+
+// Medical Module
+import MedicalLayout from "./components/medical/MedicalLayout";
+import MedicalDashboard from "./pages/medical/MedicalDashboard";
+import FamilyMembers from "./pages/medical/FamilyMembers";
+import Reports from "./pages/medical/Reports";
+import ReportDetail from "./pages/medical/ReportDetail";
+import MarkerHistory from "./pages/medical/MarkerHistory";
+import Categories from "./pages/medical/Categories";
 
 function AuthGate() {
   const { isAuthenticated, loading } = useAuth();
@@ -65,6 +75,7 @@ function AuthGate() {
         <Route path="investments" element={<Investments />} />
         <Route path="installments" element={<Installments />} />
         <Route path="annual-stats" element={<AnnualStats />} />
+        <Route path="balance-history" element={<BalanceHistory />} />
         <Route path="settings" element={<Settings />} />
       </Route>
 
@@ -76,9 +87,18 @@ function AuthGate() {
         <Route path="tests" element={<Tests />} />
       </Route>
 
+      {/* Medical Module */}
+      <Route path="/medical" element={<MedicalLayout />}>
+        <Route index element={<MedicalDashboard />} />
+        <Route path="family-members" element={<FamilyMembers />} />
+        <Route path="categories" element={<Categories />} />
+        <Route path="reports" element={<Reports />} />
+        <Route path="reports/:id" element={<ReportDetail />} />
+        <Route path="history" element={<MarkerHistory />} />
+      </Route>
+
       {/* Coming Soon Modules */}
       <Route path="/reminders" element={<ComingSoon name="Reminders" />} />
-      <Route path="/medical" element={<ComingSoon name="Medical Records" />} />
     </Routes>
   );
 }

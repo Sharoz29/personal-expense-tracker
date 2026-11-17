@@ -21,6 +21,10 @@ import committeeRoutes from "./committee.routes.js";
 import flashcardRoutes from "./flashcard.routes.js";
 import frenchTestRoutes from "./french-test.routes.js";
 import accountSnapshotRoutes from "./account-snapshot.routes.js";
+import familyMemberRoutes from "./family-member.routes.js";
+import healthReportCategoryRoutes from "./health-report-category.routes.js";
+import healthMarkerRoutes from "./health-marker.routes.js";
+import healthReportRoutes from "./health-report.routes.js";
 
 const router = Router();
 
@@ -46,5 +50,9 @@ router.use("/committees", committeeRoutes);
 router.use("/flashcards", flashcardRoutes);
 router.use("/french-tests", frenchTestRoutes);
 router.use("/account-snapshots", accountSnapshotRoutes);
+router.use("/family-members", familyMemberRoutes);
+router.use("/health-report-categories", healthReportCategoryRoutes);
+router.use("/health-markers", healthMarkerRoutes);
+router.use("/health-reports", healthReportRoutes);
 
 export default router;

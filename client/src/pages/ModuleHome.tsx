@@ -46,7 +46,7 @@ const modules: ModuleCard[] = [
     description: "Health records and prescriptions",
     icon: Heart,
     route: "/medical",
-    enabled: false,
+    enabled: true,
     color: "red",
   },
 ];
@@ -80,11 +80,11 @@ const colorClassMap: Record<string, {
     iconText: "text-gray-400",
   },
   red: {
-    border: "border-gray-200",
-    bg: "bg-gray-50",
-    hover: "",
-    iconBg: "bg-gray-200",
-    iconText: "text-gray-400",
+    border: "border-red-200",
+    bg: "bg-white",
+    hover: "hover:border-red-400 hover:shadow-lg",
+    iconBg: "bg-red-100",
+    iconText: "text-red-600",
   },
 };
 

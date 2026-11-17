@@ -581,3 +581,114 @@ export interface CreateQuestionDto {
   category?: string;
   difficulty?: string;
 }
+
+// ---- Health Reports Module ----
+
+export interface FamilyMember {
+  id: number;
+  name: string;
+  relationship: string;
+  date_of_birth: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface HealthReportCategory {
+  id: number;
+  name: string;
+  created_at: string;
+  updated_at: string;
+  markers?: HealthMarker[];
+}
+
+export interface HealthMarker {
+  id: number;
+  name: string;
+  unit: string;
+  category_id: number;
+  category_name?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface HealthReport {
+  id: number;
+  family_member_id: number;
+  family_member_name?: string;
+  category_id: number;
+  category_name?: string;
+  report_date: string;
+  lab_name: string;
+  notes: string;
+  created_at: string;
+  updated_at: string;
+  results?: HealthReportResult[];
+}
+
+export interface HealthReportResult {
+  id: number;
+  report_id: number;
+  marker_id: number;
+  marker_name?: string;
+  marker_unit?: string;
+  value: number;
+  min_reference: number | null;
+  max_reference: number | null;
+  created_at: string;
+}
+
+export interface HealthMarkerHistory {
+  report_id: number;
+  report_date: string;
+  lab_name: string;
+  value: number;
+  min_reference: number | null;
+  max_reference: number | null;
+}
+
+export interface CreateFamilyMemberDto {
+  name: string;
+  relationship: string;
+  date_of_birth?: string;
+}
+
+export type UpdateFamilyMemberDto = CreateFamilyMemberDto;
+
+export interface CreateHealthReportCategoryDto {
+  name: string;
+}
+
+export type UpdateHealthReportCategoryDto = CreateHealthReportCategoryDto;
+
+export interface CreateHealthMarkerDto {
+  name: string;
+  unit: string;
+  category_id: number;
+}
+
+export type UpdateHealthMarkerDto = CreateHealthMarkerDto;
+
+export interface CreateHealthReportResultDto {
+  marker_id: number;
+  value: number;
+  min_reference?: number | null;
+  max_reference?: number | null;
+}
+
+export interface CreateHealthReportDto {
+  family_member_id: number;
+  category_id: number;
+  report_date: string;
+  lab_name?: string;
+  notes?: string;
+  results: CreateHealthReportResultDto[];
+}
+
+export interface UpdateHealthReportDto {
+  family_member_id: number;
+  category_id: number;
+  report_date: string;
+  lab_name?: string;
+  notes?: string;
+  results: CreateHealthReportResultDto[];
+}
