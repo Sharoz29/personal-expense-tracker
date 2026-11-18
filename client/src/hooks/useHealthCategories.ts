@@ -39,13 +39,23 @@ export function useHealthCategories() {
     await fetch();
   };
 
-  const createMarker = async (data: { name: string; unit: string; category_id: number }) => {
+  const createMarker = async (data: {
+    name: string; unit: string; category_id: number;
+    marker_type: "numeric" | "text";
+    min_reference?: number | null; max_reference?: number | null;
+    normal_value?: string | null;
+  }) => {
     const created = await healthMarkersApi.create(data);
     await fetch();
     return created;
   };
 
-  const updateMarker = async (id: number, data: { name: string; unit: string; category_id: number }) => {
+  const updateMarker = async (id: number, data: {
+    name: string; unit: string; category_id: number;
+    marker_type: "numeric" | "text";
+    min_reference?: number | null; max_reference?: number | null;
+    normal_value?: string | null;
+  }) => {
     const updated = await healthMarkersApi.update(id, data);
     await fetch();
     return updated;

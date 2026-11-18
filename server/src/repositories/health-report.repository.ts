@@ -57,7 +57,9 @@ export class HealthReportRepository {
     reportId: number
   ): Promise<HealthReportResult[]> {
     const result = await this.db.execute({
-      sql: `SELECT rr.*, m.name as marker_name, m.unit as marker_unit
+      sql: `SELECT rr.id, rr.report_id, rr.marker_id, rr.value, rr.text_value, rr.created_at,
+                   m.name as marker_name, m.unit as marker_unit, m.marker_type,
+                   m.min_reference, m.max_reference, m.normal_value
             FROM health_report_results rr
             JOIN health_markers m ON rr.marker_id = m.id
             WHERE rr.report_id = ?
@@ -87,14 +89,13 @@ export class HealthReportRepository {
     dto: CreateHealthReportResultDto
   ): Promise<HealthReportResult> {
     const result = await this.db.execute({
-      sql: `INSERT INTO health_report_results (report_id, marker_id, value, min_reference, max_reference)
-            VALUES (?, ?, ?, ?, ?) RETURNING *`,
+      sql: `INSERT INTO health_report_results (report_id, marker_id, value, text_value)
+            VALUES (?, ?, ?, ?) RETURNING *`,
       args: [
         reportId,
         dto.marker_id,
-        dto.value,
-        dto.min_reference ?? null,
-        dto.max_reference ?? null,
+        dto.value ?? 0,
+        dto.text_value ?? null,
       ],
     });
     return mapRow<HealthReportResult>(result.rows[0]);
@@ -141,9 +142,11 @@ export class HealthReportRepository {
   ): Promise<HealthMarkerHistory[]> {
     const result = await this.db.execute({
       sql: `SELECT r.id as report_id, r.report_date, r.lab_name,
-                   rr.value, rr.min_reference, rr.max_reference
+                   rr.value, rr.text_value,
+                   m.min_reference, m.max_reference, m.normal_value, m.marker_type
             FROM health_report_results rr
             JOIN health_reports r ON rr.report_id = r.id
+            JOIN health_markers m ON rr.marker_id = m.id
             WHERE r.family_member_id = ? AND rr.marker_id = ?
             ORDER BY r.report_date ASC`,
       args: [familyMemberId, markerId],

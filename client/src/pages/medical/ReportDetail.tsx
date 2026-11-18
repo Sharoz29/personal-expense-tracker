@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, TrendingUp } from "lucide-react";
 import { healthReportsApi } from "../../api/health.api";
-import type { HealthReport } from "../../types";
+import type { HealthReport, HealthReportResult } from "../../types";
 
 export default function ReportDetail() {
   const { id } = useParams<{ id: string }>();
@@ -32,10 +32,14 @@ export default function ReportDetail() {
     return <div className="p-4 md:p-6"><p className="text-red-600">Report not found</p></div>;
   }
 
-  const getStatusColor = (value: number, min: number | null, max: number | null) => {
-    if (min === null && max === null) return "text-gray-800";
-    if (min !== null && value < min) return "text-red-600";
-    if (max !== null && value > max) return "text-red-600";
+  const getStatusColor = (r: HealthReportResult) => {
+    if (r.marker_type === "text") {
+      if (!r.normal_value) return "text-gray-800";
+      return r.text_value === r.normal_value ? "text-green-600" : "text-red-600";
+    }
+    if (r.min_reference === null && r.max_reference === null) return "text-gray-800";
+    if (r.min_reference !== null && (r.value ?? 0) < r.min_reference) return "text-red-600";
+    if (r.max_reference !== null && (r.value ?? 0) > r.max_reference) return "text-red-600";
     return "text-green-600";
   };
 
@@ -67,7 +71,7 @@ export default function ReportDetail() {
               <tr className="border-b border-gray-200 text-left">
                 <th className="pb-2 font-medium text-gray-600">Marker</th>
                 <th className="pb-2 font-medium text-gray-600">Value</th>
-                <th className="pb-2 font-medium text-gray-600">Reference Range</th>
+                <th className="pb-2 font-medium text-gray-600">Reference</th>
                 <th className="pb-2 font-medium text-gray-600 w-10"></th>
               </tr>
             </thead>
@@ -78,13 +82,16 @@ export default function ReportDetail() {
                     {r.marker_name}
                     {r.marker_unit && <span className="text-gray-400 text-xs ml-1">({r.marker_unit})</span>}
                   </td>
-                  <td className={`py-2.5 font-medium ${getStatusColor(r.value, r.min_reference, r.max_reference)}`}>
-                    {r.value}
+                  <td className={`py-2.5 font-medium ${getStatusColor(r)}`}>
+                    {r.marker_type === "text" ? r.text_value : r.value}
                   </td>
                   <td className="py-2.5 text-gray-500">
-                    {r.min_reference !== null || r.max_reference !== null
-                      ? `${r.min_reference ?? "—"} – ${r.max_reference ?? "—"}`
-                      : "—"}
+                    {r.marker_type === "text"
+                      ? (r.normal_value ? `Normal: ${r.normal_value}` : "—")
+                      : (r.min_reference !== null || r.max_reference !== null
+                          ? `${r.min_reference ?? "—"} – ${r.max_reference ?? "—"}`
+                          : "—")
+                    }
                   </td>
                   <td className="py-2.5">
                     <button

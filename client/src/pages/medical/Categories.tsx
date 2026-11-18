@@ -18,9 +18,18 @@ export default function Categories() {
 
   const [showMarkerForm, setShowMarkerForm] = useState(false);
   const [markerCategoryId, setMarkerCategoryId] = useState<number>(0);
-  const [editingMarker, setEditingMarker] = useState<{ id: number; name: string; unit: string; category_id: number } | null>(null);
+  const [editingMarker, setEditingMarker] = useState<{
+    id: number; name: string; unit: string; category_id: number;
+    marker_type: "numeric" | "text";
+    min_reference: number | null; max_reference: number | null;
+    normal_value: string | null;
+  } | null>(null);
   const [markerName, setMarkerName] = useState("");
   const [markerUnit, setMarkerUnit] = useState("");
+  const [markerType, setMarkerType] = useState<"numeric" | "text">("numeric");
+  const [markerMinRef, setMarkerMinRef] = useState("");
+  const [markerMaxRef, setMarkerMaxRef] = useState("");
+  const [markerNormalValue, setMarkerNormalValue] = useState("");
 
   const [deletingCategory, setDeletingCategory] = useState<{ id: number; name: string } | null>(null);
   const [deletingMarker, setDeletingMarker] = useState<{ id: number; name: string } | null>(null);
@@ -50,23 +59,32 @@ export default function Categories() {
   const handleMarkerSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!markerName.trim()) return;
+    const payload = {
+      name: markerName.trim(),
+      unit: markerUnit.trim(),
+      category_id: editingMarker ? editingMarker.category_id : markerCategoryId,
+      marker_type: markerType,
+      min_reference: markerType === "numeric" && markerMinRef ? Number(markerMinRef) : null,
+      max_reference: markerType === "numeric" && markerMaxRef ? Number(markerMaxRef) : null,
+      normal_value: markerType === "text" && markerNormalValue ? markerNormalValue.trim() : null,
+    };
     if (editingMarker) {
-      await updateMarker(editingMarker.id, {
-        name: markerName.trim(),
-        unit: markerUnit.trim(),
-        category_id: editingMarker.category_id,
-      });
+      await updateMarker(editingMarker.id, payload);
     } else {
-      await createMarker({
-        name: markerName.trim(),
-        unit: markerUnit.trim(),
-        category_id: markerCategoryId,
-      });
+      await createMarker(payload);
     }
     setShowMarkerForm(false);
     setEditingMarker(null);
+    resetMarkerFields();
+  };
+
+  const resetMarkerFields = () => {
     setMarkerName("");
     setMarkerUnit("");
+    setMarkerType("numeric");
+    setMarkerMinRef("");
+    setMarkerMaxRef("");
+    setMarkerNormalValue("");
   };
 
   if (loading) {
@@ -128,12 +146,38 @@ export default function Categories() {
                   <div className="mt-3 space-y-2">
                     {(cat.markers ?? []).map((m) => (
                       <div key={m.id} className="flex items-center justify-between py-1.5 px-3 rounded-lg bg-gray-50">
-                        <span className="text-sm text-gray-700">
-                          {m.name} {m.unit && <span className="text-gray-400">({m.unit})</span>}
-                        </span>
-                        <div className="flex gap-1">
+                        <div className="flex items-center gap-2 text-sm text-gray-700 min-w-0">
+                          <span className="truncate">
+                            {m.name} {m.unit && <span className="text-gray-400">({m.unit})</span>}
+                          </span>
+                          <span className={`text-xs px-1.5 py-0.5 rounded ${m.marker_type === "text" ? "bg-purple-100 text-purple-600" : "bg-blue-100 text-blue-600"}`}>
+                            {m.marker_type === "text" ? "Text" : "Numeric"}
+                          </span>
+                          {m.marker_type === "numeric" && (m.min_reference != null || m.max_reference != null) && (
+                            <span className="text-xs text-gray-400">
+                              [{m.min_reference ?? "—"} – {m.max_reference ?? "—"}]
+                            </span>
+                          )}
+                          {m.marker_type === "text" && m.normal_value && (
+                            <span className="text-xs text-gray-400">Normal: {m.normal_value}</span>
+                          )}
+                        </div>
+                        <div className="flex gap-1 shrink-0">
                           <button
-                            onClick={() => { setEditingMarker({ id: m.id, name: m.name, unit: m.unit, category_id: m.category_id }); setMarkerName(m.name); setMarkerUnit(m.unit); setShowMarkerForm(true); }}
+                            onClick={() => {
+                              setEditingMarker({
+                                id: m.id, name: m.name, unit: m.unit, category_id: m.category_id,
+                                marker_type: m.marker_type, min_reference: m.min_reference,
+                                max_reference: m.max_reference, normal_value: m.normal_value,
+                              });
+                              setMarkerName(m.name);
+                              setMarkerUnit(m.unit);
+                              setMarkerType(m.marker_type);
+                              setMarkerMinRef(m.min_reference != null ? String(m.min_reference) : "");
+                              setMarkerMaxRef(m.max_reference != null ? String(m.max_reference) : "");
+                              setMarkerNormalValue(m.normal_value ?? "");
+                              setShowMarkerForm(true);
+                            }}
                             className="p-1 rounded hover:bg-gray-200 transition-colors"
                           >
                             <Pencil size={12} className="text-gray-500" />
@@ -149,7 +193,7 @@ export default function Categories() {
                     ))}
                   </div>
                   <button
-                    onClick={() => { setMarkerCategoryId(cat.id); setEditingMarker(null); setMarkerName(""); setMarkerUnit(""); setShowMarkerForm(true); }}
+                    onClick={() => { setMarkerCategoryId(cat.id); setEditingMarker(null); resetMarkerFields(); setShowMarkerForm(true); }}
                     className="mt-3 flex items-center gap-1 text-sm text-rose-600 hover:text-rose-700 transition-colors"
                   >
                     <Plus size={14} />
@@ -205,16 +249,68 @@ export default function Categories() {
               autoFocus
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Unit</label>
-            <input
-              type="text"
-              value={markerUnit}
-              onChange={(e) => setMarkerUnit(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-rose-500"
-              placeholder="e.g., mg/dL"
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Unit</label>
+              <input
+                type="text"
+                value={markerUnit}
+                onChange={(e) => setMarkerUnit(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-rose-500"
+                placeholder="e.g., mg/dL"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+              <select
+                value={markerType}
+                onChange={(e) => setMarkerType(e.target.value as "numeric" | "text")}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-rose-500"
+              >
+                <option value="numeric">Numeric</option>
+                <option value="text">Text (Qualitative)</option>
+              </select>
+            </div>
           </div>
+
+          {markerType === "numeric" ? (
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Min Reference</label>
+                <input
+                  type="number"
+                  step="any"
+                  value={markerMinRef}
+                  onChange={(e) => setMarkerMinRef(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-rose-500"
+                  placeholder="e.g., 0"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Max Reference</label>
+                <input
+                  type="number"
+                  step="any"
+                  value={markerMaxRef}
+                  onChange={(e) => setMarkerMaxRef(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-rose-500"
+                  placeholder="e.g., 200"
+                />
+              </div>
+            </div>
+          ) : (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Normal Value</label>
+              <input
+                type="text"
+                value={markerNormalValue}
+                onChange={(e) => setMarkerNormalValue(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-rose-500"
+                placeholder="e.g., Negative"
+              />
+            </div>
+          )}
+
           <div className="flex justify-end gap-3">
             <button type="button" onClick={() => setShowMarkerForm(false)} className="px-4 py-2 text-sm rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors">Cancel</button>
             <button type="submit" className="px-4 py-2 text-sm rounded-lg bg-rose-600 text-white hover:bg-rose-700 transition-colors">{editingMarker ? "Update" : "Add"}</button>

@@ -37,10 +37,13 @@ export default function MarkerHistory() {
     }
   }
 
-  // Get consistent reference range from latest entry
-  const latestRef = history.length > 0 ? history[history.length - 1] : null;
-  const minRef = latestRef?.min_reference;
-  const maxRef = latestRef?.max_reference;
+  // Determine marker type from history data
+  const markerType = history.length > 0 ? history[0].marker_type : "numeric";
+
+  // Reference ranges (from marker, consistent across all entries)
+  const minRef = history.length > 0 ? history[0].min_reference : null;
+  const maxRef = history.length > 0 ? history[0].max_reference : null;
+  const normalValue = history.length > 0 ? history[0].normal_value : null;
 
   const chartData = history.map((h) => ({
     ...h,
@@ -79,66 +82,73 @@ export default function MarkerHistory() {
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="label" tick={{ fontSize: 11 }} />
-              <YAxis tick={{ fontSize: 11 }} />
-              <Tooltip
-                formatter={(value: number | undefined) => [value ?? 0, markerName]}
-              />
-              {minRef != null && (
-                <ReferenceLine
-                  y={minRef}
-                  stroke="#22c55e"
-                  strokeDasharray="5 5"
-                  label={{ value: `Min: ${minRef}`, position: "insideBottomLeft", fontSize: 10, fill: "#22c55e" }}
+          {markerType === "numeric" && (
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="label" tick={{ fontSize: 11 }} />
+                <YAxis tick={{ fontSize: 11 }} />
+                <Tooltip
+                  formatter={(value: number | undefined) => [value ?? 0, markerName]}
                 />
-              )}
-              {maxRef != null && (
-                <ReferenceLine
-                  y={maxRef}
-                  stroke="#ef4444"
-                  strokeDasharray="5 5"
-                  label={{ value: `Max: ${maxRef}`, position: "insideTopLeft", fontSize: 10, fill: "#ef4444" }}
+                {minRef != null && (
+                  <ReferenceLine
+                    y={minRef}
+                    stroke="#22c55e"
+                    strokeDasharray="5 5"
+                    label={{ value: `Min: ${minRef}`, position: "insideBottomLeft", fontSize: 10, fill: "#22c55e" }}
+                  />
+                )}
+                {maxRef != null && (
+                  <ReferenceLine
+                    y={maxRef}
+                    stroke="#ef4444"
+                    strokeDasharray="5 5"
+                    label={{ value: `Max: ${maxRef}`, position: "insideTopLeft", fontSize: 10, fill: "#ef4444" }}
+                  />
+                )}
+                <Line
+                  type="monotone"
+                  dataKey="value"
+                  stroke="#3b82f6"
+                  strokeWidth={2}
+                  dot={{ r: 4, fill: "#3b82f6" }}
+                  activeDot={{ r: 6 }}
                 />
-              )}
-              <Line
-                type="monotone"
-                dataKey="value"
-                stroke="#3b82f6"
-                strokeWidth={2}
-                dot={{ r: 4, fill: "#3b82f6" }}
-                activeDot={{ r: 6 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
+              </LineChart>
+            </ResponsiveContainer>
+          )}
 
-          {/* Data table below chart */}
-          <table className="w-full text-sm mt-6">
+          {/* Data table */}
+          <table className={`w-full text-sm ${markerType === "numeric" ? "mt-6" : ""}`}>
             <thead>
               <tr className="border-b border-gray-200 text-left">
                 <th className="pb-2 font-medium text-gray-600">Date</th>
                 <th className="pb-2 font-medium text-gray-600">Value</th>
-                <th className="pb-2 font-medium text-gray-600">Reference Range</th>
+                <th className="pb-2 font-medium text-gray-600">
+                  {markerType === "text" ? "Normal Value" : "Reference Range"}
+                </th>
                 <th className="pb-2 font-medium text-gray-600">Lab</th>
               </tr>
             </thead>
             <tbody>
               {history.map((h, i) => {
-                const isOutOfRange =
-                  (h.min_reference !== null && h.value < h.min_reference) ||
-                  (h.max_reference !== null && h.value > h.max_reference);
+                const isAbnormal = markerType === "text"
+                  ? (h.normal_value != null && h.text_value !== h.normal_value)
+                  : ((h.min_reference !== null && (h.value ?? 0) < h.min_reference) ||
+                     (h.max_reference !== null && (h.value ?? 0) > h.max_reference));
                 return (
                   <tr key={i} className="border-b border-gray-50">
                     <td className="py-2">{h.report_date}</td>
-                    <td className={`py-2 font-medium ${isOutOfRange ? "text-red-600" : "text-green-600"}`}>
-                      {h.value}
+                    <td className={`py-2 font-medium ${isAbnormal ? "text-red-600" : "text-green-600"}`}>
+                      {markerType === "text" ? h.text_value : h.value}
                     </td>
                     <td className="py-2 text-gray-500">
-                      {h.min_reference !== null || h.max_reference !== null
-                        ? `${h.min_reference ?? "—"} – ${h.max_reference ?? "—"}`
-                        : "—"}
+                      {markerType === "text"
+                        ? (normalValue ?? "—")
+                        : (h.min_reference !== null || h.max_reference !== null
+                            ? `${h.min_reference ?? "—"} – ${h.max_reference ?? "—"}`
+                            : "—")}
                     </td>
                     <td className="py-2 text-gray-400">{h.lab_name || "—"}</td>
                   </tr>

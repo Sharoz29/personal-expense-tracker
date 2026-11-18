@@ -44,9 +44,17 @@ export class HealthMarkerRepository {
 
   async create(dto: CreateHealthMarkerDto): Promise<HealthMarker> {
     const result = await this.db.execute({
-      sql: `INSERT INTO health_markers (name, unit, category_id)
-            VALUES (?, ?, ?) RETURNING *`,
-      args: [dto.name, dto.unit, dto.category_id],
+      sql: `INSERT INTO health_markers (name, unit, category_id, marker_type, min_reference, max_reference, normal_value)
+            VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING *`,
+      args: [
+        dto.name,
+        dto.unit,
+        dto.category_id,
+        dto.marker_type,
+        dto.min_reference ?? null,
+        dto.max_reference ?? null,
+        dto.normal_value ?? null,
+      ],
     });
     return mapRow<HealthMarker>(result.rows[0]);
   }
@@ -57,9 +65,20 @@ export class HealthMarkerRepository {
   ): Promise<HealthMarker | null> {
     const result = await this.db.execute({
       sql: `UPDATE health_markers
-            SET name = ?, unit = ?, category_id = ?, updated_at = datetime('now')
+            SET name = ?, unit = ?, category_id = ?, marker_type = ?,
+                min_reference = ?, max_reference = ?, normal_value = ?,
+                updated_at = datetime('now')
             WHERE id = ? RETURNING *`,
-      args: [dto.name, dto.unit, dto.category_id, id],
+      args: [
+        dto.name,
+        dto.unit,
+        dto.category_id,
+        dto.marker_type,
+        dto.min_reference ?? null,
+        dto.max_reference ?? null,
+        dto.normal_value ?? null,
+        id,
+      ],
     });
     return result.rows.length ? mapRow<HealthMarker>(result.rows[0]) : null;
   }

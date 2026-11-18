@@ -9,9 +9,8 @@ interface ReportFilters {
 
 interface CreateReportResultPayload {
   marker_id: number;
-  value: number;
-  min_reference?: number | null;
-  max_reference?: number | null;
+  value?: number | null;
+  text_value?: string | null;
 }
 
 interface CreateReportPayload {

@@ -14,13 +14,16 @@ interface CreateMarkerPayload {
   name: string;
   unit: string;
   category_id: number;
+  marker_type: "numeric" | "text";
+  min_reference?: number | null;
+  max_reference?: number | null;
+  normal_value?: string | null;
 }
 
 interface CreateReportResultPayload {
   marker_id: number;
-  value: number;
-  min_reference?: number | null;
-  max_reference?: number | null;
+  value?: number | null;
+  text_value?: string | null;
 }
 
 interface CreateReportPayload {

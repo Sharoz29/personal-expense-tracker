@@ -2,9 +2,8 @@ import { z } from "zod";
 
 const healthReportResultSchema = z.object({
   marker_id: z.number().int().positive("Marker is required"),
-  value: z.number({ required_error: "Value is required" }),
-  min_reference: z.number().nullable().optional(),
-  max_reference: z.number().nullable().optional(),
+  value: z.number().nullable().optional(),
+  text_value: z.string().nullable().optional(),
 });
 
 export const createHealthReportSchema = z.object({

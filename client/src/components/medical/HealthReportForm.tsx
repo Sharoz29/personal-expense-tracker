@@ -6,9 +6,9 @@ interface ResultEntry {
   marker_id: number;
   marker_name: string;
   marker_unit: string;
+  marker_type: "numeric" | "text";
   value: string;
-  min_reference: string;
-  max_reference: string;
+  text_value: string;
 }
 
 interface HealthReportFormProps {
@@ -21,7 +21,7 @@ interface HealthReportFormProps {
     report_date: string;
     lab_name?: string;
     notes?: string;
-    results: { marker_id: number; value: number; min_reference?: number | null; max_reference?: number | null }[];
+    results: { marker_id: number; value?: number | null; text_value?: string | null }[];
   }) => Promise<void>;
   onCancel: () => void;
 }
@@ -33,6 +33,7 @@ export default function HealthReportForm({ members, categories, initial, onSubmi
   const [labName, setLabName] = useState(initial?.lab_name ?? "");
   const [notes, setNotes] = useState(initial?.notes ?? "");
   const [results, setResults] = useState<ResultEntry[]>([]);
+  const [markersLoaded, setMarkersLoaded] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
@@ -40,13 +41,14 @@ export default function HealthReportForm({ members, categories, initial, onSubmi
   useEffect(() => {
     if (!categoryId) {
       setResults([]);
+      setMarkersLoaded(false);
       return;
     }
     const loadMarkers = async () => {
+      setMarkersLoaded(false);
       try {
         const markers = await healthMarkersApi.getAll(Number(categoryId));
         if (initial && initial.category_id === Number(categoryId) && initial.results) {
-          // Pre-fill from existing report results
           setResults(
             markers.map((m) => {
               const existing = initial.results?.find((r) => r.marker_id === m.id);
@@ -54,9 +56,9 @@ export default function HealthReportForm({ members, categories, initial, onSubmi
                 marker_id: m.id,
                 marker_name: m.name,
                 marker_unit: m.unit,
-                value: existing ? String(existing.value) : "",
-                min_reference: existing?.min_reference != null ? String(existing.min_reference) : "",
-                max_reference: existing?.max_reference != null ? String(existing.max_reference) : "",
+                marker_type: m.marker_type,
+                value: existing && m.marker_type === "numeric" ? String(existing.value ?? "") : "",
+                text_value: existing && m.marker_type === "text" ? String(existing.text_value ?? "") : "",
               };
             })
           );
@@ -66,12 +68,13 @@ export default function HealthReportForm({ members, categories, initial, onSubmi
               marker_id: m.id,
               marker_name: m.name,
               marker_unit: m.unit,
+              marker_type: m.marker_type,
               value: "",
-              min_reference: "",
-              max_reference: "",
+              text_value: "",
             }))
           );
         }
+        setMarkersLoaded(true);
       } catch {
         setError("Failed to load markers");
       }
@@ -89,7 +92,9 @@ export default function HealthReportForm({ members, categories, initial, onSubmi
       setError("Family member and category are required");
       return;
     }
-    const filledResults = results.filter((r) => r.value !== "");
+    const filledResults = results.filter((r) =>
+      r.marker_type === "numeric" ? r.value !== "" : r.text_value !== ""
+    );
     if (filledResults.length === 0) {
       setError("At least one result value is required");
       return;
@@ -106,9 +111,8 @@ export default function HealthReportForm({ members, categories, initial, onSubmi
         notes: notes || undefined,
         results: filledResults.map((r) => ({
           marker_id: r.marker_id,
-          value: Number(r.value),
-          min_reference: r.min_reference ? Number(r.min_reference) : null,
-          max_reference: r.max_reference ? Number(r.max_reference) : null,
+          value: r.marker_type === "numeric" ? Number(r.value) : null,
+          text_value: r.marker_type === "text" ? r.text_value : null,
         })),
       });
     } catch {
@@ -184,39 +188,40 @@ export default function HealthReportForm({ members, categories, initial, onSubmi
         />
       </div>
 
+      {categoryId && markersLoaded && results.length === 0 && (
+        <div className="text-amber-600 text-sm bg-amber-50 border border-amber-200 rounded-lg p-3">
+          No markers defined for this category. Go to{" "}
+          <span className="font-medium">Categories &amp; Markers</span> to add markers first.
+        </div>
+      )}
+
       {results.length > 0 && (
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Results</label>
           <div className="space-y-2">
             {results.map((r, i) => (
-              <div key={r.marker_id} className="grid grid-cols-4 gap-2 items-center">
+              <div key={r.marker_id} className="grid grid-cols-2 gap-2 items-center">
                 <span className="text-sm text-gray-700 truncate" title={`${r.marker_name} (${r.marker_unit})`}>
                   {r.marker_name} {r.marker_unit && <span className="text-gray-400 text-xs">({r.marker_unit})</span>}
                 </span>
-                <input
-                  type="number"
-                  step="any"
-                  value={r.value}
-                  onChange={(e) => updateResult(i, "value", e.target.value)}
-                  className="px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-rose-500"
-                  placeholder="Value"
-                />
-                <input
-                  type="number"
-                  step="any"
-                  value={r.min_reference}
-                  onChange={(e) => updateResult(i, "min_reference", e.target.value)}
-                  className="px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-rose-500"
-                  placeholder="Min ref"
-                />
-                <input
-                  type="number"
-                  step="any"
-                  value={r.max_reference}
-                  onChange={(e) => updateResult(i, "max_reference", e.target.value)}
-                  className="px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-rose-500"
-                  placeholder="Max ref"
-                />
+                {r.marker_type === "numeric" ? (
+                  <input
+                    type="number"
+                    step="any"
+                    value={r.value}
+                    onChange={(e) => updateResult(i, "value", e.target.value)}
+                    className="px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-rose-500"
+                    placeholder="Value"
+                  />
+                ) : (
+                  <input
+                    type="text"
+                    value={r.text_value}
+                    onChange={(e) => updateResult(i, "text_value", e.target.value)}
+                    className="px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-rose-500"
+                    placeholder="e.g., Negative"
+                  />
+                )}
               </div>
             ))}
           </div>

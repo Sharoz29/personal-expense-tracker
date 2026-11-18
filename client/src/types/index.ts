@@ -308,6 +308,10 @@ export interface HealthMarker {
   unit: string;
   category_id: number;
   category_name?: string;
+  marker_type: "numeric" | "text";
+  min_reference: number | null;
+  max_reference: number | null;
+  normal_value: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -332,9 +336,12 @@ export interface HealthReportResult {
   marker_id: number;
   marker_name?: string;
   marker_unit?: string;
-  value: number;
+  marker_type?: "numeric" | "text";
+  value: number | null;
+  text_value: string | null;
   min_reference: number | null;
   max_reference: number | null;
+  normal_value: string | null;
   created_at: string;
 }
 
@@ -342,9 +349,12 @@ export interface HealthMarkerHistory {
   report_id: number;
   report_date: string;
   lab_name: string;
-  value: number;
+  value: number | null;
+  text_value: string | null;
   min_reference: number | null;
   max_reference: number | null;
+  normal_value: string | null;
+  marker_type: "numeric" | "text";
 }
 
 // Learning Module Types
