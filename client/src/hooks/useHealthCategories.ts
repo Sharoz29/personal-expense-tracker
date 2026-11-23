@@ -61,6 +61,18 @@ export function useHealthCategories() {
     return updated;
   };
 
+  const createMarkersBatch = async (markers: {
+    name: string; unit: string; category_id: number;
+    marker_type: "numeric" | "text";
+    min_reference?: number | null; max_reference?: number | null;
+    normal_value?: string | null; reference_ranges?: string | null;
+  }[]) => {
+    for (const data of markers) {
+      await healthMarkersApi.create(data);
+    }
+    await fetch();
+  };
+
   const deleteMarker = async (id: number) => {
     await healthMarkersApi.delete(id);
     await fetch();
@@ -74,6 +86,7 @@ export function useHealthCategories() {
     updateCategory,
     deleteCategory,
     createMarker,
+    createMarkersBatch,
     updateMarker,
     deleteMarker,
     refetch: fetch,

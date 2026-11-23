@@ -1,9 +1,15 @@
 import { useState } from "react";
-import { Plus, Pencil, Trash2, ChevronDown, ChevronRight, X } from "lucide-react";
+import { Plus, Pencil, Trash2, ChevronDown, ChevronRight, X, ListPlus } from "lucide-react";
 import { useHealthCategories } from "../../hooks/useHealthCategories";
 import Modal from "../../components/common/Modal";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
 import type { ReferenceRange } from "../../types";
+
+interface BulkRow {
+  name: string;
+  unit: string;
+  marker_type: "numeric" | "text";
+}
 
 interface RangeEntry {
   label: string;
@@ -60,7 +66,7 @@ export default function Categories() {
   const {
     categories, loading, error,
     createCategory, updateCategory, deleteCategory,
-    createMarker, updateMarker, deleteMarker,
+    createMarker, createMarkersBatch, updateMarker, deleteMarker,
   } = useHealthCategories();
 
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
@@ -83,6 +89,16 @@ export default function Categories() {
   const [markerMaxRef, setMarkerMaxRef] = useState("");
   const [markerNormalValue, setMarkerNormalValue] = useState("");
   const [ranges, setRanges] = useState<RangeEntry[]>([]);
+
+  // Bulk add state
+  const [showBulkForm, setShowBulkForm] = useState(false);
+  const [bulkCategoryId, setBulkCategoryId] = useState<number>(0);
+  const [bulkRows, setBulkRows] = useState<BulkRow[]>([
+    { name: "", unit: "", marker_type: "numeric" },
+    { name: "", unit: "", marker_type: "numeric" },
+    { name: "", unit: "", marker_type: "numeric" },
+  ]);
+  const [bulkSaving, setBulkSaving] = useState(false);
 
   const [deletingCategory, setDeletingCategory] = useState<{ id: number; name: string } | null>(null);
   const [deletingMarker, setDeletingMarker] = useState<{ id: number; name: string } | null>(null);
@@ -152,6 +168,43 @@ export default function Categories() {
 
   const removeRange = (index: number) => {
     setRanges((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleBulkSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const valid = bulkRows.filter((r) => r.name.trim());
+    if (valid.length === 0) return;
+    setBulkSaving(true);
+    try {
+      await createMarkersBatch(
+        valid.map((r) => ({
+          name: r.name.trim(),
+          unit: r.unit.trim(),
+          category_id: bulkCategoryId,
+          marker_type: r.marker_type,
+        }))
+      );
+      setShowBulkForm(false);
+      setBulkRows([
+        { name: "", unit: "", marker_type: "numeric" },
+        { name: "", unit: "", marker_type: "numeric" },
+        { name: "", unit: "", marker_type: "numeric" },
+      ]);
+    } finally {
+      setBulkSaving(false);
+    }
+  };
+
+  const updateBulkRow = (index: number, field: keyof BulkRow, val: string) => {
+    setBulkRows((prev) => prev.map((r, i) => i === index ? { ...r, [field]: val } : r));
+  };
+
+  const addBulkRow = () => {
+    setBulkRows((prev) => [...prev, { name: "", unit: "", marker_type: "numeric" }]);
+  };
+
+  const removeBulkRow = (index: number) => {
+    setBulkRows((prev) => prev.filter((_, i) => i !== index));
   };
 
   const getRangesSummary = (json: string | null): string => {
@@ -280,13 +333,30 @@ export default function Categories() {
                       );
                     })}
                   </div>
-                  <button
-                    onClick={() => { setMarkerCategoryId(cat.id); setEditingMarker(null); resetMarkerFields(); setShowMarkerForm(true); }}
-                    className="mt-3 flex items-center gap-1 text-sm text-rose-600 hover:text-rose-700 transition-colors"
-                  >
-                    <Plus size={14} />
-                    Add Marker
-                  </button>
+                  <div className="mt-3 flex gap-3">
+                    <button
+                      onClick={() => { setMarkerCategoryId(cat.id); setEditingMarker(null); resetMarkerFields(); setShowMarkerForm(true); }}
+                      className="flex items-center gap-1 text-sm text-rose-600 hover:text-rose-700 transition-colors"
+                    >
+                      <Plus size={14} />
+                      Add Marker
+                    </button>
+                    <button
+                      onClick={() => {
+                        setBulkCategoryId(cat.id);
+                        setBulkRows([
+                          { name: "", unit: "", marker_type: "numeric" },
+                          { name: "", unit: "", marker_type: "numeric" },
+                          { name: "", unit: "", marker_type: "numeric" },
+                        ]);
+                        setShowBulkForm(true);
+                      }}
+                      className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 transition-colors"
+                    >
+                      <ListPlus size={14} />
+                      Bulk Add
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -482,6 +552,80 @@ export default function Categories() {
           <div className="flex justify-end gap-3">
             <button type="button" onClick={() => setShowMarkerForm(false)} className="px-4 py-2 text-sm rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors">Cancel</button>
             <button type="submit" className="px-4 py-2 text-sm rounded-lg bg-rose-600 text-white hover:bg-rose-700 transition-colors">{editingMarker ? "Update" : "Add"}</button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Bulk Add Markers Modal */}
+      <Modal
+        open={showBulkForm}
+        onClose={() => setShowBulkForm(false)}
+        title="Bulk Add Markers"
+      >
+        <form onSubmit={handleBulkSubmit} className="space-y-4">
+          <p className="text-xs text-gray-500">
+            Add multiple markers at once. Fill in name and unit for each. You can configure reference ranges later by editing individual markers.
+          </p>
+          <div className="space-y-2 max-h-80 overflow-y-auto">
+            {bulkRows.map((row, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <span className="text-xs text-gray-400 w-5 shrink-0">{i + 1}</span>
+                <input
+                  type="text"
+                  value={row.name}
+                  onChange={(e) => updateBulkRow(i, "name", e.target.value)}
+                  className="flex-1 px-2 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-rose-500"
+                  placeholder="Marker name"
+                  autoFocus={i === 0}
+                />
+                <input
+                  type="text"
+                  value={row.unit}
+                  onChange={(e) => updateBulkRow(i, "unit", e.target.value)}
+                  className="w-20 px-2 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-rose-500"
+                  placeholder="Unit"
+                />
+                <select
+                  value={row.marker_type}
+                  onChange={(e) => updateBulkRow(i, "marker_type", e.target.value)}
+                  className="w-24 px-2 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-rose-500"
+                >
+                  <option value="numeric">Numeric</option>
+                  <option value="text">Text</option>
+                </select>
+                <button
+                  type="button"
+                  onClick={() => removeBulkRow(i)}
+                  className="p-1 rounded hover:bg-gray-100 transition-colors"
+                  disabled={bulkRows.length <= 1}
+                >
+                  <X size={14} className={bulkRows.length <= 1 ? "text-gray-200" : "text-gray-400"} />
+                </button>
+              </div>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={addBulkRow}
+            className="flex items-center gap-1 text-sm text-rose-600 hover:text-rose-700 transition-colors"
+          >
+            <Plus size={14} />
+            Add Row
+          </button>
+          <div className="flex justify-between items-center">
+            <span className="text-xs text-gray-400">
+              {bulkRows.filter((r) => r.name.trim()).length} marker(s) to add
+            </span>
+            <div className="flex gap-3">
+              <button type="button" onClick={() => setShowBulkForm(false)} className="px-4 py-2 text-sm rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors">Cancel</button>
+              <button
+                type="submit"
+                disabled={bulkSaving || bulkRows.filter((r) => r.name.trim()).length === 0}
+                className="px-4 py-2 text-sm rounded-lg bg-rose-600 text-white hover:bg-rose-700 transition-colors disabled:opacity-50"
+              >
+                {bulkSaving ? "Adding..." : "Add All"}
+              </button>
+            </div>
           </div>
         </form>
       </Modal>
