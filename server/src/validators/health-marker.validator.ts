@@ -8,6 +8,7 @@ export const createHealthMarkerSchema = z.object({
   min_reference: z.number().nullable().optional(),
   max_reference: z.number().nullable().optional(),
   normal_value: z.string().nullable().optional(),
+  reference_ranges: z.string().nullable().optional(),
 });
 
 export const updateHealthMarkerSchema = createHealthMarkerSchema;

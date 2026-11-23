@@ -59,7 +59,7 @@ export class HealthReportRepository {
     const result = await this.db.execute({
       sql: `SELECT rr.id, rr.report_id, rr.marker_id, rr.value, rr.text_value, rr.created_at,
                    m.name as marker_name, m.unit as marker_unit, m.marker_type,
-                   m.min_reference, m.max_reference, m.normal_value
+                   m.min_reference, m.max_reference, m.normal_value, m.reference_ranges
             FROM health_report_results rr
             JOIN health_markers m ON rr.marker_id = m.id
             WHERE rr.report_id = ?
@@ -143,7 +143,7 @@ export class HealthReportRepository {
     const result = await this.db.execute({
       sql: `SELECT r.id as report_id, r.report_date, r.lab_name,
                    rr.value, rr.text_value,
-                   m.min_reference, m.max_reference, m.normal_value, m.marker_type
+                   m.min_reference, m.max_reference, m.normal_value, m.reference_ranges, m.marker_type
             FROM health_report_results rr
             JOIN health_reports r ON rr.report_id = r.id
             JOIN health_markers m ON rr.marker_id = m.id

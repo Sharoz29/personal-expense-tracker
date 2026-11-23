@@ -18,6 +18,7 @@ interface CreateMarkerPayload {
   min_reference?: number | null;
   max_reference?: number | null;
   normal_value?: string | null;
+  reference_ranges?: string | null;
 }
 
 interface CreateReportResultPayload {

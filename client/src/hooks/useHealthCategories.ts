@@ -43,7 +43,7 @@ export function useHealthCategories() {
     name: string; unit: string; category_id: number;
     marker_type: "numeric" | "text";
     min_reference?: number | null; max_reference?: number | null;
-    normal_value?: string | null;
+    normal_value?: string | null; reference_ranges?: string | null;
   }) => {
     const created = await healthMarkersApi.create(data);
     await fetch();
@@ -54,7 +54,7 @@ export function useHealthCategories() {
     name: string; unit: string; category_id: number;
     marker_type: "numeric" | "text";
     min_reference?: number | null; max_reference?: number | null;
-    normal_value?: string | null;
+    normal_value?: string | null; reference_ranges?: string | null;
   }) => {
     const updated = await healthMarkersApi.update(id, data);
     await fetch();

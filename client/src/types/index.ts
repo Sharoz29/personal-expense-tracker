@@ -302,6 +302,14 @@ export interface HealthReportCategory {
   markers?: HealthMarker[];
 }
 
+export interface ReferenceRange {
+  label: string;
+  min?: number | null;
+  max?: number | null;
+  value?: string | null;
+  color: "green" | "yellow" | "red";
+}
+
 export interface HealthMarker {
   id: number;
   name: string;
@@ -312,6 +320,7 @@ export interface HealthMarker {
   min_reference: number | null;
   max_reference: number | null;
   normal_value: string | null;
+  reference_ranges: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -342,6 +351,7 @@ export interface HealthReportResult {
   min_reference: number | null;
   max_reference: number | null;
   normal_value: string | null;
+  reference_ranges: string | null;
   created_at: string;
 }
 
@@ -354,6 +364,7 @@ export interface HealthMarkerHistory {
   min_reference: number | null;
   max_reference: number | null;
   normal_value: string | null;
+  reference_ranges: string | null;
   marker_type: "numeric" | "text";
 }
 

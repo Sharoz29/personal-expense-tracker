@@ -44,8 +44,8 @@ export class HealthMarkerRepository {
 
   async create(dto: CreateHealthMarkerDto): Promise<HealthMarker> {
     const result = await this.db.execute({
-      sql: `INSERT INTO health_markers (name, unit, category_id, marker_type, min_reference, max_reference, normal_value)
-            VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING *`,
+      sql: `INSERT INTO health_markers (name, unit, category_id, marker_type, min_reference, max_reference, normal_value, reference_ranges)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`,
       args: [
         dto.name,
         dto.unit,
@@ -54,6 +54,7 @@ export class HealthMarkerRepository {
         dto.min_reference ?? null,
         dto.max_reference ?? null,
         dto.normal_value ?? null,
+        dto.reference_ranges ?? null,
       ],
     });
     return mapRow<HealthMarker>(result.rows[0]);
@@ -67,7 +68,7 @@ export class HealthMarkerRepository {
       sql: `UPDATE health_markers
             SET name = ?, unit = ?, category_id = ?, marker_type = ?,
                 min_reference = ?, max_reference = ?, normal_value = ?,
-                updated_at = datetime('now')
+                reference_ranges = ?, updated_at = datetime('now')
             WHERE id = ? RETURNING *`,
       args: [
         dto.name,
@@ -77,6 +78,7 @@ export class HealthMarkerRepository {
         dto.min_reference ?? null,
         dto.max_reference ?? null,
         dto.normal_value ?? null,
+        dto.reference_ranges ?? null,
         id,
       ],
     });

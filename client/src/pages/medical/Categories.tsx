@@ -1,8 +1,60 @@
 import { useState } from "react";
-import { Plus, Pencil, Trash2, ChevronDown, ChevronRight } from "lucide-react";
+import { Plus, Pencil, Trash2, ChevronDown, ChevronRight, X } from "lucide-react";
 import { useHealthCategories } from "../../hooks/useHealthCategories";
 import Modal from "../../components/common/Modal";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
+import type { ReferenceRange } from "../../types";
+
+interface RangeEntry {
+  label: string;
+  min: string;
+  max: string;
+  value: string;
+  color: "green" | "yellow" | "red";
+}
+
+function parseRanges(json: string | null): RangeEntry[] {
+  if (!json) return [];
+  try {
+    const parsed: ReferenceRange[] = JSON.parse(json);
+    return parsed.map((r) => ({
+      label: r.label,
+      min: r.min != null ? String(r.min) : "",
+      max: r.max != null ? String(r.max) : "",
+      value: r.value ?? "",
+      color: r.color,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+function serializeRanges(ranges: RangeEntry[], markerType: "numeric" | "text"): string | null {
+  const filtered = ranges.filter((r) => r.label.trim());
+  if (filtered.length === 0) return null;
+  const serialized: ReferenceRange[] = filtered.map((r) => {
+    if (markerType === "numeric") {
+      return {
+        label: r.label.trim(),
+        min: r.min ? Number(r.min) : null,
+        max: r.max ? Number(r.max) : null,
+        color: r.color,
+      };
+    }
+    return {
+      label: r.label.trim(),
+      value: r.value.trim() || null,
+      color: r.color,
+    };
+  });
+  return JSON.stringify(serialized);
+}
+
+const colorOptions: { value: "green" | "yellow" | "red"; label: string; cls: string }[] = [
+  { value: "green", label: "Normal", cls: "bg-green-100 text-green-700" },
+  { value: "yellow", label: "Borderline", cls: "bg-yellow-100 text-yellow-700" },
+  { value: "red", label: "High/Abnormal", cls: "bg-red-100 text-red-700" },
+];
 
 export default function Categories() {
   const {
@@ -22,7 +74,7 @@ export default function Categories() {
     id: number; name: string; unit: string; category_id: number;
     marker_type: "numeric" | "text";
     min_reference: number | null; max_reference: number | null;
-    normal_value: string | null;
+    normal_value: string | null; reference_ranges: string | null;
   } | null>(null);
   const [markerName, setMarkerName] = useState("");
   const [markerUnit, setMarkerUnit] = useState("");
@@ -30,6 +82,7 @@ export default function Categories() {
   const [markerMinRef, setMarkerMinRef] = useState("");
   const [markerMaxRef, setMarkerMaxRef] = useState("");
   const [markerNormalValue, setMarkerNormalValue] = useState("");
+  const [ranges, setRanges] = useState<RangeEntry[]>([]);
 
   const [deletingCategory, setDeletingCategory] = useState<{ id: number; name: string } | null>(null);
   const [deletingMarker, setDeletingMarker] = useState<{ id: number; name: string } | null>(null);
@@ -67,6 +120,7 @@ export default function Categories() {
       min_reference: markerType === "numeric" && markerMinRef ? Number(markerMinRef) : null,
       max_reference: markerType === "numeric" && markerMaxRef ? Number(markerMaxRef) : null,
       normal_value: markerType === "text" && markerNormalValue ? markerNormalValue.trim() : null,
+      reference_ranges: serializeRanges(ranges, markerType),
     };
     if (editingMarker) {
       await updateMarker(editingMarker.id, payload);
@@ -85,6 +139,29 @@ export default function Categories() {
     setMarkerMinRef("");
     setMarkerMaxRef("");
     setMarkerNormalValue("");
+    setRanges([]);
+  };
+
+  const addRange = () => {
+    setRanges((prev) => [...prev, { label: "", min: "", max: "", value: "", color: "green" }]);
+  };
+
+  const updateRange = (index: number, field: keyof RangeEntry, val: string) => {
+    setRanges((prev) => prev.map((r, i) => i === index ? { ...r, [field]: val } : r));
+  };
+
+  const removeRange = (index: number) => {
+    setRanges((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const getRangesSummary = (json: string | null): string => {
+    if (!json) return "";
+    try {
+      const parsed: ReferenceRange[] = JSON.parse(json);
+      return parsed.map((r) => r.label).join(", ");
+    } catch {
+      return "";
+    }
   };
 
   if (loading) {
@@ -144,53 +221,64 @@ export default function Categories() {
               {expanded.has(cat.id) && (
                 <div className="border-t border-gray-100 px-4 pb-4">
                   <div className="mt-3 space-y-2">
-                    {(cat.markers ?? []).map((m) => (
-                      <div key={m.id} className="flex items-center justify-between py-1.5 px-3 rounded-lg bg-gray-50">
-                        <div className="flex items-center gap-2 text-sm text-gray-700 min-w-0">
-                          <span className="truncate">
-                            {m.name} {m.unit && <span className="text-gray-400">({m.unit})</span>}
-                          </span>
-                          <span className={`text-xs px-1.5 py-0.5 rounded ${m.marker_type === "text" ? "bg-purple-100 text-purple-600" : "bg-blue-100 text-blue-600"}`}>
-                            {m.marker_type === "text" ? "Text" : "Numeric"}
-                          </span>
-                          {m.marker_type === "numeric" && (m.min_reference != null || m.max_reference != null) && (
-                            <span className="text-xs text-gray-400">
-                              [{m.min_reference ?? "—"} – {m.max_reference ?? "—"}]
+                    {(cat.markers ?? []).map((m) => {
+                      const rangesSummary = getRangesSummary(m.reference_ranges);
+                      return (
+                        <div key={m.id} className="flex items-center justify-between py-1.5 px-3 rounded-lg bg-gray-50">
+                          <div className="flex items-center gap-2 text-sm text-gray-700 min-w-0 flex-wrap">
+                            <span className="truncate">
+                              {m.name} {m.unit && <span className="text-gray-400">({m.unit})</span>}
                             </span>
-                          )}
-                          {m.marker_type === "text" && m.normal_value && (
-                            <span className="text-xs text-gray-400">Normal: {m.normal_value}</span>
-                          )}
+                            <span className={`text-xs px-1.5 py-0.5 rounded ${m.marker_type === "text" ? "bg-purple-100 text-purple-600" : "bg-blue-100 text-blue-600"}`}>
+                              {m.marker_type === "text" ? "Text" : "Numeric"}
+                            </span>
+                            {rangesSummary ? (
+                              <span className="text-xs text-gray-400">{rangesSummary}</span>
+                            ) : (
+                              <>
+                                {m.marker_type === "numeric" && (m.min_reference != null || m.max_reference != null) && (
+                                  <span className="text-xs text-gray-400">
+                                    [{m.min_reference ?? "—"} – {m.max_reference ?? "—"}]
+                                  </span>
+                                )}
+                                {m.marker_type === "text" && m.normal_value && (
+                                  <span className="text-xs text-gray-400">Normal: {m.normal_value}</span>
+                                )}
+                              </>
+                            )}
+                          </div>
+                          <div className="flex gap-1 shrink-0">
+                            <button
+                              onClick={() => {
+                                setEditingMarker({
+                                  id: m.id, name: m.name, unit: m.unit, category_id: m.category_id,
+                                  marker_type: m.marker_type, min_reference: m.min_reference,
+                                  max_reference: m.max_reference, normal_value: m.normal_value,
+                                  reference_ranges: m.reference_ranges,
+                                });
+                                setMarkerName(m.name);
+                                setMarkerUnit(m.unit);
+                                setMarkerType(m.marker_type);
+                                setMarkerMinRef(m.min_reference != null ? String(m.min_reference) : "");
+                                setMarkerMaxRef(m.max_reference != null ? String(m.max_reference) : "");
+                                setMarkerNormalValue(m.normal_value ?? "");
+                                setRanges(parseRanges(m.reference_ranges));
+                                setShowMarkerForm(true);
+                              }}
+                              className="p-1 rounded hover:bg-gray-200 transition-colors"
+                            >
+                              <Pencil size={12} className="text-gray-500" />
+                            </button>
+                            <button
+                              onClick={() => setDeletingMarker({ id: m.id, name: m.name })}
+                              className="p-1 rounded hover:bg-gray-200 transition-colors"
+                            >
+                              <Trash2 size={12} className="text-red-500" />
+                            </button>
+                          </div>
                         </div>
-                        <div className="flex gap-1 shrink-0">
-                          <button
-                            onClick={() => {
-                              setEditingMarker({
-                                id: m.id, name: m.name, unit: m.unit, category_id: m.category_id,
-                                marker_type: m.marker_type, min_reference: m.min_reference,
-                                max_reference: m.max_reference, normal_value: m.normal_value,
-                              });
-                              setMarkerName(m.name);
-                              setMarkerUnit(m.unit);
-                              setMarkerType(m.marker_type);
-                              setMarkerMinRef(m.min_reference != null ? String(m.min_reference) : "");
-                              setMarkerMaxRef(m.max_reference != null ? String(m.max_reference) : "");
-                              setMarkerNormalValue(m.normal_value ?? "");
-                              setShowMarkerForm(true);
-                            }}
-                            className="p-1 rounded hover:bg-gray-200 transition-colors"
-                          >
-                            <Pencil size={12} className="text-gray-500" />
-                          </button>
-                          <button
-                            onClick={() => setDeletingMarker({ id: m.id, name: m.name })}
-                            className="p-1 rounded hover:bg-gray-200 transition-colors"
-                          >
-                            <Trash2 size={12} className="text-red-500" />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                   <button
                     onClick={() => { setMarkerCategoryId(cat.id); setEditingMarker(null); resetMarkerFields(); setShowMarkerForm(true); }}
@@ -310,6 +398,86 @@ export default function Categories() {
               />
             </div>
           )}
+
+          {/* Multi-tier Reference Ranges */}
+          <div className="border-t border-gray-200 pt-4">
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-sm font-medium text-gray-700">Reference Ranges</label>
+              <button
+                type="button"
+                onClick={addRange}
+                className="flex items-center gap-1 text-xs text-rose-600 hover:text-rose-700 transition-colors"
+              >
+                <Plus size={12} />
+                Add Range
+              </button>
+            </div>
+            {ranges.length === 0 ? (
+              <p className="text-xs text-gray-400">
+                Optional. Add tiered ranges for markers like cholesterol (Desirable, Borderline, High).
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {ranges.map((range, i) => (
+                  <div key={i} className="flex items-start gap-2 p-2 rounded-lg bg-gray-50">
+                    <div className="flex-1 grid grid-cols-2 gap-2">
+                      <input
+                        type="text"
+                        value={range.label}
+                        onChange={(e) => updateRange(i, "label", e.target.value)}
+                        className="col-span-2 px-2 py-1.5 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-rose-500"
+                        placeholder="Label (e.g., Desirable)"
+                      />
+                      {markerType === "numeric" ? (
+                        <>
+                          <input
+                            type="number"
+                            step="any"
+                            value={range.min}
+                            onChange={(e) => updateRange(i, "min", e.target.value)}
+                            className="px-2 py-1.5 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-rose-500"
+                            placeholder="Min (optional)"
+                          />
+                          <input
+                            type="number"
+                            step="any"
+                            value={range.max}
+                            onChange={(e) => updateRange(i, "max", e.target.value)}
+                            className="px-2 py-1.5 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-rose-500"
+                            placeholder="Max (optional)"
+                          />
+                        </>
+                      ) : (
+                        <input
+                          type="text"
+                          value={range.value}
+                          onChange={(e) => updateRange(i, "value", e.target.value)}
+                          className="col-span-2 px-2 py-1.5 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-rose-500"
+                          placeholder="Value (e.g., Negative)"
+                        />
+                      )}
+                      <select
+                        value={range.color}
+                        onChange={(e) => updateRange(i, "color", e.target.value)}
+                        className="col-span-2 px-2 py-1.5 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-rose-500"
+                      >
+                        {colorOptions.map((c) => (
+                          <option key={c.value} value={c.value}>{c.label} ({c.value})</option>
+                        ))}
+                      </select>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeRange(i)}
+                      className="p-1 rounded hover:bg-gray-200 transition-colors mt-0.5"
+                    >
+                      <X size={14} className="text-gray-400" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
           <div className="flex justify-end gap-3">
             <button type="button" onClick={() => setShowMarkerForm(false)} className="px-4 py-2 text-sm rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors">Cancel</button>

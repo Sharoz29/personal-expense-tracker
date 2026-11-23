@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, TrendingUp } from "lucide-react";
 import { healthReportsApi } from "../../api/health.api";
-import type { HealthReport, HealthReportResult } from "../../types";
+import { getResultColor, getReferenceDisplay } from "../../utils/referenceRanges";
+import type { HealthReport } from "../../types";
 
 export default function ReportDetail() {
   const { id } = useParams<{ id: string }>();
@@ -31,17 +32,6 @@ export default function ReportDetail() {
   if (!report) {
     return <div className="p-4 md:p-6"><p className="text-red-600">Report not found</p></div>;
   }
-
-  const getStatusColor = (r: HealthReportResult) => {
-    if (r.marker_type === "text") {
-      if (!r.normal_value) return "text-gray-800";
-      return r.text_value === r.normal_value ? "text-green-600" : "text-red-600";
-    }
-    if (r.min_reference === null && r.max_reference === null) return "text-gray-800";
-    if (r.min_reference !== null && (r.value ?? 0) < r.min_reference) return "text-red-600";
-    if (r.max_reference !== null && (r.value ?? 0) > r.max_reference) return "text-red-600";
-    return "text-green-600";
-  };
 
   return (
     <div className="p-4 md:p-6 space-y-6">
@@ -82,16 +72,11 @@ export default function ReportDetail() {
                     {r.marker_name}
                     {r.marker_unit && <span className="text-gray-400 text-xs ml-1">({r.marker_unit})</span>}
                   </td>
-                  <td className={`py-2.5 font-medium ${getStatusColor(r)}`}>
+                  <td className={`py-2.5 font-medium ${getResultColor(r)}`}>
                     {r.marker_type === "text" ? r.text_value : r.value}
                   </td>
                   <td className="py-2.5 text-gray-500">
-                    {r.marker_type === "text"
-                      ? (r.normal_value ? `Normal: ${r.normal_value}` : "—")
-                      : (r.min_reference !== null || r.max_reference !== null
-                          ? `${r.min_reference ?? "—"} – ${r.max_reference ?? "—"}`
-                          : "—")
-                    }
+                    {getReferenceDisplay(r)}
                   </td>
                   <td className="py-2.5">
                     <button

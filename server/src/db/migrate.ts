@@ -34,6 +34,7 @@ async function migrate() {
     "023_account_balance_snapshots.sql",
     "024_health_reports.sql",
     "025_health_markers_refactor.sql",
+    "026_health_marker_reference_ranges.sql",
   ];
 
   for (const file of migrationFiles) {
