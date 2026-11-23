@@ -9,6 +9,10 @@ interface BulkRow {
   name: string;
   unit: string;
   marker_type: "numeric" | "text";
+  min_reference: string;
+  max_reference: string;
+  normal_value: string;
+  ranges: RangeEntry[];
 }
 
 interface RangeEntry {
@@ -91,14 +95,15 @@ export default function Categories() {
   const [ranges, setRanges] = useState<RangeEntry[]>([]);
 
   // Bulk add state
+  const emptyBulkRow = (): BulkRow => ({
+    name: "", unit: "", marker_type: "numeric",
+    min_reference: "", max_reference: "", normal_value: "", ranges: [],
+  });
   const [showBulkForm, setShowBulkForm] = useState(false);
   const [bulkCategoryId, setBulkCategoryId] = useState<number>(0);
-  const [bulkRows, setBulkRows] = useState<BulkRow[]>([
-    { name: "", unit: "", marker_type: "numeric" },
-    { name: "", unit: "", marker_type: "numeric" },
-    { name: "", unit: "", marker_type: "numeric" },
-  ]);
+  const [bulkRows, setBulkRows] = useState<BulkRow[]>([emptyBulkRow(), emptyBulkRow(), emptyBulkRow()]);
   const [bulkSaving, setBulkSaving] = useState(false);
+  const [expandedBulk, setExpandedBulk] = useState<Set<number>>(new Set());
 
   const [deletingCategory, setDeletingCategory] = useState<{ id: number; name: string } | null>(null);
   const [deletingMarker, setDeletingMarker] = useState<{ id: number; name: string } | null>(null);
@@ -182,29 +187,61 @@ export default function Categories() {
           unit: r.unit.trim(),
           category_id: bulkCategoryId,
           marker_type: r.marker_type,
+          min_reference: r.marker_type === "numeric" && r.min_reference ? Number(r.min_reference) : null,
+          max_reference: r.marker_type === "numeric" && r.max_reference ? Number(r.max_reference) : null,
+          normal_value: r.marker_type === "text" && r.normal_value ? r.normal_value.trim() : null,
+          reference_ranges: serializeRanges(r.ranges, r.marker_type),
         }))
       );
       setShowBulkForm(false);
-      setBulkRows([
-        { name: "", unit: "", marker_type: "numeric" },
-        { name: "", unit: "", marker_type: "numeric" },
-        { name: "", unit: "", marker_type: "numeric" },
-      ]);
+      setBulkRows([emptyBulkRow(), emptyBulkRow(), emptyBulkRow()]);
+      setExpandedBulk(new Set());
     } finally {
       setBulkSaving(false);
     }
   };
 
-  const updateBulkRow = (index: number, field: keyof BulkRow, val: string) => {
+  const updateBulkRow = (index: number, field: string, val: string) => {
     setBulkRows((prev) => prev.map((r, i) => i === index ? { ...r, [field]: val } : r));
   };
 
   const addBulkRow = () => {
-    setBulkRows((prev) => [...prev, { name: "", unit: "", marker_type: "numeric" }]);
+    setBulkRows((prev) => [...prev, emptyBulkRow()]);
   };
 
   const removeBulkRow = (index: number) => {
     setBulkRows((prev) => prev.filter((_, i) => i !== index));
+    setExpandedBulk((prev) => {
+      const next = new Set<number>();
+      prev.forEach((v) => { if (v < index) next.add(v); else if (v > index) next.add(v - 1); });
+      return next;
+    });
+  };
+
+  const toggleBulkAccordion = (index: number) => {
+    setExpandedBulk((prev) => {
+      const next = new Set(prev);
+      if (next.has(index)) next.delete(index); else next.add(index);
+      return next;
+    });
+  };
+
+  const addBulkRange = (index: number) => {
+    setBulkRows((prev) => prev.map((r, i) =>
+      i === index ? { ...r, ranges: [...r.ranges, { label: "", min: "", max: "", value: "", color: "green" as const }] } : r
+    ));
+  };
+
+  const updateBulkRange = (rowIndex: number, rangeIndex: number, field: keyof RangeEntry, val: string) => {
+    setBulkRows((prev) => prev.map((r, i) =>
+      i === rowIndex ? { ...r, ranges: r.ranges.map((rng, j) => j === rangeIndex ? { ...rng, [field]: val } : rng) } : r
+    ));
+  };
+
+  const removeBulkRange = (rowIndex: number, rangeIndex: number) => {
+    setBulkRows((prev) => prev.map((r, i) =>
+      i === rowIndex ? { ...r, ranges: r.ranges.filter((_, j) => j !== rangeIndex) } : r
+    ));
   };
 
   const getRangesSummary = (json: string | null): string => {
@@ -344,11 +381,8 @@ export default function Categories() {
                     <button
                       onClick={() => {
                         setBulkCategoryId(cat.id);
-                        setBulkRows([
-                          { name: "", unit: "", marker_type: "numeric" },
-                          { name: "", unit: "", marker_type: "numeric" },
-                          { name: "", unit: "", marker_type: "numeric" },
-                        ]);
+                        setBulkRows([emptyBulkRow(), emptyBulkRow(), emptyBulkRow()]);
+                        setExpandedBulk(new Set());
                         setShowBulkForm(true);
                       }}
                       className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 transition-colors"
@@ -561,58 +595,195 @@ export default function Categories() {
         open={showBulkForm}
         onClose={() => setShowBulkForm(false)}
         title="Bulk Add Markers"
+        size="xl"
       >
-        <form onSubmit={handleBulkSubmit} className="space-y-4">
-          <p className="text-xs text-gray-500">
-            Add multiple markers at once. Fill in name and unit for each. You can configure reference ranges later by editing individual markers.
-          </p>
-          <div className="space-y-2 max-h-80 overflow-y-auto">
-            {bulkRows.map((row, i) => (
-              <div key={i} className="flex items-center gap-2">
-                <span className="text-xs text-gray-400 w-5 shrink-0">{i + 1}</span>
-                <input
-                  type="text"
-                  value={row.name}
-                  onChange={(e) => updateBulkRow(i, "name", e.target.value)}
-                  className="flex-1 px-2 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-rose-500"
-                  placeholder="Marker name"
-                  autoFocus={i === 0}
-                />
-                <input
-                  type="text"
-                  value={row.unit}
-                  onChange={(e) => updateBulkRow(i, "unit", e.target.value)}
-                  className="w-20 px-2 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-rose-500"
-                  placeholder="Unit"
-                />
-                <select
-                  value={row.marker_type}
-                  onChange={(e) => updateBulkRow(i, "marker_type", e.target.value)}
-                  className="w-24 px-2 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-rose-500"
-                >
-                  <option value="numeric">Numeric</option>
-                  <option value="text">Text</option>
-                </select>
-                <button
-                  type="button"
-                  onClick={() => removeBulkRow(i)}
-                  className="p-1 rounded hover:bg-gray-100 transition-colors"
-                  disabled={bulkRows.length <= 1}
-                >
-                  <X size={14} className={bulkRows.length <= 1 ? "text-gray-200" : "text-gray-400"} />
-                </button>
-              </div>
-            ))}
+        <form onSubmit={handleBulkSubmit} className="space-y-3">
+          <div className="space-y-2">
+            {bulkRows.map((row, i) => {
+              const isOpen = expandedBulk.has(i);
+              const hasRangeData = row.ranges.length > 0 || row.min_reference || row.max_reference || row.normal_value;
+              return (
+                <div key={i} className="border border-gray-200 rounded-lg overflow-hidden">
+                  {/* Accordion header */}
+                  <div className="flex items-center gap-2 p-3 bg-gray-50">
+                    <button
+                      type="button"
+                      onClick={() => toggleBulkAccordion(i)}
+                      className="p-0.5 shrink-0"
+                    >
+                      {isOpen ? <ChevronDown size={14} className="text-gray-400" /> : <ChevronRight size={14} className="text-gray-400" />}
+                    </button>
+                    <span className="text-xs text-gray-400 w-4 shrink-0">{i + 1}</span>
+                    <input
+                      type="text"
+                      value={row.name}
+                      onChange={(e) => updateBulkRow(i, "name", e.target.value)}
+                      className="flex-1 px-2 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-rose-500 bg-white"
+                      placeholder="Marker name"
+                      autoFocus={i === 0}
+                    />
+                    <input
+                      type="text"
+                      value={row.unit}
+                      onChange={(e) => updateBulkRow(i, "unit", e.target.value)}
+                      className="w-24 px-2 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-rose-500 bg-white"
+                      placeholder="Unit"
+                    />
+                    <select
+                      value={row.marker_type}
+                      onChange={(e) => updateBulkRow(i, "marker_type", e.target.value)}
+                      className="w-28 px-2 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-rose-500 bg-white"
+                    >
+                      <option value="numeric">Numeric</option>
+                      <option value="text">Text</option>
+                    </select>
+                    {hasRangeData && (
+                      <span className="w-2 h-2 rounded-full bg-blue-400 shrink-0" title="Has reference ranges" />
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => removeBulkRow(i)}
+                      className="p-1 rounded hover:bg-gray-200 transition-colors shrink-0"
+                      disabled={bulkRows.length <= 1}
+                    >
+                      <X size={14} className={bulkRows.length <= 1 ? "text-gray-200" : "text-gray-400"} />
+                    </button>
+                  </div>
+
+                  {/* Accordion body - reference ranges */}
+                  {isOpen && (
+                    <div className="p-3 pt-2 border-t border-gray-100 bg-white space-y-3">
+                      {/* Simple reference fields */}
+                      {row.marker_type === "numeric" ? (
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-medium text-gray-500 mb-1">Min Reference</label>
+                            <input
+                              type="number"
+                              step="any"
+                              value={row.min_reference}
+                              onChange={(e) => updateBulkRow(i, "min_reference", e.target.value)}
+                              className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-rose-500"
+                              placeholder="e.g., 0"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-gray-500 mb-1">Max Reference</label>
+                            <input
+                              type="number"
+                              step="any"
+                              value={row.max_reference}
+                              onChange={(e) => updateBulkRow(i, "max_reference", e.target.value)}
+                              className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-rose-500"
+                              placeholder="e.g., 200"
+                            />
+                          </div>
+                        </div>
+                      ) : (
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1">Normal Value</label>
+                          <input
+                            type="text"
+                            value={row.normal_value}
+                            onChange={(e) => updateBulkRow(i, "normal_value", e.target.value)}
+                            className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-rose-500"
+                            placeholder="e.g., Negative"
+                          />
+                        </div>
+                      )}
+
+                      {/* Tiered ranges */}
+                      <div>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <label className="text-xs font-medium text-gray-500">Reference Ranges</label>
+                          <button
+                            type="button"
+                            onClick={() => addBulkRange(i)}
+                            className="flex items-center gap-1 text-xs text-rose-600 hover:text-rose-700 transition-colors"
+                          >
+                            <Plus size={10} />
+                            Add Range
+                          </button>
+                        </div>
+                        {row.ranges.length === 0 ? (
+                          <p className="text-xs text-gray-400">No tiered ranges. Click "Add Range" for markers like cholesterol.</p>
+                        ) : (
+                          <div className="space-y-1.5">
+                            {row.ranges.map((rng, ri) => (
+                              <div key={ri} className="flex items-center gap-2 p-2 rounded bg-gray-50">
+                                <input
+                                  type="text"
+                                  value={rng.label}
+                                  onChange={(e) => updateBulkRange(i, ri, "label", e.target.value)}
+                                  className="flex-1 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-rose-500"
+                                  placeholder="Label (e.g., Desirable)"
+                                />
+                                {row.marker_type === "numeric" ? (
+                                  <>
+                                    <input
+                                      type="number"
+                                      step="any"
+                                      value={rng.min}
+                                      onChange={(e) => updateBulkRange(i, ri, "min", e.target.value)}
+                                      className="w-20 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-rose-500"
+                                      placeholder="Min"
+                                    />
+                                    <input
+                                      type="number"
+                                      step="any"
+                                      value={rng.max}
+                                      onChange={(e) => updateBulkRange(i, ri, "max", e.target.value)}
+                                      className="w-20 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-rose-500"
+                                      placeholder="Max"
+                                    />
+                                  </>
+                                ) : (
+                                  <input
+                                    type="text"
+                                    value={rng.value}
+                                    onChange={(e) => updateBulkRange(i, ri, "value", e.target.value)}
+                                    className="w-28 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-rose-500"
+                                    placeholder="Value"
+                                  />
+                                )}
+                                <select
+                                  value={rng.color}
+                                  onChange={(e) => updateBulkRange(i, ri, "color", e.target.value)}
+                                  className="w-28 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-rose-500"
+                                >
+                                  {colorOptions.map((c) => (
+                                    <option key={c.value} value={c.value}>{c.label}</option>
+                                  ))}
+                                </select>
+                                <button
+                                  type="button"
+                                  onClick={() => removeBulkRange(i, ri)}
+                                  className="p-0.5 rounded hover:bg-gray-200 transition-colors"
+                                >
+                                  <X size={12} className="text-gray-400" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
+
           <button
             type="button"
             onClick={addBulkRow}
             className="flex items-center gap-1 text-sm text-rose-600 hover:text-rose-700 transition-colors"
           >
             <Plus size={14} />
-            Add Row
+            Add Marker
           </button>
-          <div className="flex justify-between items-center">
+
+          <div className="flex justify-between items-center pt-2 border-t border-gray-200">
             <span className="text-xs text-gray-400">
               {bulkRows.filter((r) => r.name.trim()).length} marker(s) to add
             </span>
