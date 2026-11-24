@@ -52,4 +52,9 @@ export class HealthReportController {
     const data = await service.getMarkerHistory(familyMemberId, markerId);
     res.json({ data });
   }
+
+  async getFollowUps(_req: Request, res: Response) {
+    const data = await service.getFollowUpsDue();
+    res.json({ data });
+  }
 }

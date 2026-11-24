@@ -4,6 +4,7 @@ import { useFamilyMembers } from "../../hooks/useFamilyMembers";
 import Modal from "../../components/common/Modal";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
 import FamilyMemberForm from "../../components/medical/FamilyMemberForm";
+import { formatDate } from "../../utils/dateFormat";
 import type { FamilyMember } from "../../types";
 
 export default function FamilyMembers() {
@@ -64,7 +65,7 @@ export default function FamilyMembers() {
                   <h3 className="font-semibold text-gray-800">{m.name}</h3>
                   <p className="text-sm text-gray-500">{m.relationship}</p>
                   {m.date_of_birth && (
-                    <p className="text-xs text-gray-400 mt-1">DOB: {m.date_of_birth}</p>
+                    <p className="text-xs text-gray-400 mt-1">DOB: {formatDate(m.date_of_birth)}</p>
                   )}
                 </div>
                 <div className="flex gap-1">

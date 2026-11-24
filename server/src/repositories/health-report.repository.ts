@@ -7,6 +7,7 @@ import type {
   UpdateHealthReportDto,
   CreateHealthReportResultDto,
   HealthMarkerHistory,
+  FollowUpDue,
 } from "../types/index.js";
 
 export class HealthReportRepository {
@@ -152,5 +153,33 @@ export class HealthReportRepository {
       args: [familyMemberId, markerId],
     });
     return mapRows<HealthMarkerHistory>(result.rows);
+  }
+
+  async findFollowUpsDue(): Promise<FollowUpDue[]> {
+    const result = await this.db.execute({
+      sql: `SELECT
+              c.id as category_id,
+              c.name as category_name,
+              r.family_member_id,
+              fm.name as family_member_name,
+              MAX(r.report_date) as last_report_date,
+              date(MAX(r.report_date), '+' || c.follow_up_months || ' months') as next_due_date,
+              CASE
+                WHEN date(MAX(r.report_date), '+' || c.follow_up_months || ' months') <= date('now')
+                THEN 1 ELSE 0
+              END as is_overdue
+            FROM health_reports r
+            JOIN health_report_categories c ON r.category_id = c.id
+            JOIN family_members fm ON r.family_member_id = fm.id
+            WHERE c.follow_up_months IS NOT NULL
+            GROUP BY c.id, r.family_member_id
+            HAVING date(MAX(r.report_date), '+' || c.follow_up_months || ' months') <= date('now', '+7 days')
+            ORDER BY next_due_date ASC`,
+      args: [],
+    });
+    return mapRows<FollowUpDue>(result.rows).map((row) => ({
+      ...row,
+      is_overdue: Boolean(row.is_overdue),
+    }));
   }
 }

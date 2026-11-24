@@ -596,6 +596,7 @@ export interface FamilyMember {
 export interface HealthReportCategory {
   id: number;
   name: string;
+  follow_up_months: number | null;
   created_at: string;
   updated_at: string;
   markers?: HealthMarker[];
@@ -677,9 +678,20 @@ export type UpdateFamilyMemberDto = CreateFamilyMemberDto;
 
 export interface CreateHealthReportCategoryDto {
   name: string;
+  follow_up_months?: number | null;
 }
 
 export type UpdateHealthReportCategoryDto = CreateHealthReportCategoryDto;
+
+export interface FollowUpDue {
+  category_id: number;
+  category_name: string;
+  family_member_id: number;
+  family_member_name: string;
+  last_report_date: string;
+  next_due_date: string;
+  is_overdue: boolean;
+}
 
 export interface CreateHealthMarkerDto {
   name: string;

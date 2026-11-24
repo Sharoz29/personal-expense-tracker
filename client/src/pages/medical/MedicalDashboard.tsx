@@ -1,12 +1,15 @@
 import { useNavigate } from "react-router-dom";
-import { Users, FileText, ClipboardList, Plus } from "lucide-react";
+import { Users, FileText, ClipboardList, Plus, AlertTriangle, Clock } from "lucide-react";
 import { useFamilyMembers } from "../../hooks/useFamilyMembers";
 import { useHealthReports } from "../../hooks/useHealthReports";
+import { useFollowUps } from "../../hooks/useFollowUps";
+import { formatDate } from "../../utils/dateFormat";
 
 export default function MedicalDashboard() {
   const navigate = useNavigate();
   const { members } = useFamilyMembers();
   const { reports } = useHealthReports();
+  const { followUps } = useFollowUps();
 
   const recentReports = reports.slice(0, 5);
 
@@ -54,6 +57,44 @@ export default function MedicalDashboard() {
         </div>
       </div>
 
+      {/* Follow-up Due Section */}
+      {followUps.length > 0 && (
+        <div className="bg-white rounded-xl border border-amber-200 p-4 md:p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <AlertTriangle size={18} className="text-amber-500" />
+            <h2 className="text-lg font-semibold text-gray-800">Follow-ups Due</h2>
+          </div>
+          <div className="space-y-2">
+            {followUps.map((f) => (
+              <div
+                key={`${f.category_id}-${f.family_member_id}`}
+                onClick={() => navigate(`/medical/reports?category_id=${f.category_id}&family_member_id=${f.family_member_id}`)}
+                className="flex items-center justify-between p-3 rounded-lg hover:bg-amber-50 cursor-pointer transition-colors"
+              >
+                <div>
+                  <p className="text-sm font-medium text-gray-800">
+                    {f.category_name}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {f.family_member_name} &middot; Last: {formatDate(f.last_report_date)}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full ${
+                    f.is_overdue
+                      ? "bg-red-100 text-red-700"
+                      : "bg-amber-100 text-amber-700"
+                  }`}>
+                    <Clock size={12} />
+                    {f.is_overdue ? "Overdue" : `Due ${formatDate(f.next_due_date)}`}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-800">Recent Reports</h2>
@@ -83,7 +124,7 @@ export default function MedicalDashboard() {
                     {r.category_name}
                   </p>
                   <p className="text-xs text-gray-500">
-                    {r.family_member_name} &middot; {r.report_date}
+                    {r.family_member_name} &middot; {formatDate(r.report_date)}
                   </p>
                 </div>
                 {r.lab_name && (

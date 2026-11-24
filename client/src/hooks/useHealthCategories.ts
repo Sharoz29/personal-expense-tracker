@@ -22,14 +22,14 @@ export function useHealthCategories() {
 
   useEffect(() => { fetch(); }, [fetch]);
 
-  const createCategory = async (name: string) => {
-    const created = await healthCategoriesApi.create({ name });
+  const createCategory = async (name: string, follow_up_months?: number | null) => {
+    const created = await healthCategoriesApi.create({ name, follow_up_months });
     await fetch();
     return created;
   };
 
-  const updateCategory = async (id: number, name: string) => {
-    const updated = await healthCategoriesApi.update(id, { name });
+  const updateCategory = async (id: number, name: string, follow_up_months?: number | null) => {
+    const updated = await healthCategoriesApi.update(id, { name, follow_up_months });
     await fetch();
     return updated;
   };

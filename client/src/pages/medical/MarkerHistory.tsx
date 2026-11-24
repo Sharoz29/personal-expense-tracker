@@ -14,6 +14,7 @@ import { useMarkerHistory } from "../../hooks/useMarkerHistory";
 import { useFamilyMembers } from "../../hooks/useFamilyMembers";
 import { useHealthCategories } from "../../hooks/useHealthCategories";
 import { getResultColor, getReferenceDisplay, parseReferenceRanges } from "../../utils/referenceRanges";
+import { formatDate } from "../../utils/dateFormat";
 
 const rangeColorMap: Record<string, string> = {
   green: "#22c55e",
@@ -55,7 +56,7 @@ export default function MarkerHistory() {
 
   const chartData = history.map((h) => ({
     ...h,
-    label: h.report_date,
+    label: formatDate(h.report_date),
   }));
 
   // Build reference lines for the chart
@@ -169,7 +170,7 @@ export default function MarkerHistory() {
             <tbody>
               {history.map((h, i) => (
                 <tr key={i} className="border-b border-gray-50">
-                  <td className="py-2">{h.report_date}</td>
+                  <td className="py-2">{formatDate(h.report_date)}</td>
                   <td className={`py-2 font-medium ${getResultColor({ ...h, marker_type: markerType })}`}>
                     {markerType === "text" ? h.text_value : h.value}
                   </td>

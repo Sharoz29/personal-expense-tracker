@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, TrendingUp } from "lucide-react";
 import { healthReportsApi } from "../../api/health.api";
 import { getResultColor, getReferenceDisplay } from "../../utils/referenceRanges";
+import { formatDate } from "../../utils/dateFormat";
 import type { HealthReport } from "../../types";
 
 export default function ReportDetail() {
@@ -47,7 +48,7 @@ export default function ReportDetail() {
         <div className="mb-4">
           <h1 className="text-xl font-bold text-gray-800">{report.category_name}</h1>
           <p className="text-sm text-gray-500">
-            {report.family_member_name} &middot; {report.report_date}
+            {report.family_member_name} &middot; {formatDate(report.report_date)}
             {report.lab_name && ` &middot; ${report.lab_name}`}
           </p>
           {report.notes && (

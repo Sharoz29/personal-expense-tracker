@@ -12,12 +12,13 @@ import {
 const router = Router();
 const controller = new HealthReportController();
 
-// History must come before /:id to avoid param conflict
+// Named routes must come before /:id to avoid param conflict
 router.get(
   "/history",
   validate(healthReportHistoryQuerySchema, "query"),
   asyncHandler(controller.getHistory)
 );
+router.get("/follow-ups", asyncHandler(controller.getFollowUps));
 router.get(
   "/",
   validate(healthReportFilterQuerySchema, "query"),

@@ -46,4 +46,8 @@ export class HealthReportService {
   async getMarkerHistory(familyMemberId: number, markerId: number) {
     return repo.findMarkerHistory(familyMemberId, markerId);
   }
+
+  async getFollowUpsDue() {
+    return repo.findFollowUpsDue();
+  }
 }

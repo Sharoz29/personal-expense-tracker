@@ -31,9 +31,9 @@ export class HealthReportCategoryRepository {
     dto: CreateHealthReportCategoryDto
   ): Promise<HealthReportCategory> {
     const result = await this.db.execute({
-      sql: `INSERT INTO health_report_categories (name)
-            VALUES (?) RETURNING *`,
-      args: [dto.name],
+      sql: `INSERT INTO health_report_categories (name, follow_up_months)
+            VALUES (?, ?) RETURNING *`,
+      args: [dto.name, dto.follow_up_months ?? null],
     });
     return mapRow<HealthReportCategory>(result.rows[0]);
   }
@@ -44,9 +44,9 @@ export class HealthReportCategoryRepository {
   ): Promise<HealthReportCategory | null> {
     const result = await this.db.execute({
       sql: `UPDATE health_report_categories
-            SET name = ?, updated_at = datetime('now')
+            SET name = ?, follow_up_months = ?, updated_at = datetime('now')
             WHERE id = ? RETURNING *`,
-      args: [dto.name, id],
+      args: [dto.name, dto.follow_up_months ?? null, id],
     });
     return result.rows.length
       ? mapRow<HealthReportCategory>(result.rows[0])

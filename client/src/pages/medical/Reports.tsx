@@ -8,6 +8,7 @@ import { healthReportsApi } from "../../api/health.api";
 import Modal from "../../components/common/Modal";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
 import HealthReportForm from "../../components/medical/HealthReportForm";
+import { formatDate } from "../../utils/dateFormat";
 import type { HealthReport } from "../../types";
 
 export default function Reports() {
@@ -138,7 +139,7 @@ export default function Reports() {
                   onClick={() => navigate(`/medical/reports/${r.id}`)}
                 >
                   <td className="px-4 py-3">
-                    {new Date(r.report_date).toLocaleDateString("en-GB")}
+                    {formatDate(r.report_date)}
                   </td>
                   <td className="px-4 py-3">{r.family_member_name}</td>
                   <td className="px-4 py-3">{r.category_name}</td>
@@ -196,7 +197,7 @@ export default function Reports() {
         onClose={() => setDeleting(null)}
         onConfirm={handleDelete}
         title="Delete Report"
-        message={`Delete this ${deleting?.category_name} report from ${deleting?.report_date}?`}
+        message={`Delete this ${deleting?.category_name} report from ${formatDate(deleting?.report_date)}?`}
       />
     </div>
   );

@@ -75,8 +75,9 @@ export default function Categories() {
 
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
   const [showCategoryForm, setShowCategoryForm] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<{ id: number; name: string } | null>(null);
+  const [editingCategory, setEditingCategory] = useState<{ id: number; name: string; follow_up_months: number | null } | null>(null);
   const [categoryName, setCategoryName] = useState("");
+  const [categoryFollowUp, setCategoryFollowUp] = useState<string>("");
 
   const [showMarkerForm, setShowMarkerForm] = useState(false);
   const [markerCategoryId, setMarkerCategoryId] = useState<number>(0);
@@ -120,14 +121,16 @@ export default function Categories() {
   const handleCategorySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!categoryName.trim()) return;
+    const followUp = categoryFollowUp ? Number(categoryFollowUp) : null;
     if (editingCategory) {
-      await updateCategory(editingCategory.id, categoryName.trim());
+      await updateCategory(editingCategory.id, categoryName.trim(), followUp);
     } else {
-      await createCategory(categoryName.trim());
+      await createCategory(categoryName.trim(), followUp);
     }
     setShowCategoryForm(false);
     setEditingCategory(null);
     setCategoryName("");
+    setCategoryFollowUp("");
   };
 
   const handleMarkerSubmit = async (e: React.FormEvent) => {
@@ -263,7 +266,7 @@ export default function Categories() {
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold text-gray-800">Categories & Markers</h1>
         <button
-          onClick={() => { setEditingCategory(null); setCategoryName(""); setShowCategoryForm(true); }}
+          onClick={() => { setEditingCategory(null); setCategoryName(""); setCategoryFollowUp(""); setShowCategoryForm(true); }}
           className="flex items-center gap-1 px-3 py-2 bg-rose-600 text-white rounded-lg text-sm hover:bg-rose-700 transition-colors"
         >
           <Plus size={16} />
@@ -291,10 +294,15 @@ export default function Categories() {
                   <span className="text-xs text-gray-400">
                     ({cat.markers?.length ?? 0} markers)
                   </span>
+                  {cat.follow_up_months != null && (
+                    <span className="text-xs px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">
+                      Every {cat.follow_up_months}mo
+                    </span>
+                  )}
                 </div>
                 <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
                   <button
-                    onClick={() => { setEditingCategory({ id: cat.id, name: cat.name }); setCategoryName(cat.name); setShowCategoryForm(true); }}
+                    onClick={() => { setEditingCategory({ id: cat.id, name: cat.name, follow_up_months: cat.follow_up_months }); setCategoryName(cat.name); setCategoryFollowUp(cat.follow_up_months != null ? String(cat.follow_up_months) : ""); setShowCategoryForm(true); }}
                     className="p-1.5 rounded hover:bg-gray-100 transition-colors"
                   >
                     <Pencil size={14} className="text-gray-500" />
@@ -401,7 +409,7 @@ export default function Categories() {
       {/* Category Form Modal */}
       <Modal
         open={showCategoryForm}
-        onClose={() => { setShowCategoryForm(false); setEditingCategory(null); }}
+        onClose={() => { setShowCategoryForm(false); setEditingCategory(null); setCategoryFollowUp(""); }}
         title={editingCategory ? "Edit Category" : "Add Category"}
       >
         <form onSubmit={handleCategorySubmit} className="space-y-4">
@@ -415,6 +423,23 @@ export default function Categories() {
               placeholder="e.g., Lipid Panel"
               autoFocus
             />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Follow-up Interval</label>
+            <select
+              value={categoryFollowUp}
+              onChange={(e) => setCategoryFollowUp(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-rose-500"
+            >
+              <option value="">No follow-up</option>
+              <option value="3">Every 3 months</option>
+              <option value="6">Every 6 months</option>
+              <option value="12">Every 1 year</option>
+              <option value="24">Every 2 years</option>
+            </select>
+            <p className="text-xs text-gray-400 mt-1">
+              Dashboard will alert 1 week before the follow-up is due.
+            </p>
           </div>
           <div className="flex justify-end gap-3">
             <button type="button" onClick={() => setShowCategoryForm(false)} className="px-4 py-2 text-sm rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors">Cancel</button>

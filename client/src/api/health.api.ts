@@ -4,10 +4,12 @@ import type {
   HealthMarker,
   HealthReport,
   HealthMarkerHistory,
+  FollowUpDue,
 } from "../types";
 
 interface CreateCategoryPayload {
   name: string;
+  follow_up_months?: number | null;
 }
 
 interface CreateMarkerPayload {
@@ -109,6 +111,10 @@ export const healthReportsApi = {
     const res = await api.get(
       `/health-reports/history?family_member_id=${familyMemberId}&marker_id=${markerId}`
     );
+    return res.data.data;
+  },
+  getFollowUps: async (): Promise<FollowUpDue[]> => {
+    const res = await api.get("/health-reports/follow-ups");
     return res.data.data;
   },
 };
