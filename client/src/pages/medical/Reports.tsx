@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, Trash2 } from "lucide-react";
 import { useHealthReports } from "../../hooks/useHealthReports";
+import Loader from "../../components/common/Loader";
 import { useFamilyMembers } from "../../hooks/useFamilyMembers";
 import { useHealthCategories } from "../../hooks/useHealthCategories";
 import { healthReportsApi } from "../../api/health.api";
@@ -56,7 +57,7 @@ export default function Reports() {
   if (loading) {
     return (
       <div className="p-4 md:p-6">
-        <p className="text-gray-500">Loading...</p>
+        <Loader module="medical" />
       </div>
     );
   }

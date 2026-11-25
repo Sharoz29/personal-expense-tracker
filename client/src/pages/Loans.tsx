@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { useLoans } from "../hooks/useLoans";
+import Loader from "../components/common/Loader";
 import { useAccounts } from "../hooks/useAccounts";
 import { useExpenseTypes } from "../hooks/useExpenseTypes";
 import { expensesApi } from "../api/expenses.api";
@@ -149,7 +150,7 @@ export default function Loans() {
       </header>
       <div className="p-4 md:p-6 space-y-4">
         {loading ? (
-          <div className="text-gray-500">Loading...</div>
+          <Loader module="finance" />
         ) : loans.length === 0 ? (
           <div className="text-center text-gray-500 py-12">No loans yet. Click "Add Loan" to get started.</div>
         ) : (

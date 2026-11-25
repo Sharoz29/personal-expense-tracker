@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Plus, Edit, Trash, Play, RefreshCw, Volume2 } from "lucide-react";
 import { flashcardsApi } from "../../api/flashcards.api";
+import Loader from "../../components/common/Loader";
 import type { Flashcard } from "../../types";
 import Modal from "../../components/common/Modal";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
@@ -108,7 +109,7 @@ export default function Flashcards() {
       </div>
 
       {loading ? (
-        <p className="text-gray-500">Loading...</p>
+        <Loader module="learning" />
       ) : flashcards.length === 0 ? (
         <div className="text-center py-12 text-gray-500">
           <p className="mb-4">No flashcards yet. Create your first one!</p>

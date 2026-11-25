@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { useFamilyMembers } from "../../hooks/useFamilyMembers";
+import Loader from "../../components/common/Loader";
 import Modal from "../../components/common/Modal";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
 import FamilyMemberForm from "../../components/medical/FamilyMemberForm";
@@ -31,7 +32,7 @@ export default function FamilyMembers() {
   };
 
   if (loading) {
-    return <div className="p-4 md:p-6"><p className="text-gray-500">Loading...</p></div>;
+    return <div className="p-4 md:p-6"><Loader module="medical" /></div>;
   }
 
   return (

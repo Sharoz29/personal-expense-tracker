@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useSavingsCertificates } from "../hooks/useSavingsCertificates";
+import Loader from "../components/common/Loader";
 import { useAccounts } from "../hooks/useAccounts";
 import SavingsCertificateList from "../components/national-savings/SavingsCertificateList";
 import SavingsCertificateForm from "../components/national-savings/SavingsCertificateForm";
@@ -51,7 +52,7 @@ export default function NationalSavings() {
         <div className="bg-white rounded-xl border border-gray-200">
           <div className="p-4 border-b border-gray-200">
             <h3 className="font-semibold text-gray-700">
-              {loading ? "Loading..." : `${certificates.length} certificate${certificates.length !== 1 ? "s" : ""}`}
+              {loading ? <Loader module="finance" size="inline" /> : `${certificates.length} certificate${certificates.length !== 1 ? "s" : ""}`}
             </h3>
           </div>
           <SavingsCertificateList

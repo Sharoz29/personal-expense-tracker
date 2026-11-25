@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useMonthYear } from "../context/MonthYearContext";
 import { useSavings } from "../hooks/useSavings";
+import Loader from "../components/common/Loader";
 import SavingsList from "../components/savings/SavingsList";
 import SavingsForm from "../components/savings/SavingsForm";
 import Modal from "../components/common/Modal";
@@ -54,7 +55,7 @@ export default function Savings() {
         <div className="bg-white rounded-xl border border-gray-200">
           <div className="p-4 border-b border-gray-200">
             <h3 className="font-semibold text-gray-700">
-              {loading ? "Loading..." : "Savings History"}
+              {loading ? <Loader module="finance" size="inline" /> : "Savings History"}
             </h3>
           </div>
           <SavingsList

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAssetTypes } from "../../hooks/useAssetTypes";
 import { Pencil, Trash2, Plus, Check, X } from "lucide-react";
 import ConfirmDialog from "../common/ConfirmDialog";
+import Loader from "../common/Loader";
 
 export default function AssetTypeManager() {
   const { assetTypes, loading, create, update, remove } = useAssetTypes();
@@ -45,7 +46,7 @@ export default function AssetTypeManager() {
     }
   };
 
-  if (loading) return <div className="text-gray-500">Loading...</div>;
+  if (loading) return <Loader module="finance" />;
 
   return (
     <div>

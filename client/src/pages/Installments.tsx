@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { useInstallmentPlans } from "../hooks/useInstallmentPlans";
+import Loader from "../components/common/Loader";
 import { useAccounts } from "../hooks/useAccounts";
 import { useIncomeSources } from "../hooks/useIncomeSources";
 import { incomesApi } from "../api/incomes.api";
@@ -164,7 +165,7 @@ export default function Installments() {
       </header>
       <div className="p-4 md:p-6 space-y-4">
         {loading ? (
-          <div className="text-gray-500">Loading...</div>
+          <Loader module="finance" />
         ) : plans.length === 0 ? (
           <div className="text-center text-gray-500 py-12">No installment plans yet. Click "Add Plan" to get started.</div>
         ) : (
@@ -248,7 +249,7 @@ export default function Installments() {
                 {isExpanded && (
                   <div className="border-t border-gray-200">
                     {paymentsLoading === plan.id ? (
-                      <div className="p-4 text-gray-500 text-sm">Loading...</div>
+                      <div className="p-4"><Loader module="finance" size="inline" /></div>
                     ) : (
                       <>
                         <InstallmentPaymentList

@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import Header from "../components/layout/Header";
 import { useMonthYear } from "../context/MonthYearContext";
 import { useIncomes } from "../hooks/useIncomes";
+import Loader from "../components/common/Loader";
 import { useIncomeSources } from "../hooks/useIncomeSources";
 import { useAccounts } from "../hooks/useAccounts";
 import IncomeList from "../components/income/IncomeList";
@@ -65,7 +66,7 @@ export default function Income() {
         <div className="bg-white rounded-xl border border-gray-200">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between p-4 border-b border-gray-200">
             <h3 className="font-semibold text-gray-700">
-              {loading ? "Loading..." : `${filteredIncomes.length} income entr${filteredIncomes.length !== 1 ? "ies" : "y"}`}
+              {loading ? <Loader module="finance" size="inline" /> : `${filteredIncomes.length} income entr${filteredIncomes.length !== 1 ? "ies" : "y"}`}
             </h3>
             <div className="flex items-center gap-2 sm:gap-3">
               <div className="flex items-center gap-1.5 text-gray-500">

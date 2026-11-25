@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, TrendingUp } from "lucide-react";
 import { healthReportsApi } from "../../api/health.api";
+import Loader from "../../components/common/Loader";
 import { getResultColor, getReferenceDisplay } from "../../utils/referenceRanges";
 import { formatDate } from "../../utils/dateFormat";
 import type { HealthReport } from "../../types";
@@ -27,7 +28,7 @@ export default function ReportDetail() {
   }, [id]);
 
   if (loading) {
-    return <div className="p-4 md:p-6"><p className="text-gray-500">Loading...</p></div>;
+    return <div className="p-4 md:p-6"><Loader module="medical" /></div>;
   }
 
   if (!report) {

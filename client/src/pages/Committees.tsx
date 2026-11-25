@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useCommittees } from "../hooks/useCommittees";
+import Loader from "../components/common/Loader";
 import { useAccounts } from "../hooks/useAccounts";
 import CommitteeList from "../components/committees/CommitteeList";
 import CommitteeForm from "../components/committees/CommitteeForm";
@@ -51,7 +52,7 @@ export default function Committees() {
         <div className="bg-white rounded-xl border border-gray-200">
           <div className="p-4 border-b border-gray-200">
             <h3 className="font-semibold text-gray-700">
-              {loading ? "Loading..." : `${committees.length} committee${committees.length !== 1 ? "s" : ""}`}
+              {loading ? <Loader module="finance" size="inline" /> : `${committees.length} committee${committees.length !== 1 ? "s" : ""}`}
             </h3>
           </div>
           <CommitteeList

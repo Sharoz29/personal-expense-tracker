@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import Header from "../components/layout/Header";
 import { useMonthYear } from "../context/MonthYearContext";
 import { useExpenses } from "../hooks/useExpenses";
+import Loader from "../components/common/Loader";
 import { useExpenseTypes } from "../hooks/useExpenseTypes";
 import { useAccounts } from "../hooks/useAccounts";
 import { usePayableTypes } from "../hooks/usePayableTypes";
@@ -87,7 +88,7 @@ export default function Expenses() {
         <div className="bg-white rounded-xl border border-gray-200">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between p-4 border-b border-gray-200">
             <h3 className="font-semibold text-gray-700">
-              {loading ? "Loading..." : `${filteredExpenses.length} expense${filteredExpenses.length !== 1 ? "s" : ""}`}
+              {loading ? <Loader module="finance" size="inline" /> : `${filteredExpenses.length} expense${filteredExpenses.length !== 1 ? "s" : ""}`}
             </h3>
             <div className="flex items-center gap-2 sm:gap-3">
               <div className="flex items-center gap-1.5 text-gray-500">

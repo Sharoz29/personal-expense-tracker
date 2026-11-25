@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Plus, Pencil, Trash2, ChevronDown, ChevronRight, X, ListPlus } from "lucide-react";
 import { useHealthCategories } from "../../hooks/useHealthCategories";
+import Loader from "../../components/common/Loader";
 import Modal from "../../components/common/Modal";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
 import type { ReferenceRange } from "../../types";
@@ -258,7 +259,7 @@ export default function Categories() {
   };
 
   if (loading) {
-    return <div className="p-4 md:p-6"><p className="text-gray-500">Loading...</p></div>;
+    return <div className="p-4 md:p-6"><Loader module="medical" /></div>;
   }
 
   return (

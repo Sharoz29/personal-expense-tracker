@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAssets } from "../hooks/useAssets";
+import Loader from "../components/common/Loader";
 import { useAssetTypes } from "../hooks/useAssetTypes";
 import { useAccounts } from "../hooks/useAccounts";
 import AssetList from "../components/assets/AssetList";
@@ -54,7 +55,7 @@ export default function Assets() {
         <div className="bg-white rounded-xl border border-gray-200">
           <div className="p-4 border-b border-gray-200">
             <h3 className="font-semibold text-gray-700">
-              {loading ? "Loading..." : `${assets.length} asset${assets.length !== 1 ? "s" : ""}`}
+              {loading ? <Loader module="finance" size="inline" /> : `${assets.length} asset${assets.length !== 1 ? "s" : ""}`}
             </h3>
           </div>
           <AssetList

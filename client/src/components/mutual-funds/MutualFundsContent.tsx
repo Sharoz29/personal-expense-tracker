@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useMutualFundCompanies } from "../../hooks/useMutualFundCompanies";
+import Loader from "../common/Loader";
 import { useMutualFunds } from "../../hooks/useMutualFunds";
 import { useMutualFundTransactions } from "../../hooks/useMutualFundTransactions";
 import { useAccounts } from "../../hooks/useAccounts";
@@ -95,7 +96,7 @@ export default function MutualFundsContent() {
       <div className="bg-white rounded-xl border border-gray-200">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between p-4 border-b border-gray-200">
           <h3 className="font-semibold text-gray-700">
-            {loading ? "Loading..." : `${funds.length} fund${funds.length !== 1 ? "s" : ""}`}
+            {loading ? <Loader module="finance" size="inline" /> : `${funds.length} fund${funds.length !== 1 ? "s" : ""}`}
           </h3>
           <div className="flex gap-2">
             <button

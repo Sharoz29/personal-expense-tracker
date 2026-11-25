@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { usePayables } from "../hooks/usePayables";
+import Loader from "../components/common/Loader";
 import { useAccounts } from "../hooks/useAccounts";
 import { usePayableTypes } from "../hooks/usePayableTypes";
 import { usePayees } from "../hooks/usePayees";
@@ -128,7 +129,7 @@ export default function Payables() {
             className="w-full flex items-center justify-between p-4 border-b border-gray-200 hover:bg-gray-50 transition-colors"
           >
             <h3 className="font-semibold text-gray-700">
-              {loading ? "Loading..." : (
+              {loading ? <Loader module="finance" size="inline" /> : (
                 <>
                   <span className="px-2 py-0.5 bg-yellow-50 text-yellow-700 rounded text-xs font-medium mr-2">Pending</span>
                   {pendingPayables.length} payable{pendingPayables.length !== 1 ? "s" : ""}
@@ -155,7 +156,7 @@ export default function Payables() {
             className="w-full flex items-center justify-between p-4 border-b border-gray-200 hover:bg-gray-50 transition-colors"
           >
             <h3 className="font-semibold text-gray-700">
-              {loading ? "Loading..." : (
+              {loading ? <Loader module="finance" size="inline" /> : (
                 <>
                   <span className="px-2 py-0.5 bg-green-50 text-green-700 rounded text-xs font-medium mr-2">Paid</span>
                   {paidPayables.length} payable{paidPayables.length !== 1 ? "s" : ""}

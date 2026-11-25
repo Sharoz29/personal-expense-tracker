@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { dashboardApi } from "../api/dashboard.api";
+import Loader from "../components/common/Loader";
 import SummaryCards from "../components/dashboard/SummaryCards";
 import ExpenseBreakdownChart from "../components/dashboard/ExpenseBreakdownChart";
 import IncomeBreakdownChart from "../components/dashboard/IncomeBreakdownChart";
@@ -63,7 +64,7 @@ export default function AnnualStats() {
       </header>
       <div className="p-4 md:p-6 space-y-4 md:space-y-6">
         {loading ? (
-          <div className="text-gray-500">Loading...</div>
+          <Loader module="finance" />
         ) : summary ? (
           <>
             <SummaryCards

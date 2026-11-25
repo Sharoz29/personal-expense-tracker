@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Volume2, ArrowLeft } from "lucide-react";
 import { flashcardsApi } from "../../api/flashcards.api";
+import Loader from "../../components/common/Loader";
 import type { Flashcard } from "../../types";
 
 export default function Study() {
@@ -54,7 +55,7 @@ export default function Study() {
   if (loading) {
     return (
       <div className="p-6">
-        <p className="text-gray-500">Loading...</p>
+        <Loader module="learning" />
       </div>
     );
   }

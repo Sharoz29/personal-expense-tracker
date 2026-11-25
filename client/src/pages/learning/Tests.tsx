@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { ClipboardList, Trophy } from "lucide-react";
 import { frenchTestsApi } from "../../api/french-tests.api";
+import Loader from "../../components/common/Loader";
 import type { FrenchTestResult } from "../../types";
 
 export default function Tests() {
@@ -49,7 +50,7 @@ export default function Tests() {
       </div>
 
       {loading ? (
-        <p className="text-gray-500">Loading...</p>
+        <Loader module="learning" />
       ) : testResults.length === 0 ? (
         <div className="text-center py-12 text-gray-500">
           <p>No test results yet.</p>

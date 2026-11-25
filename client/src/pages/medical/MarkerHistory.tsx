@@ -1,5 +1,6 @@
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import Loader from "../../components/common/Loader";
 import {
   LineChart,
   Line,
@@ -96,7 +97,7 @@ export default function MarkerHistory() {
   }
 
   if (loading) {
-    return <div className="p-4 md:p-6"><p className="text-gray-500">Loading...</p></div>;
+    return <div className="p-4 md:p-6"><Loader module="medical" /></div>;
   }
 
   return (
