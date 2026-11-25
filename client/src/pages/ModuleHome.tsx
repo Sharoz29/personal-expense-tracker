@@ -100,20 +100,20 @@ export default function ModuleHome() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200 px-6 py-4">
+      <header className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4">
         <div className="flex justify-between items-center max-w-6xl mx-auto">
-          <h1 className="text-2xl font-bold text-gray-800">My Apps</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-800">My Apps</h1>
           <button
             onClick={logout}
-            className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+            className="px-3 py-1.5 sm:px-4 sm:py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
           >
             Logout
           </button>
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 md:py-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {modules.map((module) => {
             const Icon = module.icon;
             const isEnabled = module.enabled;
@@ -125,23 +125,23 @@ export default function ModuleHome() {
                 onClick={() => handleModuleClick(module)}
                 disabled={!isEnabled}
                 className={`
-                  relative p-6 rounded-xl border-2 text-left transition-all
+                  relative p-4 sm:p-6 rounded-xl border-2 text-left transition-all
                   ${colorClasses.border} ${colorClasses.bg} ${isEnabled ? `${colorClasses.hover} cursor-pointer` : "cursor-not-allowed opacity-60"}
                 `}
               >
-                <div className="flex items-start gap-4">
-                  <div className={`p-3 rounded-lg ${colorClasses.iconBg}`}>
-                    <Icon size={24} className={colorClasses.iconText} />
+                <div className="flex items-start gap-3 sm:gap-4">
+                  <div className={`p-2.5 sm:p-3 rounded-lg ${colorClasses.iconBg}`}>
+                    <Icon className={`w-5 h-5 sm:w-6 sm:h-6 ${colorClasses.iconText}`} />
                   </div>
-                  <div className="flex-1">
-                    <h2 className="text-xl font-semibold text-gray-800 mb-1">
+                  <div className="flex-1 min-w-0">
+                    <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-1">
                       {module.name}
                     </h2>
-                    <p className="text-sm text-gray-600">{module.description}</p>
+                    <p className="text-xs sm:text-sm text-gray-600">{module.description}</p>
                   </div>
                 </div>
                 {!isEnabled && (
-                  <div className="absolute top-4 right-4">
+                  <div className="absolute top-3 right-3 sm:top-4 sm:right-4">
                     <span className="px-2 py-1 text-xs font-medium bg-gray-200 text-gray-600 rounded-full">
                       Coming Soon
                     </span>
