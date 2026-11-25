@@ -49,15 +49,13 @@ export default function Dashboard() {
               savings={summary.savings}
               payablesTotalForMonth={summary.payablesTotalForMonth}
             />
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-              <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">Expenses by Type</h3>
-                <ExpenseBreakdownChart data={summary.expensesByType} />
-              </div>
-              <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">Income by Source</h3>
-                <IncomeBreakdownChart data={summary.incomeBySource} />
-              </div>
+            <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Expenses by Type</h3>
+              <ExpenseBreakdownChart data={summary.expensesByType} />
+            </div>
+            <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Income by Source</h3>
+              <IncomeBreakdownChart data={summary.incomeBySource} />
             </div>
           </>
         ) : (

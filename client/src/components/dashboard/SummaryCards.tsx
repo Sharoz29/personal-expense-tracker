@@ -56,7 +56,7 @@ export default function SummaryCards({ totalIncome, totalExpenses, savings, paya
               <Icon size={18} className={color} />
             </div>
           </div>
-          <div className={`text-base sm:text-2xl font-bold ${color}`}>
+          <div className={`text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-bold ${color}`}>
             {formatPKR(value)}
           </div>
         </div>
