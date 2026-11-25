@@ -88,13 +88,13 @@ export default function CommitteeList({ committees, getPayments, accounts, onEdi
         const nextUnpaidMonth = Array.from({ length: committee.total_members }, (_, i) => i + 1).find((m) => !paidMonths.has(m));
 
         return (
-          <div key={committee.id} className="p-4">
-            <div className="flex items-start justify-between mb-3">
-              <div>
-                <div className="flex items-center gap-2">
-                  <h4 className="font-semibold text-gray-800">{committee.name}</h4>
+          <div key={committee.id} className="p-3 sm:p-4">
+            <div className="flex items-start justify-between mb-2 sm:mb-3">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <h4 className="text-sm sm:text-base font-semibold text-gray-800 truncate">{committee.name}</h4>
                   <span
-                    className={`px-2 py-0.5 rounded text-xs font-medium ${
+                    className={`px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-xs font-medium shrink-0 ${
                       status === "active"
                         ? "bg-emerald-50 text-emerald-700"
                         : status === "completed"
@@ -105,36 +105,51 @@ export default function CommitteeList({ committees, getPayments, accounts, onEdi
                     {status === "active" ? "Active" : status === "completed" ? "Completed" : "Upcoming"}
                   </span>
                 </div>
-                <p className="text-xs text-gray-500 mt-0.5">
-                  {committee.total_members} members &middot; {formatPKR(committee.contribution_per_month)}/month
-                  {committee.account_name && <> &middot; {committee.account_name}</>}
+                <p className="text-[10px] sm:text-xs text-gray-500 mt-0.5">
+                  {committee.total_members} members &middot; {formatPKR(committee.contribution_per_month)}/mo
+                  {committee.account_name && <span className="hidden sm:inline"> &middot; {committee.account_name}</span>}
                 </p>
               </div>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-0.5 sm:gap-1 ml-2 shrink-0">
                 {nextUnpaidMonth && (
-                  <button
-                    onClick={() => {
-                      setPayingId(payingId === committee.id ? null : committee.id);
-                      setPayAccountId(committee.account_id ?? 0);
-                      setPayDate(todayISO());
-                      setError(null);
-                    }}
-                    className="px-2 py-1 text-xs bg-emerald-600 text-white rounded hover:bg-emerald-700 transition-colors flex items-center gap-1"
-                  >
-                    <CreditCard size={12} /> Pay Month {nextUnpaidMonth}
-                  </button>
+                  <>
+                    <button
+                      onClick={() => {
+                        setPayingId(payingId === committee.id ? null : committee.id);
+                        setPayAccountId(committee.account_id ?? 0);
+                        setPayDate(todayISO());
+                        setError(null);
+                      }}
+                      className="sm:hidden p-1 text-emerald-600 hover:bg-emerald-50 rounded transition-colors"
+                    >
+                      <CreditCard size={14} />
+                    </button>
+                    <button
+                      onClick={() => {
+                        setPayingId(payingId === committee.id ? null : committee.id);
+                        setPayAccountId(committee.account_id ?? 0);
+                        setPayDate(todayISO());
+                        setError(null);
+                      }}
+                      className="hidden sm:flex px-2 py-1 text-xs bg-emerald-600 text-white rounded hover:bg-emerald-700 transition-colors items-center gap-1"
+                    >
+                      <CreditCard size={12} /> Pay Month {nextUnpaidMonth}
+                    </button>
+                  </>
                 )}
                 <button
                   onClick={() => onEdit(committee)}
-                  className="p-1.5 text-gray-400 hover:text-blue-600 transition-colors"
+                  className="p-1 sm:p-1.5 text-gray-400 hover:text-blue-600 transition-colors"
                 >
-                  <Pencil size={14} />
+                  <Pencil size={12} className="sm:hidden" />
+                  <Pencil size={14} className="hidden sm:block" />
                 </button>
                 <button
                   onClick={() => onDelete(committee)}
-                  className="p-1.5 text-gray-400 hover:text-red-600 transition-colors"
+                  className="p-1 sm:p-1.5 text-gray-400 hover:text-red-600 transition-colors"
                 >
-                  <Trash2 size={14} />
+                  <Trash2 size={12} className="sm:hidden" />
+                  <Trash2 size={14} className="hidden sm:block" />
                 </button>
               </div>
             </div>
@@ -188,33 +203,33 @@ export default function CommitteeList({ committees, getPayments, accounts, onEdi
               </div>
             )}
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 text-xs sm:text-sm">
               <div>
-                <p className="text-gray-500 text-xs">Total Payout</p>
+                <p className="text-gray-500 text-[10px] sm:text-xs">Total Payout</p>
                 <p className="font-semibold text-gray-800">{formatPKR(totalPayout)}</p>
               </div>
               <div>
-                <p className="text-gray-500 text-xs">My Month</p>
+                <p className="text-gray-500 text-[10px] sm:text-xs">My Month</p>
                 <p className="font-semibold text-gray-800">
                   Month {committee.my_month}
-                  <span className="text-xs font-normal text-gray-500 ml-1">({formatDate(payoutDate)})</span>
+                  <span className="text-[10px] sm:text-xs font-normal text-gray-500 ml-1">({formatDate(payoutDate)})</span>
                 </p>
               </div>
               <div>
-                <p className="text-gray-500 text-xs">Paid</p>
+                <p className="text-gray-500 text-[10px] sm:text-xs">Paid</p>
                 <p className="font-semibold text-gray-800">
                   {formatPKR(totalPaid)}
-                  <span className="text-xs font-normal text-gray-500 ml-1">({paidMonths.size}/{committee.total_members})</span>
+                  <span className="text-[10px] sm:text-xs font-normal text-gray-500 ml-1">({paidMonths.size}/{committee.total_members})</span>
                 </p>
               </div>
               <div>
-                <p className="text-gray-500 text-xs">Remaining</p>
+                <p className="text-gray-500 text-[10px] sm:text-xs">Remaining</p>
                 <p className="font-semibold text-gray-800">{formatPKR(Math.max(0, remaining))}</p>
               </div>
             </div>
 
             {/* Month grid */}
-            <div className="mt-3 flex flex-wrap gap-1">
+            <div className="mt-2 sm:mt-3 flex flex-wrap gap-0.5 sm:gap-1">
               {Array.from({ length: committee.total_members }, (_, i) => {
                 const monthNum = i + 1;
                 const isPaid = paidMonths.has(monthNum);
@@ -222,7 +237,7 @@ export default function CommitteeList({ committees, getPayments, accounts, onEdi
                 return (
                   <div
                     key={monthNum}
-                    className={`w-7 h-7 rounded text-xs flex items-center justify-center font-medium border ${
+                    className={`w-6 h-6 sm:w-7 sm:h-7 rounded text-[10px] sm:text-xs flex items-center justify-center font-medium border ${
                       isPaid
                         ? "bg-emerald-500 text-white border-emerald-600"
                         : isMyMonth
@@ -237,7 +252,7 @@ export default function CommitteeList({ committees, getPayments, accounts, onEdi
               })}
             </div>
 
-            <div className="mt-3 flex items-center gap-4 text-xs text-gray-500">
+            <div className="mt-2 sm:mt-3 flex flex-wrap items-center gap-x-3 sm:gap-x-4 gap-y-0.5 text-[10px] sm:text-xs text-gray-500">
               <span>Start: {formatDate(committee.start_date)}</span>
               <span>End: {formatDate(endDate)}</span>
               {status === "active" && (
@@ -263,31 +278,31 @@ export default function CommitteeList({ committees, getPayments, accounts, onEdi
               <div className="mt-2">
                 <button
                   onClick={() => setExpandedId(isExpanded ? null : committee.id)}
-                  className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1 transition-colors"
+                  className="text-[10px] sm:text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1 transition-colors"
                 >
                   {isExpanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
                   {isExpanded ? "Hide" : "Show"} payment history ({committeePayments.length})
                 </button>
                 {isExpanded && (
-                  <div className="mt-2 border border-gray-200 rounded-lg overflow-hidden">
-                    <table className="w-full text-xs">
+                  <div className="mt-2 border border-gray-200 rounded-lg overflow-x-auto">
+                    <table className="w-full text-[10px] sm:text-xs">
                       <thead>
                         <tr className="bg-gray-50">
-                          <th className="text-left px-3 py-2 font-medium text-gray-600">Month</th>
-                          <th className="text-left px-3 py-2 font-medium text-gray-600">Amount</th>
-                          <th className="text-left px-3 py-2 font-medium text-gray-600">Date</th>
-                          <th className="text-left px-3 py-2 font-medium text-gray-600">Account</th>
-                          <th className="text-right px-3 py-2 font-medium text-gray-600"></th>
+                          <th className="text-left px-2 sm:px-3 py-1.5 sm:py-2 font-medium text-gray-600">Month</th>
+                          <th className="text-left px-2 sm:px-3 py-1.5 sm:py-2 font-medium text-gray-600">Amount</th>
+                          <th className="text-left px-2 sm:px-3 py-1.5 sm:py-2 font-medium text-gray-600">Date</th>
+                          <th className="text-left px-2 sm:px-3 py-1.5 sm:py-2 font-medium text-gray-600 hidden sm:table-cell">Account</th>
+                          <th className="text-right px-2 sm:px-3 py-1.5 sm:py-2 font-medium text-gray-600"></th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-100">
                         {committeePayments.map((p) => (
                           <tr key={p.id}>
-                            <td className="px-3 py-2">Month {p.month_number}</td>
-                            <td className="px-3 py-2">{formatPKR(p.amount)}</td>
-                            <td className="px-3 py-2">{formatDate(p.payment_date)}</td>
-                            <td className="px-3 py-2">{p.account_name || "—"}</td>
-                            <td className="px-3 py-2 text-right">
+                            <td className="px-2 sm:px-3 py-1.5 sm:py-2">M{p.month_number}</td>
+                            <td className="px-2 sm:px-3 py-1.5 sm:py-2">{formatPKR(p.amount)}</td>
+                            <td className="px-2 sm:px-3 py-1.5 sm:py-2">{formatDate(p.payment_date)}</td>
+                            <td className="px-2 sm:px-3 py-1.5 sm:py-2 hidden sm:table-cell">{p.account_name || "—"}</td>
+                            <td className="px-2 sm:px-3 py-1.5 sm:py-2 text-right">
                               <button
                                 onClick={() => onUndoPayment(p.id)}
                                 className="text-gray-400 hover:text-red-600 transition-colors"

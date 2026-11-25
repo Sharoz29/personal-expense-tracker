@@ -71,24 +71,42 @@ export default function MutualFundCard({
       {expanded && (
         <div className="border-t border-gray-200">
           {/* Actions */}
-          <div className="flex items-center justify-between px-4 py-2 bg-gray-50 border-b border-gray-100">
+          <div className="flex items-center justify-between px-3 sm:px-4 py-2 bg-gray-50 border-b border-gray-100">
             <div className="flex gap-1">
               <button
                 onClick={(e) => { e.stopPropagation(); onEditFund(fund); }}
-                className="px-2 py-1 text-xs text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors flex items-center gap-1"
+                className="sm:hidden p-1 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+              >
+                <Pencil size={14} />
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); onEditFund(fund); }}
+                className="hidden sm:flex px-2 py-1 text-xs text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors items-center gap-1"
               >
                 <Pencil size={12} /> Edit Fund
               </button>
               <button
                 onClick={(e) => { e.stopPropagation(); onDeleteFund(fund); }}
-                className="px-2 py-1 text-xs text-gray-600 hover:text-red-600 hover:bg-red-50 rounded transition-colors flex items-center gap-1"
+                className="sm:hidden p-1 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+              >
+                <Trash2 size={14} />
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); onDeleteFund(fund); }}
+                className="hidden sm:flex px-2 py-1 text-xs text-gray-600 hover:text-red-600 hover:bg-red-50 rounded transition-colors items-center gap-1"
               >
                 <Trash2 size={12} /> Delete
               </button>
             </div>
             <button
               onClick={(e) => { e.stopPropagation(); onAddTransaction(fund); }}
-              className="px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors flex items-center gap-1"
+              className="sm:hidden p-1 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+            >
+              <Plus size={16} />
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); onAddTransaction(fund); }}
+              className="hidden sm:flex px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors items-center gap-1"
             >
               <Plus size={12} /> Add Investment
             </button>

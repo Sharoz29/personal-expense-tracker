@@ -101,13 +101,26 @@ export default function MutualFundsContent() {
           <div className="flex gap-2">
             <button
               onClick={() => setShowCompanyManager(true)}
-              className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors flex items-center gap-1 whitespace-nowrap"
+              className="sm:hidden p-1.5 text-gray-600 hover:bg-gray-200 rounded-lg transition-colors"
+            >
+              <Building2 size={20} />
+            </button>
+            <button
+              onClick={() => setShowCompanyManager(true)}
+              className="hidden sm:flex px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors items-center gap-1 whitespace-nowrap"
             >
               <Building2 size={16} /> Manage AMCs
             </button>
             <button
               onClick={() => { setEditingFund(null); setShowFundForm(true); }}
-              className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors flex items-center gap-1 whitespace-nowrap"
+              className="sm:hidden p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+              disabled={companies.length === 0}
+            >
+              <Plus size={20} />
+            </button>
+            <button
+              onClick={() => { setEditingFund(null); setShowFundForm(true); }}
+              className="hidden sm:flex px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors items-center gap-1 whitespace-nowrap"
               disabled={companies.length === 0}
             >
               <Plus size={16} /> Add Fund

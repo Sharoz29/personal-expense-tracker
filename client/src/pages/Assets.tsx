@@ -41,7 +41,13 @@ export default function Assets() {
         <h2 className="text-lg sm:text-xl font-bold text-gray-800">Assets</h2>
         <button
           onClick={() => { setEditing(null); setShowForm(true); }}
-          className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors flex items-center gap-1"
+          className="sm:hidden p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+        >
+          <Plus size={20} />
+        </button>
+        <button
+          onClick={() => { setEditing(null); setShowForm(true); }}
+          className="hidden sm:flex px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors items-center gap-1"
         >
           <Plus size={16} /> Add Asset
         </button>

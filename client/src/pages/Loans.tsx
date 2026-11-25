@@ -143,7 +143,13 @@ export default function Loans() {
         <h2 className="text-lg sm:text-xl font-bold text-gray-800">Loans</h2>
         <button
           onClick={() => { setEditingLoan(null); setShowLoanForm(true); }}
-          className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors flex items-center gap-1"
+          className="sm:hidden p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+        >
+          <Plus size={20} />
+        </button>
+        <button
+          onClick={() => { setEditingLoan(null); setShowLoanForm(true); }}
+          className="hidden sm:flex px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors items-center gap-1"
         >
           <Plus size={16} /> Add Loan
         </button>
@@ -164,23 +170,23 @@ export default function Loans() {
             return (
               <div key={loan.id} className="bg-white rounded-xl border border-gray-200">
                 <div
-                  className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+                  className="flex items-start justify-between p-3 sm:p-4 cursor-pointer hover:bg-gray-50 transition-colors"
                   onClick={() => toggleLoan(loan.id)}
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <h3 className="font-semibold text-gray-800 truncate">{loan.name}</h3>
+                      <h3 className="text-sm sm:text-base font-semibold text-gray-800 truncate">{loan.name}</h3>
                       {loan.description && (
                         <span className="text-xs text-gray-500 hidden sm:inline">({loan.description})</span>
                       )}
                     </div>
-                    <div className="flex items-center gap-4 mt-1 text-sm text-gray-500">
+                    <div className="flex flex-wrap items-center gap-x-2 sm:gap-x-4 gap-y-0.5 mt-1 text-xs sm:text-sm text-gray-500">
                       <span>Total: {formatPKR(loan.total_amount)}</span>
                       {loanPayments[loan.id] && (
                         <>
                           <span>Paid: {formatPKR(paidTotal)}</span>
                           <span className={remaining > 0 ? "text-red-600" : "text-green-600"}>
-                            {remaining > 0 ? `Remaining: ${formatPKR(remaining)}` : "Fully Paid"}
+                            {remaining > 0 ? `Rem: ${formatPKR(remaining)}` : "Fully Paid"}
                           </span>
                         </>
                       )}
@@ -194,7 +200,7 @@ export default function Loans() {
                       </div>
                     )}
                   </div>
-                  <div className="flex items-center gap-2 ml-4">
+                  <div className="flex items-center gap-1 sm:gap-2 ml-2 sm:ml-4 shrink-0">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -202,23 +208,38 @@ export default function Loans() {
                         setEditingPayment(null);
                         setShowPaymentForm(true);
                       }}
-                      className="px-2.5 py-1.5 bg-blue-600 text-white rounded-lg text-xs hover:bg-blue-700 transition-colors flex items-center gap-1"
+                      className="xl:hidden p-1 sm:p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                    >
+                      <Plus size={14} className="sm:hidden" />
+                      <Plus size={16} className="hidden sm:block" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPaymentLoanId(loan.id);
+                        setEditingPayment(null);
+                        setShowPaymentForm(true);
+                      }}
+                      className="hidden xl:flex px-2.5 py-1.5 bg-blue-600 text-white rounded-lg text-xs hover:bg-blue-700 transition-colors items-center gap-1"
                     >
                       <Plus size={12} /> Payment
                     </button>
                     <button
                       onClick={(e) => { e.stopPropagation(); setEditingLoan(loan); setShowLoanForm(true); }}
-                      className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                      className="p-1 sm:p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
                     >
-                      <Pencil size={14} />
+                      <Pencil size={12} className="sm:hidden" />
+                      <Pencil size={14} className="hidden sm:block" />
                     </button>
                     <button
                       onClick={(e) => { e.stopPropagation(); setDeletingLoan(loan); }}
-                      className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                      className="p-1 sm:p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
                     >
-                      <Trash2 size={14} />
+                      <Trash2 size={12} className="sm:hidden" />
+                      <Trash2 size={14} className="hidden sm:block" />
                     </button>
-                    {isExpanded ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
+                    {isExpanded ? <ChevronUp size={16} className="text-gray-400 sm:hidden" /> : <ChevronDown size={16} className="text-gray-400 sm:hidden" />}
+                    {isExpanded ? <ChevronUp size={18} className="text-gray-400 hidden sm:block" /> : <ChevronDown size={18} className="text-gray-400 hidden sm:block" />}
                   </div>
                 </div>
                 {isExpanded && (
