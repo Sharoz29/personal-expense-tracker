@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Volume2, ArrowLeft } from "lucide-react";
+import { Volume2 } from "lucide-react";
 import { flashcardsApi } from "../../api/flashcards.api";
 import Loader from "../../components/common/Loader";
 import type { Flashcard } from "../../types";
@@ -54,7 +54,7 @@ export default function Study() {
 
   if (loading) {
     return (
-      <div className="p-6">
+      <div className="p-4 md:p-6">
         <Loader module="learning" />
       </div>
     );
@@ -62,13 +62,13 @@ export default function Study() {
 
   if (dueCards.length === 0) {
     return (
-      <div className="p-6">
+      <div className="p-4 md:p-6">
         <div className="max-w-2xl mx-auto text-center py-12">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">All caught up!</h1>
-          <p className="text-gray-600 mb-6">No cards due for review right now. Great job!</p>
+          <h1 className="text-lg sm:text-xl font-bold text-gray-800 mb-4">All caught up!</h1>
+          <p className="text-sm sm:text-base text-gray-600 mb-6">No cards due for review right now. Great job!</p>
           <button
             onClick={() => navigate("/learning")}
-            className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700"
+            className="px-5 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm"
           >
             Back to Dashboard
           </button>
@@ -80,28 +80,21 @@ export default function Study() {
   const currentCard = dueCards[currentIndex];
 
   return (
-    <div className="p-6">
+    <div className="p-4 md:p-6">
       <div className="max-w-2xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <button
-            onClick={() => navigate("/learning")}
-            className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900"
-          >
-            <ArrowLeft size={16} />
-            Back
-          </button>
-          <p className="text-sm text-gray-600">
+        <div className="flex items-center justify-end mb-4 sm:mb-6">
+          <p className="text-xs sm:text-sm text-gray-600">
             Card {currentIndex + 1} of {dueCards.length}
           </p>
         </div>
 
         <div
-          className="bg-white rounded-xl border-2 border-gray-200 p-8 min-h-[300px] flex items-center justify-center cursor-pointer hover:border-green-300 transition-colors"
+          className="bg-white rounded-xl border-2 border-gray-200 p-6 sm:p-8 min-h-[250px] sm:min-h-[300px] flex items-center justify-center cursor-pointer hover:border-green-300 transition-colors"
           onClick={() => setShowAnswer(!showAnswer)}
         >
           <div className="text-center">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <p className="text-3xl font-bold text-gray-800">{currentCard.french_text}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-gray-800">{currentCard.french_text}</p>
               {currentCard.audio_url && (
                 <button
                   onClick={(e) => {
@@ -110,44 +103,44 @@ export default function Study() {
                   }}
                   className="p-2 text-green-600 hover:bg-green-50 rounded-full transition-colors"
                 >
-                  <Volume2 size={24} />
+                  <Volume2 size={22} />
                 </button>
               )}
             </div>
             {showAnswer && (
-              <p className="text-xl text-gray-600 mt-4">{currentCard.english_meaning}</p>
+              <p className="text-lg sm:text-xl text-gray-600 mt-4">{currentCard.english_meaning}</p>
             )}
             {!showAnswer && (
-              <p className="text-sm text-gray-400 mt-8">Click to reveal answer</p>
+              <p className="text-xs sm:text-sm text-gray-400 mt-6 sm:mt-8">Click to reveal answer</p>
             )}
           </div>
         </div>
 
-        <div className="mt-6">
+        <div className="mt-4 sm:mt-6">
           {!showAnswer ? (
             <button
               onClick={() => setShowAnswer(true)}
-              className="w-full py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+              className="w-full py-2.5 sm:py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium text-sm sm:text-base"
             >
               Show Answer
             </button>
           ) : (
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
               <button
                 onClick={() => handleRating(1)}
-                className="py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+                className="py-2.5 sm:py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium text-sm sm:text-base"
               >
                 Hard
               </button>
               <button
                 onClick={() => handleRating(3)}
-                className="py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors font-medium"
+                className="py-2.5 sm:py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors font-medium text-sm sm:text-base"
               >
                 Good
               </button>
               <button
                 onClick={() => handleRating(5)}
-                className="py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+                className="py-2.5 sm:py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium text-sm sm:text-base"
               >
                 Easy
               </button>
@@ -155,7 +148,7 @@ export default function Study() {
           )}
         </div>
 
-        <p className="text-center text-sm text-gray-500 mt-4">
+        <p className="text-center text-xs sm:text-sm text-gray-500 mt-3 sm:mt-4">
           Hard: 1 day • Good: 3-6 days • Easy: 6+ days
         </p>
       </div>
