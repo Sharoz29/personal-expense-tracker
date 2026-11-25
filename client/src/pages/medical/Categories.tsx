@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Plus, Pencil, Trash2, ChevronDown, ChevronRight, X, ListPlus } from "lucide-react";
 import { useHealthCategories } from "../../hooks/useHealthCategories";
+import Loader from "../../components/common/Loader";
 import Modal from "../../components/common/Modal";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
 import type { ReferenceRange } from "../../types";
@@ -258,19 +259,20 @@ export default function Categories() {
   };
 
   if (loading) {
-    return <div className="p-4 md:p-6"><p className="text-gray-500">Loading...</p></div>;
+    return <div className="p-4 md:p-6"><Loader module="medical" /></div>;
   }
 
   return (
-    <div className="p-4 md:p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-gray-800">Categories & Markers</h1>
+    <div className="p-4 md:p-6 space-y-4 sm:space-y-6">
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="text-lg sm:text-xl font-bold text-gray-800">Categories & Markers</h1>
         <button
           onClick={() => { setEditingCategory(null); setCategoryName(""); setCategoryFollowUp(""); setShowCategoryForm(true); }}
-          className="flex items-center gap-1 px-3 py-2 bg-rose-600 text-white rounded-lg text-sm hover:bg-rose-700 transition-colors"
+          className="flex items-center gap-1 p-1.5 sm:px-3 sm:py-1.5 sm:bg-rose-600 sm:text-white text-rose-600 rounded-lg text-sm sm:hover:bg-rose-700 hover:bg-rose-50 transition-colors shrink-0"
         >
-          <Plus size={16} />
-          Add Category
+          <Plus size={20} className="sm:hidden" />
+          <Plus size={16} className="hidden sm:block" />
+          <span className="hidden sm:inline">Add Category</span>
         </button>
       </div>
 
@@ -285,22 +287,22 @@ export default function Categories() {
           {categories.map((cat) => (
             <div key={cat.id} className="bg-white rounded-xl border border-gray-200">
               <div
-                className="flex items-center justify-between p-4 cursor-pointer"
+                className="flex items-center justify-between gap-2 p-3 sm:p-4 cursor-pointer"
                 onClick={() => toggle(cat.id)}
               >
-                <div className="flex items-center gap-2">
-                  {expanded.has(cat.id) ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-                  <h3 className="font-semibold text-gray-800">{cat.name}</h3>
+                <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-wrap">
+                  {expanded.has(cat.id) ? <ChevronDown size={16} className="shrink-0" /> : <ChevronRight size={16} className="shrink-0" />}
+                  <h3 className="font-semibold text-gray-800 text-sm sm:text-base">{cat.name}</h3>
                   <span className="text-xs text-gray-400">
-                    ({cat.markers?.length ?? 0} markers)
+                    ({cat.markers?.length ?? 0})
                   </span>
                   {cat.follow_up_months != null && (
                     <span className="text-xs px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">
-                      Every {cat.follow_up_months}mo
+                      {cat.follow_up_months}mo
                     </span>
                   )}
                 </div>
-                <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
+                <div className="flex gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
                   <button
                     onClick={() => { setEditingCategory({ id: cat.id, name: cat.name, follow_up_months: cat.follow_up_months }); setCategoryName(cat.name); setCategoryFollowUp(cat.follow_up_months != null ? String(cat.follow_up_months) : ""); setShowCategoryForm(true); }}
                     className="p-1.5 rounded hover:bg-gray-100 transition-colors"
@@ -317,33 +319,35 @@ export default function Categories() {
               </div>
 
               {expanded.has(cat.id) && (
-                <div className="border-t border-gray-100 px-4 pb-4">
+                <div className="border-t border-gray-100 px-3 sm:px-4 pb-3 sm:pb-4">
                   <div className="mt-3 space-y-2">
                     {(cat.markers ?? []).map((m) => {
                       const rangesSummary = getRangesSummary(m.reference_ranges);
                       return (
-                        <div key={m.id} className="flex items-center justify-between py-1.5 px-3 rounded-lg bg-gray-50">
-                          <div className="flex items-center gap-2 text-sm text-gray-700 min-w-0 flex-wrap">
-                            <span className="truncate">
-                              {m.name} {m.unit && <span className="text-gray-400">({m.unit})</span>}
-                            </span>
-                            <span className={`text-xs px-1.5 py-0.5 rounded ${m.marker_type === "text" ? "bg-purple-100 text-purple-600" : "bg-blue-100 text-blue-600"}`}>
-                              {m.marker_type === "text" ? "Text" : "Numeric"}
-                            </span>
-                            {rangesSummary ? (
-                              <span className="text-xs text-gray-400">{rangesSummary}</span>
-                            ) : (
-                              <>
-                                {m.marker_type === "numeric" && (m.min_reference != null || m.max_reference != null) && (
-                                  <span className="text-xs text-gray-400">
-                                    [{m.min_reference ?? "—"} – {m.max_reference ?? "—"}]
-                                  </span>
-                                )}
-                                {m.marker_type === "text" && m.normal_value && (
-                                  <span className="text-xs text-gray-400">Normal: {m.normal_value}</span>
-                                )}
-                              </>
-                            )}
+                        <div key={m.id} className="flex items-start sm:items-center justify-between gap-2 py-2 sm:py-1.5 px-2.5 sm:px-3 rounded-lg bg-gray-50">
+                          <div className="text-sm text-gray-700 min-w-0">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <span className="truncate">
+                                {m.name} {m.unit && <span className="text-gray-400">({m.unit})</span>}
+                              </span>
+                              <span className={`text-xs px-1.5 py-0.5 rounded ${m.marker_type === "text" ? "bg-purple-100 text-purple-600" : "bg-blue-100 text-blue-600"}`}>
+                                {m.marker_type === "text" ? "Text" : "Num"}
+                              </span>
+                            </div>
+                            <div className="text-xs text-gray-400 mt-0.5">
+                              {rangesSummary ? (
+                                <span>{rangesSummary}</span>
+                              ) : (
+                                <>
+                                  {m.marker_type === "numeric" && (m.min_reference != null || m.max_reference != null) && (
+                                    <span>[{m.min_reference ?? "—"} – {m.max_reference ?? "—"}]</span>
+                                  )}
+                                  {m.marker_type === "text" && m.normal_value && (
+                                    <span>Normal: {m.normal_value}</span>
+                                  )}
+                                </>
+                              )}
+                            </div>
                           </div>
                           <div className="flex gap-1 shrink-0">
                             <button
@@ -630,49 +634,61 @@ export default function Categories() {
               return (
                 <div key={i} className="border border-gray-200 rounded-lg overflow-hidden">
                   {/* Accordion header */}
-                  <div className="flex items-center gap-2 p-3 bg-gray-50">
-                    <button
-                      type="button"
-                      onClick={() => toggleBulkAccordion(i)}
-                      className="p-0.5 shrink-0"
-                    >
-                      {isOpen ? <ChevronDown size={14} className="text-gray-400" /> : <ChevronRight size={14} className="text-gray-400" />}
-                    </button>
-                    <span className="text-xs text-gray-400 w-4 shrink-0">{i + 1}</span>
-                    <input
-                      type="text"
-                      value={row.name}
-                      onChange={(e) => updateBulkRow(i, "name", e.target.value)}
-                      className="flex-1 px-2 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-rose-500 bg-white"
-                      placeholder="Marker name"
-                      autoFocus={i === 0}
-                    />
-                    <input
-                      type="text"
-                      value={row.unit}
-                      onChange={(e) => updateBulkRow(i, "unit", e.target.value)}
-                      className="w-24 px-2 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-rose-500 bg-white"
-                      placeholder="Unit"
-                    />
-                    <select
-                      value={row.marker_type}
-                      onChange={(e) => updateBulkRow(i, "marker_type", e.target.value)}
-                      className="w-28 px-2 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-rose-500 bg-white"
-                    >
-                      <option value="numeric">Numeric</option>
-                      <option value="text">Text</option>
-                    </select>
-                    {hasRangeData && (
-                      <span className="w-2 h-2 rounded-full bg-blue-400 shrink-0" title="Has reference ranges" />
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => removeBulkRow(i)}
-                      className="p-1 rounded hover:bg-gray-200 transition-colors shrink-0"
-                      disabled={bulkRows.length <= 1}
-                    >
-                      <X size={14} className={bulkRows.length <= 1 ? "text-gray-200" : "text-gray-400"} />
-                    </button>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 p-3 bg-gray-50">
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      <button
+                        type="button"
+                        onClick={() => toggleBulkAccordion(i)}
+                        className="p-0.5 shrink-0"
+                      >
+                        {isOpen ? <ChevronDown size={14} className="text-gray-400" /> : <ChevronRight size={14} className="text-gray-400" />}
+                      </button>
+                      <span className="text-xs text-gray-400 w-4 shrink-0">{i + 1}</span>
+                      <input
+                        type="text"
+                        value={row.name}
+                        onChange={(e) => updateBulkRow(i, "name", e.target.value)}
+                        className="flex-1 min-w-0 px-2 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-rose-500 bg-white"
+                        placeholder="Marker name"
+                        autoFocus={i === 0}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeBulkRow(i)}
+                        className="sm:hidden p-1 rounded hover:bg-gray-200 transition-colors shrink-0"
+                        disabled={bulkRows.length <= 1}
+                      >
+                        <X size={14} className={bulkRows.length <= 1 ? "text-gray-200" : "text-gray-400"} />
+                      </button>
+                    </div>
+                    <div className="flex items-center gap-2 pl-9 sm:pl-0">
+                      <input
+                        type="text"
+                        value={row.unit}
+                        onChange={(e) => updateBulkRow(i, "unit", e.target.value)}
+                        className="w-20 sm:w-24 px-2 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-rose-500 bg-white"
+                        placeholder="Unit"
+                      />
+                      <select
+                        value={row.marker_type}
+                        onChange={(e) => updateBulkRow(i, "marker_type", e.target.value)}
+                        className="w-24 sm:w-28 px-2 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-rose-500 bg-white"
+                      >
+                        <option value="numeric">Numeric</option>
+                        <option value="text">Text</option>
+                      </select>
+                      {hasRangeData && (
+                        <span className="w-2 h-2 rounded-full bg-blue-400 shrink-0" title="Has reference ranges" />
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => removeBulkRow(i)}
+                        className="hidden sm:block p-1 rounded hover:bg-gray-200 transition-colors shrink-0"
+                        disabled={bulkRows.length <= 1}
+                      >
+                        <X size={14} className={bulkRows.length <= 1 ? "text-gray-200" : "text-gray-400"} />
+                      </button>
+                    </div>
                   </div>
 
                   {/* Accordion body - reference ranges */}
@@ -735,12 +751,12 @@ export default function Categories() {
                         ) : (
                           <div className="space-y-1.5">
                             {row.ranges.map((rng, ri) => (
-                              <div key={ri} className="flex items-center gap-2 p-2 rounded bg-gray-50">
+                              <div key={ri} className="flex flex-wrap items-center gap-2 p-2 rounded bg-gray-50">
                                 <input
                                   type="text"
                                   value={rng.label}
                                   onChange={(e) => updateBulkRange(i, ri, "label", e.target.value)}
-                                  className="flex-1 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-rose-500"
+                                  className="flex-1 min-w-[120px] px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-rose-500"
                                   placeholder="Label (e.g., Desirable)"
                                 />
                                 {row.marker_type === "numeric" ? (
@@ -750,7 +766,7 @@ export default function Categories() {
                                       step="any"
                                       value={rng.min}
                                       onChange={(e) => updateBulkRange(i, ri, "min", e.target.value)}
-                                      className="w-20 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-rose-500"
+                                      className="w-16 sm:w-20 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-rose-500"
                                       placeholder="Min"
                                     />
                                     <input
@@ -758,7 +774,7 @@ export default function Categories() {
                                       step="any"
                                       value={rng.max}
                                       onChange={(e) => updateBulkRange(i, ri, "max", e.target.value)}
-                                      className="w-20 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-rose-500"
+                                      className="w-16 sm:w-20 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-rose-500"
                                       placeholder="Max"
                                     />
                                   </>
@@ -767,14 +783,14 @@ export default function Categories() {
                                     type="text"
                                     value={rng.value}
                                     onChange={(e) => updateBulkRange(i, ri, "value", e.target.value)}
-                                    className="w-28 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-rose-500"
+                                    className="w-24 sm:w-28 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-rose-500"
                                     placeholder="Value"
                                   />
                                 )}
                                 <select
                                   value={rng.color}
                                   onChange={(e) => updateBulkRange(i, ri, "color", e.target.value)}
-                                  className="w-28 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-rose-500"
+                                  className="w-24 sm:w-28 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-rose-500"
                                 >
                                   {colorOptions.map((c) => (
                                     <option key={c.value} value={c.value}>{c.label}</option>

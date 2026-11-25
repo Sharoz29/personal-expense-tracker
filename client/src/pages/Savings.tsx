@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useMonthYear } from "../context/MonthYearContext";
 import { useSavings } from "../hooks/useSavings";
+import Loader from "../components/common/Loader";
 import SavingsList from "../components/savings/SavingsList";
 import SavingsForm from "../components/savings/SavingsForm";
 import Modal from "../components/common/Modal";
@@ -33,20 +34,34 @@ export default function Savings() {
 
   return (
     <>
-      <header className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between px-4 py-3 md:px-6 md:py-4 bg-white border-b border-gray-200">
-        <h2 className="text-xl md:text-2xl font-bold text-gray-800">Savings</h2>
+      <header className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4 bg-white border-b border-gray-200">
+        <h2 className="text-lg sm:text-xl font-bold text-gray-800">Savings</h2>
         <div className="flex items-center gap-2">
+          {/* Mobile: icon-only buttons */}
           <button
             onClick={() => setShowAddForm(true)}
-            className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors flex items-center gap-1 whitespace-nowrap"
+            className="sm:hidden p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+          >
+            <Plus size={20} />
+          </button>
+          <button
+            onClick={handleCalculateCurrent}
+            className="sm:hidden p-1.5 text-orange-500 hover:bg-orange-50 rounded-lg transition-colors"
+          >
+            <Calculator size={20} />
+          </button>
+          {/* Tablet+: full buttons */}
+          <button
+            onClick={() => setShowAddForm(true)}
+            className="hidden sm:flex px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors items-center gap-1 whitespace-nowrap"
           >
             <Plus size={16} /> Add Savings
           </button>
           <button
             onClick={handleCalculateCurrent}
-            className="px-3 py-2 bg-orange-500 text-white rounded-lg text-sm hover:bg-orange-600 transition-colors flex items-center gap-1 whitespace-nowrap"
+            className="hidden sm:flex px-3 py-2 bg-orange-500 text-white rounded-lg text-sm hover:bg-orange-600 transition-colors items-center gap-1 whitespace-nowrap"
           >
-            <Calculator size={16} /> <span className="hidden sm:inline">Calculate Current Month</span><span className="sm:hidden">Calculate</span>
+            <Calculator size={16} /> Calculate Current Month
           </button>
         </div>
       </header>
@@ -54,7 +69,7 @@ export default function Savings() {
         <div className="bg-white rounded-xl border border-gray-200">
           <div className="p-4 border-b border-gray-200">
             <h3 className="font-semibold text-gray-700">
-              {loading ? "Loading..." : "Savings History"}
+              {loading ? <Loader module="finance" size="inline" /> : "Savings History"}
             </h3>
           </div>
           <SavingsList

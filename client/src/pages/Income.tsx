@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import Header from "../components/layout/Header";
 import { useMonthYear } from "../context/MonthYearContext";
 import { useIncomes } from "../hooks/useIncomes";
+import Loader from "../components/common/Loader";
 import { useIncomeSources } from "../hooks/useIncomeSources";
 import { useAccounts } from "../hooks/useAccounts";
 import IncomeList from "../components/income/IncomeList";
@@ -63,30 +64,36 @@ export default function Income() {
       <Header title="Income" />
       <div className="p-4 md:p-6">
         <div className="bg-white rounded-xl border border-gray-200">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between p-4 border-b border-gray-200">
-            <h3 className="font-semibold text-gray-700">
-              {loading ? "Loading..." : `${filteredIncomes.length} income entr${filteredIncomes.length !== 1 ? "ies" : "y"}`}
-            </h3>
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="flex items-center gap-1.5 text-gray-500">
-                <Filter size={14} className="hidden sm:block" />
-                <select
-                  value={filterSourceId ?? ""}
-                  onChange={(e) => setFilterSourceId(e.target.value ? Number(e.target.value) : null)}
-                  className="px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">All Sources</option>
-                  {incomeSources.map((s) => (
-                    <option key={s.id} value={s.id}>{s.name}</option>
-                  ))}
-                </select>
-              </div>
+          <div className="p-4 border-b border-gray-200 space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold text-gray-700">
+                {loading ? <Loader module="finance" size="inline" /> : `${filteredIncomes.length} income entr${filteredIncomes.length !== 1 ? "ies" : "y"}`}
+              </h3>
               <button
                 onClick={() => { setEditing(null); setShowForm(true); }}
-                className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors flex items-center gap-1 whitespace-nowrap"
+                className="sm:hidden p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+              >
+                <Plus size={20} />
+              </button>
+              <button
+                onClick={() => { setEditing(null); setShowForm(true); }}
+                className="hidden sm:flex px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors items-center gap-1 whitespace-nowrap"
               >
                 <Plus size={16} /> Add Income
               </button>
+            </div>
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-gray-500">
+              <Filter size={14} className="hidden sm:block" />
+              <select
+                value={filterSourceId ?? ""}
+                onChange={(e) => setFilterSourceId(e.target.value ? Number(e.target.value) : null)}
+                className="min-w-0 flex-1 sm:flex-none px-2 py-1.5 border border-gray-300 rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All Sources</option>
+                {incomeSources.map((s) => (
+                  <option key={s.id} value={s.id}>{s.name}</option>
+                ))}
+              </select>
             </div>
           </div>
           <IncomeList

@@ -18,7 +18,7 @@ export default function Investments() {
   return (
     <>
       <header className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4 bg-white border-b border-gray-200">
-        <h2 className="text-xl md:text-2xl font-bold text-gray-800">Investments</h2>
+        <h2 className="text-lg sm:text-xl font-bold text-gray-800">Investments</h2>
       </header>
 
       <div className="bg-white border-b border-gray-200 px-4 md:px-6">

@@ -21,8 +21,8 @@ export default function PinScreen() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl border border-gray-200 p-8 w-full max-w-sm shadow-sm">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-6">
+      <div className="bg-white rounded-xl border border-gray-200 p-6 sm:p-8 w-full max-w-sm shadow-sm">
         <div className="flex flex-col items-center mb-6">
           <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mb-3">
             <Lock size={24} className="text-blue-600" />

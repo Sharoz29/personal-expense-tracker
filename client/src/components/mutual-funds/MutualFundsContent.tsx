@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useMutualFundCompanies } from "../../hooks/useMutualFundCompanies";
+import Loader from "../common/Loader";
 import { useMutualFunds } from "../../hooks/useMutualFunds";
 import { useMutualFundTransactions } from "../../hooks/useMutualFundTransactions";
 import { useAccounts } from "../../hooks/useAccounts";
@@ -71,22 +72,22 @@ export default function MutualFundsContent() {
     <div className="p-4 md:p-6 space-y-4 md:space-y-6">
       {/* Summary */}
       <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           <div>
-            <p className="text-sm text-gray-500 mb-1">Total Invested</p>
-            <p className="text-2xl font-bold text-emerald-600">{formatPKR(totalInvested)}</p>
+            <p className="text-xs sm:text-sm text-gray-500 mb-1">Total Invested</p>
+            <p className="text-base sm:text-2xl font-bold text-emerald-600">{formatPKR(totalInvested)}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-500 mb-1">Net Invested</p>
-            <p className="text-xl font-bold text-blue-600">{formatPKR(totalNetInvested)}</p>
+            <p className="text-xs sm:text-sm text-gray-500 mb-1">Net Invested</p>
+            <p className="text-base sm:text-xl font-bold text-blue-600">{formatPKR(totalNetInvested)}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-500 mb-1">Total Fees</p>
-            <p className="text-xl font-bold text-red-500">{formatPKR(totalFees)}</p>
+            <p className="text-xs sm:text-sm text-gray-500 mb-1">Total Fees</p>
+            <p className="text-base sm:text-xl font-bold text-red-500">{formatPKR(totalFees)}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-500 mb-1">Funds</p>
-            <p className="text-xl font-bold text-gray-800">{funds.length}</p>
+            <p className="text-xs sm:text-sm text-gray-500 mb-1">Funds</p>
+            <p className="text-base sm:text-xl font-bold text-gray-800">{funds.length}</p>
           </div>
         </div>
       </div>
@@ -95,18 +96,31 @@ export default function MutualFundsContent() {
       <div className="bg-white rounded-xl border border-gray-200">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between p-4 border-b border-gray-200">
           <h3 className="font-semibold text-gray-700">
-            {loading ? "Loading..." : `${funds.length} fund${funds.length !== 1 ? "s" : ""}`}
+            {loading ? <Loader module="finance" size="inline" /> : `${funds.length} fund${funds.length !== 1 ? "s" : ""}`}
           </h3>
           <div className="flex gap-2">
             <button
               onClick={() => setShowCompanyManager(true)}
-              className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors flex items-center gap-1 whitespace-nowrap"
+              className="sm:hidden p-1.5 text-gray-600 hover:bg-gray-200 rounded-lg transition-colors"
+            >
+              <Building2 size={20} />
+            </button>
+            <button
+              onClick={() => setShowCompanyManager(true)}
+              className="hidden sm:flex px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors items-center gap-1 whitespace-nowrap"
             >
               <Building2 size={16} /> Manage AMCs
             </button>
             <button
               onClick={() => { setEditingFund(null); setShowFundForm(true); }}
-              className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors flex items-center gap-1 whitespace-nowrap"
+              className="sm:hidden p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+              disabled={companies.length === 0}
+            >
+              <Plus size={20} />
+            </button>
+            <button
+              onClick={() => { setEditingFund(null); setShowFundForm(true); }}
+              className="hidden sm:flex px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors items-center gap-1 whitespace-nowrap"
               disabled={companies.length === 0}
             >
               <Plus size={16} /> Add Fund

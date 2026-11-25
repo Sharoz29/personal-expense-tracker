@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { dashboardApi } from "../api/dashboard.api";
+import Loader from "../components/common/Loader";
 import SummaryCards from "../components/dashboard/SummaryCards";
 import ExpenseBreakdownChart from "../components/dashboard/ExpenseBreakdownChart";
 import IncomeBreakdownChart from "../components/dashboard/IncomeBreakdownChart";
@@ -50,7 +51,7 @@ export default function AnnualStats() {
   return (
     <>
       <header className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between px-4 py-3 md:px-6 md:py-4 bg-white border-b border-gray-200">
-        <h2 className="text-xl md:text-2xl font-bold text-gray-800">Annual Statistics</h2>
+        <h2 className="text-lg sm:text-xl font-bold text-gray-800">Annual Statistics</h2>
         <select
           value={year}
           onChange={(e) => setYear(Number(e.target.value))}
@@ -63,7 +64,7 @@ export default function AnnualStats() {
       </header>
       <div className="p-4 md:p-6 space-y-4 md:space-y-6">
         {loading ? (
-          <div className="text-gray-500">Loading...</div>
+          <Loader module="finance" />
         ) : summary ? (
           <>
             <SummaryCards

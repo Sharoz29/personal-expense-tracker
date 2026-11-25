@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "/api",
+  // baseURL: import.meta.env.VITE_API_URL || "/api",
+  baseURL: "https://personal-expense-tracker-jq6z.vercel.app/api",
   headers: { "Content-Type": "application/json" },
 });
 
@@ -21,7 +22,7 @@ api.interceptors.response.use(
       window.dispatchEvent(new Event("auth:logout"));
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;

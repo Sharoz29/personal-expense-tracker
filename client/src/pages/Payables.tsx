@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { usePayables } from "../hooks/usePayables";
+import Loader from "../components/common/Loader";
 import { useAccounts } from "../hooks/useAccounts";
 import { usePayableTypes } from "../hooks/usePayableTypes";
 import { usePayees } from "../hooks/usePayees";
@@ -68,56 +69,70 @@ export default function Payables() {
 
   return (
     <>
-      <header className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4 bg-white border-b border-gray-200">
-        <h2 className="text-xl md:text-2xl font-bold text-gray-800">Payable to Me</h2>
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 text-gray-500">
-            <Filter size={14} className="hidden sm:block" />
-            <select
-              value={filterTypeId}
-              onChange={(e) => setFilterTypeId(Number(e.target.value))}
-              className="px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+      <header className="px-4 py-3 md:px-6 md:py-4 bg-white border-b border-gray-200 space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg sm:text-xl font-bold text-gray-800">Payable to Me</h2>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowLumpSum(true)}
+              className="sm:hidden p-1.5 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
             >
-              <option value={0}>All Types</option>
-              {payableTypes.map((t) => (
-                <option key={t.id} value={t.id}>{t.name}</option>
-              ))}
-            </select>
-            <select
-              value={filterPayeeId}
-              onChange={(e) => setFilterPayeeId(Number(e.target.value))}
-              className="px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <Banknote size={20} />
+            </button>
+            <button
+              onClick={() => { setEditing(null); setShowForm(true); }}
+              className="sm:hidden p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
             >
-              <option value={0}>All Payees</option>
-              {payees.map((p) => (
-                <option key={p.id} value={p.id}>{p.name}</option>
-              ))}
-            </select>
+              <Plus size={20} />
+            </button>
+            <button
+              onClick={() => setShowLumpSum(true)}
+              className="hidden sm:flex px-3 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-colors items-center gap-1"
+            >
+              <Banknote size={16} /> Lump Sum
+            </button>
+            <button
+              onClick={() => { setEditing(null); setShowForm(true); }}
+              className="hidden sm:flex px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors items-center gap-1"
+            >
+              <Plus size={16} /> Add Payable
+            </button>
           </div>
-          <button
-            onClick={() => setShowLumpSum(true)}
-            className="px-3 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-colors flex items-center gap-1"
+        </div>
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-gray-500">
+          <Filter size={14} className="hidden sm:block" />
+          <select
+            value={filterTypeId}
+            onChange={(e) => setFilterTypeId(Number(e.target.value))}
+            className="min-w-0 flex-1 sm:flex-none px-2 py-1.5 border border-gray-300 rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <Banknote size={16} /> Lump Sum
-          </button>
-          <button
-            onClick={() => { setEditing(null); setShowForm(true); }}
-            className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors flex items-center gap-1"
+            <option value={0}>All Types</option>
+            {payableTypes.map((t) => (
+              <option key={t.id} value={t.id}>{t.name}</option>
+            ))}
+          </select>
+          <select
+            value={filterPayeeId}
+            onChange={(e) => setFilterPayeeId(Number(e.target.value))}
+            className="min-w-0 flex-1 sm:flex-none px-2 py-1.5 border border-gray-300 rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <Plus size={16} /> Add Payable
-          </button>
+            <option value={0}>All Payees</option>
+            {payees.map((p) => (
+              <option key={p.id} value={p.id}>{p.name}</option>
+            ))}
+          </select>
         </div>
       </header>
       <div className="p-4 md:p-6 space-y-4 md:space-y-6">
         {/* Summary Cards */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4">
           <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
-            <p className="text-sm text-gray-500 mb-1">Total Pending</p>
-            <p className="text-2xl font-bold text-yellow-600">{formatPKR(totalPending)}</p>
+            <p className="text-xs sm:text-sm text-gray-500 mb-1">Total Pending</p>
+            <p className="text-lg sm:text-2xl font-bold text-yellow-600">{formatPKR(totalPending)}</p>
           </div>
           <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
-            <p className="text-sm text-gray-500 mb-1">Total Paid</p>
-            <p className="text-2xl font-bold text-green-600">{formatPKR(totalPaid)}</p>
+            <p className="text-xs sm:text-sm text-gray-500 mb-1">Total Paid</p>
+            <p className="text-lg sm:text-2xl font-bold text-green-600">{formatPKR(totalPaid)}</p>
           </div>
         </div>
 
@@ -128,7 +143,7 @@ export default function Payables() {
             className="w-full flex items-center justify-between p-4 border-b border-gray-200 hover:bg-gray-50 transition-colors"
           >
             <h3 className="font-semibold text-gray-700">
-              {loading ? "Loading..." : (
+              {loading ? <Loader module="finance" size="inline" /> : (
                 <>
                   <span className="px-2 py-0.5 bg-yellow-50 text-yellow-700 rounded text-xs font-medium mr-2">Pending</span>
                   {pendingPayables.length} payable{pendingPayables.length !== 1 ? "s" : ""}
@@ -155,7 +170,7 @@ export default function Payables() {
             className="w-full flex items-center justify-between p-4 border-b border-gray-200 hover:bg-gray-50 transition-colors"
           >
             <h3 className="font-semibold text-gray-700">
-              {loading ? "Loading..." : (
+              {loading ? <Loader module="finance" size="inline" /> : (
                 <>
                   <span className="px-2 py-0.5 bg-green-50 text-green-700 rounded text-xs font-medium mr-2">Paid</span>
                   {paidPayables.length} payable{paidPayables.length !== 1 ? "s" : ""}

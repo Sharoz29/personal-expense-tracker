@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAssets } from "../hooks/useAssets";
+import Loader from "../components/common/Loader";
 import { useAssetTypes } from "../hooks/useAssetTypes";
 import { useAccounts } from "../hooks/useAccounts";
 import AssetList from "../components/assets/AssetList";
@@ -37,10 +38,16 @@ export default function Assets() {
   return (
     <>
       <header className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4 bg-white border-b border-gray-200">
-        <h2 className="text-xl md:text-2xl font-bold text-gray-800">Assets</h2>
+        <h2 className="text-lg sm:text-xl font-bold text-gray-800">Assets</h2>
         <button
           onClick={() => { setEditing(null); setShowForm(true); }}
-          className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors flex items-center gap-1"
+          className="sm:hidden p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+        >
+          <Plus size={20} />
+        </button>
+        <button
+          onClick={() => { setEditing(null); setShowForm(true); }}
+          className="hidden sm:flex px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors items-center gap-1"
         >
           <Plus size={16} /> Add Asset
         </button>
@@ -48,13 +55,13 @@ export default function Assets() {
       <div className="p-4 md:p-6 space-y-4 md:space-y-6">
         <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
           <p className="text-sm text-gray-500 mb-1">Total Portfolio Value</p>
-          <p className="text-2xl font-bold text-green-600">{formatPKR(totalValue)}</p>
+          <p className="text-lg sm:text-2xl font-bold text-green-600">{formatPKR(totalValue)}</p>
         </div>
 
         <div className="bg-white rounded-xl border border-gray-200">
           <div className="p-4 border-b border-gray-200">
             <h3 className="font-semibold text-gray-700">
-              {loading ? "Loading..." : `${assets.length} asset${assets.length !== 1 ? "s" : ""}`}
+              {loading ? <Loader module="finance" size="inline" /> : `${assets.length} asset${assets.length !== 1 ? "s" : ""}`}
             </h3>
           </div>
           <AssetList

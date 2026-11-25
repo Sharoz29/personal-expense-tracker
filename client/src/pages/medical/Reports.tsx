@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, Trash2 } from "lucide-react";
 import { useHealthReports } from "../../hooks/useHealthReports";
+import Loader from "../../components/common/Loader";
 import { useFamilyMembers } from "../../hooks/useFamilyMembers";
 import { useHealthCategories } from "../../hooks/useHealthCategories";
 import { healthReportsApi } from "../../api/health.api";
@@ -56,29 +57,30 @@ export default function Reports() {
   if (loading) {
     return (
       <div className="p-4 md:p-6">
-        <p className="text-gray-500">Loading...</p>
+        <Loader module="medical" />
       </div>
     );
   }
 
   return (
-    <div className="p-4 md:p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-gray-800">Health Reports</h1>
+    <div className="p-4 md:p-6 space-y-4 sm:space-y-6">
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="text-lg sm:text-xl font-bold text-gray-800">Health Reports</h1>
         <button
           onClick={() => {
             setEditing(null);
             setShowForm(true);
           }}
-          className="flex items-center gap-1 px-3 py-2 bg-rose-600 text-white rounded-lg text-sm hover:bg-rose-700 transition-colors"
+          className="flex items-center gap-1 p-1.5 sm:px-3 sm:py-1.5 sm:bg-rose-600 sm:text-white text-rose-600 rounded-lg text-sm sm:hover:bg-rose-700 hover:bg-rose-50 transition-colors shrink-0"
         >
-          <Plus size={16} />
-          Add Report
+          <Plus size={20} className="sm:hidden" />
+          <Plus size={16} className="hidden sm:block" />
+          <span className="hidden sm:inline">Add Report</span>
         </button>
       </div>
 
       {/* Filters */}
-      <div className="flex gap-4">
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
         <select
           value={filterMember ?? ""}
           onChange={(e) =>
@@ -118,58 +120,98 @@ export default function Reports() {
           No reports found. Create your first health report.
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-gray-50 text-left">
-                <th className="px-4 py-3 font-medium text-gray-600">Date</th>
-                <th className="px-4 py-3 font-medium text-gray-600">Person</th>
-                <th className="px-4 py-3 font-medium text-gray-600">
-                  Category
-                </th>
-                <th className="px-4 py-3 font-medium text-gray-600">Lab</th>
-                <th className="px-4 py-3 font-medium text-gray-600 w-20"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {reports.map((r) => (
-                <tr
-                  key={r.id}
-                  className="border-t border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors"
-                  onClick={() => navigate(`/medical/reports/${r.id}`)}
-                >
-                  <td className="px-4 py-3">
-                    {formatDate(r.report_date)}
-                  </td>
-                  <td className="px-4 py-3">{r.family_member_name}</td>
-                  <td className="px-4 py-3">{r.category_name}</td>
-                  <td className="px-4 py-3 text-gray-500">
-                    {r.lab_name || "—"}
-                  </td>
-                  <td
-                    className="px-4 py-3"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <div className="flex gap-1">
-                      <button
-                        onClick={() => handleEdit(r)}
-                        className="px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 rounded transition-colors"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => setDeleting(r)}
-                        className="p-1 rounded hover:bg-gray-100 transition-colors"
-                      >
-                        <Trash2 size={14} className="text-red-500" />
-                      </button>
-                    </div>
-                  </td>
+        <>
+          {/* Mobile card view */}
+          <div className="sm:hidden space-y-3">
+            {reports.map((r) => (
+              <div
+                key={r.id}
+                onClick={() => navigate(`/medical/reports/${r.id}`)}
+                className="bg-white rounded-xl border border-gray-200 p-3 cursor-pointer hover:border-rose-300 transition-colors"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-gray-800">{r.category_name}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      {r.family_member_name} &middot; {formatDate(r.report_date)}
+                    </p>
+                    {r.lab_name && (
+                      <p className="text-xs text-gray-400 mt-0.5">{r.lab_name}</p>
+                    )}
+                  </div>
+                  <div className="flex gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
+                    <button
+                      onClick={() => handleEdit(r)}
+                      className="px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => setDeleting(r)}
+                      className="p-1 rounded hover:bg-gray-100 transition-colors"
+                    >
+                      <Trash2 size={14} className="text-red-500" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop/tablet table view */}
+          <div className="hidden sm:block bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-gray-50 text-left">
+                  <th className="px-4 py-3 font-medium text-gray-600">Date</th>
+                  <th className="px-4 py-3 font-medium text-gray-600">Person</th>
+                  <th className="px-4 py-3 font-medium text-gray-600">
+                    Category
+                  </th>
+                  <th className="px-4 py-3 font-medium text-gray-600">Lab</th>
+                  <th className="px-4 py-3 font-medium text-gray-600 w-20"></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {reports.map((r) => (
+                  <tr
+                    key={r.id}
+                    className="border-t border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors"
+                    onClick={() => navigate(`/medical/reports/${r.id}`)}
+                  >
+                    <td className="px-4 py-3">
+                      {formatDate(r.report_date)}
+                    </td>
+                    <td className="px-4 py-3">{r.family_member_name}</td>
+                    <td className="px-4 py-3">{r.category_name}</td>
+                    <td className="px-4 py-3 text-gray-500">
+                      {r.lab_name || "—"}
+                    </td>
+                    <td
+                      className="px-4 py-3"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="flex gap-1">
+                        <button
+                          onClick={() => handleEdit(r)}
+                          className="px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => setDeleting(r)}
+                          className="p-1 rounded hover:bg-gray-100 transition-colors"
+                        >
+                          <Trash2 size={14} className="text-red-500" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
 
       <Modal

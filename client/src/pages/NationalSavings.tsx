@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useSavingsCertificates } from "../hooks/useSavingsCertificates";
+import Loader from "../components/common/Loader";
 import { useAccounts } from "../hooks/useAccounts";
 import SavingsCertificateList from "../components/national-savings/SavingsCertificateList";
 import SavingsCertificateForm from "../components/national-savings/SavingsCertificateForm";
@@ -35,14 +36,20 @@ export default function NationalSavings() {
   return (
     <>
       <div className="p-4 md:p-6 space-y-4 md:space-y-6">
-        <div className="flex items-center gap-3">
-          <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6 flex-1">
+        <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6 flex items-center justify-between">
+          <div>
             <p className="text-sm text-gray-500 mb-1">Total Invested</p>
-            <p className="text-2xl font-bold text-emerald-600">{formatPKR(totalInvested)}</p>
+            <p className="text-lg sm:text-2xl font-bold text-emerald-600">{formatPKR(totalInvested)}</p>
           </div>
           <button
             onClick={() => { setEditing(null); setShowForm(true); }}
-            className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors flex items-center gap-1 shrink-0 self-start"
+            className="sm:hidden p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+          >
+            <Plus size={20} />
+          </button>
+          <button
+            onClick={() => { setEditing(null); setShowForm(true); }}
+            className="hidden sm:flex px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors items-center gap-1"
           >
             <Plus size={16} /> Add Certificate
           </button>
@@ -51,7 +58,7 @@ export default function NationalSavings() {
         <div className="bg-white rounded-xl border border-gray-200">
           <div className="p-4 border-b border-gray-200">
             <h3 className="font-semibold text-gray-700">
-              {loading ? "Loading..." : `${certificates.length} certificate${certificates.length !== 1 ? "s" : ""}`}
+              {loading ? <Loader module="finance" size="inline" /> : `${certificates.length} certificate${certificates.length !== 1 ? "s" : ""}`}
             </h3>
           </div>
           <SavingsCertificateList

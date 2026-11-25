@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Plus, Edit, Trash, Play, RefreshCw, Volume2 } from "lucide-react";
 import { flashcardsApi } from "../../api/flashcards.api";
+import Loader from "../../components/common/Loader";
 import type { Flashcard } from "../../types";
 import Modal from "../../components/common/Modal";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
@@ -83,24 +84,25 @@ export default function Flashcards() {
   };
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Flashcards</h1>
+    <div className="p-4 md:p-6 space-y-4 sm:space-y-6">
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="text-lg sm:text-xl font-bold text-gray-800">Flashcards</h1>
         <button
           onClick={() => { setEditing(null); setShowForm(true); }}
-          className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+          className="flex items-center gap-1 p-1.5 sm:px-3 sm:py-1.5 sm:bg-green-600 sm:text-white text-green-600 rounded-lg text-sm sm:hover:bg-green-700 hover:bg-green-50 transition-colors shrink-0"
         >
-          <Plus size={20} />
-          Add Flashcard
+          <Plus size={20} className="sm:hidden" />
+          <Plus size={16} className="hidden sm:block" />
+          <span className="hidden sm:inline">Add Flashcard</span>
         </button>
       </div>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+      <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
         <div className="flex items-start gap-3">
-          <Volume2 size={20} className="text-blue-600 mt-0.5" />
+          <Volume2 size={20} className="text-blue-600 mt-0.5 shrink-0" />
           <div>
-            <h3 className="font-semibold text-blue-800 mb-1">Auto-Generated Pronunciation</h3>
-            <p className="text-sm text-blue-700">
+            <h3 className="font-semibold text-blue-800 mb-1 text-sm sm:text-base">Auto-Generated Pronunciation</h3>
+            <p className="text-xs sm:text-sm text-blue-700">
               French pronunciation audio is automatically generated using Google Cloud Text-to-Speech when you create or edit flashcards.
             </p>
           </div>
@@ -108,19 +110,19 @@ export default function Flashcards() {
       </div>
 
       {loading ? (
-        <p className="text-gray-500">Loading...</p>
+        <Loader module="learning" />
       ) : flashcards.length === 0 ? (
         <div className="text-center py-12 text-gray-500">
-          <p className="mb-4">No flashcards yet. Create your first one!</p>
+          <p className="text-sm mb-4">No flashcards yet. Create your first one!</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {flashcards.map((card) => (
-            <div key={card.id} className="bg-white p-4 rounded-lg border border-gray-200">
+            <div key={card.id} className="bg-white p-4 rounded-xl border border-gray-200">
               <div className="flex justify-between items-start mb-2">
-                <div className="flex-1">
-                  <p className="font-semibold text-lg text-gray-800">{card.french_text}</p>
-                  <p className="text-gray-600">{card.english_meaning}</p>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-base sm:text-lg text-gray-800">{card.french_text}</p>
+                  <p className="text-sm sm:text-base text-gray-600">{card.english_meaning}</p>
                   <div className="flex gap-2 mt-2">
                     <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
                       {card.category}

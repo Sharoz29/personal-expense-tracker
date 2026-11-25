@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import Header from "../components/layout/Header";
 import { useMonthYear } from "../context/MonthYearContext";
 import { useExpenses } from "../hooks/useExpenses";
+import Loader from "../components/common/Loader";
 import { useExpenseTypes } from "../hooks/useExpenseTypes";
 import { useAccounts } from "../hooks/useAccounts";
 import { usePayableTypes } from "../hooks/usePayableTypes";
@@ -85,43 +86,58 @@ export default function Expenses() {
       <Header title="Expenses" />
       <div className="p-4 md:p-6">
         <div className="bg-white rounded-xl border border-gray-200">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between p-4 border-b border-gray-200">
-            <h3 className="font-semibold text-gray-700">
-              {loading ? "Loading..." : `${filteredExpenses.length} expense${filteredExpenses.length !== 1 ? "s" : ""}`}
-            </h3>
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="flex items-center gap-1.5 text-gray-500">
-                <Filter size={14} className="hidden sm:block" />
-                <select
-                  value={filterTypeId ?? ""}
-                  onChange={(e) => setFilterTypeId(e.target.value ? Number(e.target.value) : null)}
-                  className="px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">All Types</option>
-                  {expenseTypes.map((t) => (
-                    <option key={t.id} value={t.id}>{t.name}</option>
-                  ))}
-                </select>
-                <select
-                  value={filterAccountId ?? ""}
-                  onChange={(e) => setFilterAccountId(e.target.value ? Number(e.target.value) : null)}
-                  className="px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">All Accounts</option>
-                  {accounts.map((a) => (
-                    <option key={a.id} value={a.id}>{a.name}</option>
-                  ))}
-                </select>
-                <input
-                  type="date"
-                  value={filterDate}
-                  onChange={(e) => setFilterDate(e.target.value)}
-                  className="px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+          <div className="p-4 border-b border-gray-200 space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold text-gray-700">
+                {loading ? <Loader module="finance" size="inline" /> : `${filteredExpenses.length} expense${filteredExpenses.length !== 1 ? "s" : ""}`}
+              </h3>
+              {/* Mobile: icon-only */}
               <button
                 onClick={() => { setEditing(null); setShowForm(true); }}
-                className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors flex items-center gap-1 whitespace-nowrap"
+                className="sm:hidden p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+              >
+                <Plus size={20} />
+              </button>
+              {/* Large screens (xl+): full button in top row */}
+              <button
+                onClick={() => { setEditing(null); setShowForm(true); }}
+                className="hidden xl:flex px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors items-center gap-1 whitespace-nowrap"
+              >
+                <Plus size={16} /> Add Expense
+              </button>
+            </div>
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-gray-500">
+              <Filter size={14} className="hidden sm:block" />
+              <select
+                value={filterTypeId ?? ""}
+                onChange={(e) => setFilterTypeId(e.target.value ? Number(e.target.value) : null)}
+                className="min-w-0 flex-1 sm:flex-none px-2 py-1.5 border border-gray-300 rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All Types</option>
+                {expenseTypes.map((t) => (
+                  <option key={t.id} value={t.id}>{t.name}</option>
+                ))}
+              </select>
+              <select
+                value={filterAccountId ?? ""}
+                onChange={(e) => setFilterAccountId(e.target.value ? Number(e.target.value) : null)}
+                className="min-w-0 flex-1 sm:flex-none px-2 py-1.5 border border-gray-300 rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All Accounts</option>
+                {accounts.map((a) => (
+                  <option key={a.id} value={a.id}>{a.name}</option>
+                ))}
+              </select>
+              <input
+                type="date"
+                value={filterDate}
+                onChange={(e) => setFilterDate(e.target.value)}
+                className="min-w-0 flex-1 sm:flex-none px-2 py-1.5 border border-gray-300 rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {/* Tablet/Laptop (sm to xl): button adjacent to pickers */}
+              <button
+                onClick={() => { setEditing(null); setShowForm(true); }}
+                className="hidden sm:flex xl:hidden px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors items-center gap-1 whitespace-nowrap"
               >
                 <Plus size={16} /> Add Expense
               </button>

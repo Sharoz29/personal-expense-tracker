@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { useInstallmentPlans } from "../hooks/useInstallmentPlans";
+import Loader from "../components/common/Loader";
 import { useAccounts } from "../hooks/useAccounts";
 import { useIncomeSources } from "../hooks/useIncomeSources";
 import { incomesApi } from "../api/incomes.api";
@@ -154,17 +155,23 @@ export default function Installments() {
   return (
     <>
       <header className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4 bg-white border-b border-gray-200">
-        <h2 className="text-xl md:text-2xl font-bold text-gray-800">Installment Plans</h2>
+        <h2 className="text-lg sm:text-xl font-bold text-gray-800">Installment Plans</h2>
         <button
           onClick={() => { setEditingPlan(null); setShowPlanForm(true); }}
-          className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors flex items-center gap-1"
+          className="sm:hidden p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+        >
+          <Plus size={20} />
+        </button>
+        <button
+          onClick={() => { setEditingPlan(null); setShowPlanForm(true); }}
+          className="hidden sm:flex px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors items-center gap-1"
         >
           <Plus size={16} /> Add Plan
         </button>
       </header>
       <div className="p-4 md:p-6 space-y-4">
         {loading ? (
-          <div className="text-gray-500">Loading...</div>
+          <Loader module="finance" />
         ) : plans.length === 0 ? (
           <div className="text-center text-gray-500 py-12">No installment plans yet. Click "Add Plan" to get started.</div>
         ) : (
@@ -181,18 +188,18 @@ export default function Installments() {
             return (
               <div key={plan.id} className="bg-white rounded-xl border border-gray-200">
                 <div
-                  className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+                  className="flex items-start justify-between p-3 sm:p-4 cursor-pointer hover:bg-gray-50 transition-colors"
                   onClick={() => togglePlan(plan.id)}
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <h3 className="font-semibold text-gray-800 truncate">{plan.name}</h3>
+                      <h3 className="text-sm sm:text-base font-semibold text-gray-800 truncate">{plan.name}</h3>
                       <span className="text-xs text-gray-500 hidden sm:inline">Buyer: {plan.buyer_name}</span>
                       {plan.description && (
                         <span className="text-xs text-gray-400 hidden md:inline">({plan.description})</span>
                       )}
                     </div>
-                    <div className="flex items-center gap-4 mt-1 text-sm text-gray-500 flex-wrap">
+                    <div className="flex flex-wrap items-center gap-x-2 sm:gap-x-4 gap-y-0.5 mt-1 text-xs sm:text-sm text-gray-500">
                       <span>Expected: {formatPKR(plan.total_amount)}</span>
                       {planPayments[plan.id] && (
                         <>
@@ -204,7 +211,7 @@ export default function Installments() {
                             </>
                           )}
                           <span className={outstanding > 0 ? "text-amber-600" : "text-green-600"}>
-                            {outstanding > 0 ? `Outstanding: ${formatPKR(outstanding)}` : "Fully Received"}
+                            {outstanding > 0 ? `Due: ${formatPKR(outstanding)}` : "Fully Received"}
                           </span>
                         </>
                       )}
@@ -218,7 +225,7 @@ export default function Installments() {
                       </div>
                     )}
                   </div>
-                  <div className="flex items-center gap-2 ml-4">
+                  <div className="flex items-center gap-1 sm:gap-2 ml-2 sm:ml-4 shrink-0">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -226,29 +233,44 @@ export default function Installments() {
                         setEditingPayment(null);
                         setShowPaymentForm(true);
                       }}
-                      className="px-2.5 py-1.5 bg-blue-600 text-white rounded-lg text-xs hover:bg-blue-700 transition-colors flex items-center gap-1"
+                      className="xl:hidden p-1 sm:p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                    >
+                      <Plus size={14} className="sm:hidden" />
+                      <Plus size={16} className="hidden sm:block" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPaymentPlanId(plan.id);
+                        setEditingPayment(null);
+                        setShowPaymentForm(true);
+                      }}
+                      className="hidden xl:flex px-2.5 py-1.5 bg-blue-600 text-white rounded-lg text-xs hover:bg-blue-700 transition-colors items-center gap-1"
                     >
                       <Plus size={12} /> Payment
                     </button>
                     <button
                       onClick={(e) => { e.stopPropagation(); setEditingPlan(plan); setShowPlanForm(true); }}
-                      className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                      className="p-1 sm:p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
                     >
-                      <Pencil size={14} />
+                      <Pencil size={12} className="sm:hidden" />
+                      <Pencil size={14} className="hidden sm:block" />
                     </button>
                     <button
                       onClick={(e) => { e.stopPropagation(); setDeletingPlan(plan); }}
-                      className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                      className="p-1 sm:p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
                     >
-                      <Trash2 size={14} />
+                      <Trash2 size={12} className="sm:hidden" />
+                      <Trash2 size={14} className="hidden sm:block" />
                     </button>
-                    {isExpanded ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
+                    {isExpanded ? <ChevronUp size={16} className="text-gray-400 sm:hidden" /> : <ChevronDown size={16} className="text-gray-400 sm:hidden" />}
+                    {isExpanded ? <ChevronUp size={18} className="text-gray-400 hidden sm:block" /> : <ChevronDown size={18} className="text-gray-400 hidden sm:block" />}
                   </div>
                 </div>
                 {isExpanded && (
                   <div className="border-t border-gray-200">
                     {paymentsLoading === plan.id ? (
-                      <div className="p-4 text-gray-500 text-sm">Loading...</div>
+                      <div className="p-4"><Loader module="finance" size="inline" /></div>
                     ) : (
                       <>
                         <InstallmentPaymentList

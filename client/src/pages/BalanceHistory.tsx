@@ -1,6 +1,7 @@
 import { useAccountSnapshots } from "../hooks/useAccountSnapshots";
 import { formatPKR } from "../utils/format";
 import BalanceTrajectoryChart from "../components/accounts/BalanceTrajectoryChart";
+import Loader from "../components/common/Loader";
 
 export default function BalanceHistory() {
   const { trajectories, loading, error } = useAccountSnapshots();
@@ -8,7 +9,7 @@ export default function BalanceHistory() {
   if (loading) {
     return (
       <div className="p-4 md:p-6">
-        <p className="text-gray-500">Loading balance history...</p>
+        <Loader module="finance" />
       </div>
     );
   }
@@ -23,7 +24,7 @@ export default function BalanceHistory() {
 
   return (
     <div className="p-4 md:p-6 space-y-6">
-      <h1 className="text-xl font-bold text-gray-800">Balance History</h1>
+      <h1 className="text-lg sm:text-xl font-bold text-gray-800">Balance History</h1>
       <p className="text-sm text-gray-500">
         Monthly balance trajectory for each account, computed from all transactions.
       </p>

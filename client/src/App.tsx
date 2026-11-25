@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { MonthYearProvider } from "./context/MonthYearContext";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import PinScreen from "./components/auth/PinScreen";
+import Loader from "./components/common/Loader";
 import ModuleHome from "./pages/ModuleHome";
 import ComingSoon from "./pages/ComingSoon";
 
@@ -43,7 +44,7 @@ function AuthGate() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-gray-500">Loading...</p>
+        <Loader />
       </div>
     );
   }

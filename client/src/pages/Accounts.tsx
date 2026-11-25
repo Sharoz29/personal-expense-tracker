@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Header from "../components/layout/Header";
 import { useAccounts } from "../hooks/useAccounts";
+import Loader from "../components/common/Loader";
 import AccountList from "../components/accounts/AccountList";
 import AccountForm from "../components/accounts/AccountForm";
 import TransferForm from "../components/accounts/TransferForm";
@@ -47,7 +48,7 @@ export default function Accounts() {
         {/* Total Balance Card */}
         <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
           <p className="text-sm text-gray-500 mb-1">Total Balance</p>
-          <p className={`text-2xl font-bold ${totalBalance >= 0 ? "text-green-700" : "text-red-700"}`}>
+          <p className={`text-lg sm:text-2xl font-bold ${totalBalance >= 0 ? "text-green-700" : "text-red-700"}`}>
             {formatPKR(totalBalance)}
           </p>
         </div>
@@ -56,7 +57,7 @@ export default function Accounts() {
         <div className="bg-white rounded-xl border border-gray-200">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between p-4 border-b border-gray-200">
             <h3 className="font-semibold text-gray-700">
-              {loading ? "Loading..." : `${accounts.length} account${accounts.length !== 1 ? "s" : ""}`}
+              {loading ? <Loader module="finance" size="inline" /> : `${accounts.length} account${accounts.length !== 1 ? "s" : ""}`}
             </h3>
             <div className="flex gap-2">
               <button
