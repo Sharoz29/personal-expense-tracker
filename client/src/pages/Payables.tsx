@@ -70,7 +70,7 @@ export default function Payables() {
   return (
     <>
       <header className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4 bg-white border-b border-gray-200">
-        <h2 className="text-xl md:text-2xl font-bold text-gray-800">Payable to Me</h2>
+        <h2 className="text-lg sm:text-xl font-bold text-gray-800">Payable to Me</h2>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5 text-gray-500">
             <Filter size={14} className="hidden sm:block" />
@@ -111,14 +111,14 @@ export default function Payables() {
       </header>
       <div className="p-4 md:p-6 space-y-4 md:space-y-6">
         {/* Summary Cards */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4">
           <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
-            <p className="text-sm text-gray-500 mb-1">Total Pending</p>
-            <p className="text-2xl font-bold text-yellow-600">{formatPKR(totalPending)}</p>
+            <p className="text-xs sm:text-sm text-gray-500 mb-1">Total Pending</p>
+            <p className="text-lg sm:text-2xl font-bold text-yellow-600">{formatPKR(totalPending)}</p>
           </div>
           <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
-            <p className="text-sm text-gray-500 mb-1">Total Paid</p>
-            <p className="text-2xl font-bold text-green-600">{formatPKR(totalPaid)}</p>
+            <p className="text-xs sm:text-sm text-gray-500 mb-1">Total Paid</p>
+            <p className="text-lg sm:text-2xl font-bold text-green-600">{formatPKR(totalPaid)}</p>
           </div>
         </div>
 

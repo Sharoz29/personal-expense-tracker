@@ -47,16 +47,16 @@ export default function SummaryCards({ totalIncome, totalExpenses, savings, paya
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
       {cards.map(({ label, value, icon: Icon, color, bg, iconBg }) => (
-        <div key={label} className={`${bg} rounded-xl p-5 border border-gray-100`}>
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-medium text-gray-600">{label}</span>
-            <div className={`${iconBg} p-2 rounded-lg`}>
-              <Icon size={20} className={color} />
+        <div key={label} className={`${bg} rounded-xl p-3 sm:p-5 border border-gray-100`}>
+          <div className="flex items-center justify-between mb-2 sm:mb-3">
+            <span className="text-xs sm:text-sm font-medium text-gray-600">{label}</span>
+            <div className={`${iconBg} p-1.5 sm:p-2 rounded-lg`}>
+              <Icon size={18} className={color} />
             </div>
           </div>
-          <div className={`text-2xl font-bold ${color}`}>
+          <div className={`text-base sm:text-2xl font-bold ${color}`}>
             {formatPKR(value)}
           </div>
         </div>

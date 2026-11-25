@@ -26,7 +26,7 @@ export default function MedicalDashboard() {
             <div className="p-2 bg-rose-50 rounded-lg">
               <Users size={20} className="text-rose-600" />
             </div>
-            <span className="text-2xl font-bold text-gray-800">{members.length}</span>
+            <span className="text-xl sm:text-2xl font-bold text-gray-800">{members.length}</span>
           </div>
           <p className="text-sm text-gray-600">Family Members</p>
         </div>
@@ -39,7 +39,7 @@ export default function MedicalDashboard() {
             <div className="p-2 bg-blue-50 rounded-lg">
               <FileText size={20} className="text-blue-600" />
             </div>
-            <span className="text-2xl font-bold text-gray-800">{reports.length}</span>
+            <span className="text-xl sm:text-2xl font-bold text-gray-800">{reports.length}</span>
           </div>
           <p className="text-sm text-gray-600">Total Reports</p>
         </div>

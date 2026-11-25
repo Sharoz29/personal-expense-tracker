@@ -23,7 +23,7 @@ export default function BalanceHistory() {
 
   return (
     <div className="p-4 md:p-6 space-y-6">
-      <h1 className="text-xl font-bold text-gray-800">Balance History</h1>
+      <h1 className="text-lg sm:text-xl font-bold text-gray-800">Balance History</h1>
       <p className="text-sm text-gray-500">
         Monthly balance trajectory for each account, computed from all transactions.
       </p>

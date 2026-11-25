@@ -72,22 +72,22 @@ export default function MutualFundsContent() {
     <div className="p-4 md:p-6 space-y-4 md:space-y-6">
       {/* Summary */}
       <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           <div>
-            <p className="text-sm text-gray-500 mb-1">Total Invested</p>
-            <p className="text-2xl font-bold text-emerald-600">{formatPKR(totalInvested)}</p>
+            <p className="text-xs sm:text-sm text-gray-500 mb-1">Total Invested</p>
+            <p className="text-base sm:text-2xl font-bold text-emerald-600">{formatPKR(totalInvested)}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-500 mb-1">Net Invested</p>
-            <p className="text-xl font-bold text-blue-600">{formatPKR(totalNetInvested)}</p>
+            <p className="text-xs sm:text-sm text-gray-500 mb-1">Net Invested</p>
+            <p className="text-base sm:text-xl font-bold text-blue-600">{formatPKR(totalNetInvested)}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-500 mb-1">Total Fees</p>
-            <p className="text-xl font-bold text-red-500">{formatPKR(totalFees)}</p>
+            <p className="text-xs sm:text-sm text-gray-500 mb-1">Total Fees</p>
+            <p className="text-base sm:text-xl font-bold text-red-500">{formatPKR(totalFees)}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-500 mb-1">Funds</p>
-            <p className="text-xl font-bold text-gray-800">{funds.length}</p>
+            <p className="text-xs sm:text-sm text-gray-500 mb-1">Funds</p>
+            <p className="text-base sm:text-xl font-bold text-gray-800">{funds.length}</p>
           </div>
         </div>
       </div>

@@ -73,7 +73,7 @@ export default function LearningDashboard() {
                 <div className={`${card.color} p-2 rounded-lg`}>
                   <Icon size={20} className="text-white" />
                 </div>
-                <span className="text-2xl font-bold text-gray-800">{card.value}</span>
+                <span className="text-xl sm:text-2xl font-bold text-gray-800">{card.value}</span>
               </div>
               <p className="text-sm text-gray-600">{card.title}</p>
             </button>

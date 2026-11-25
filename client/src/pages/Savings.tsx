@@ -35,7 +35,7 @@ export default function Savings() {
   return (
     <>
       <header className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between px-4 py-3 md:px-6 md:py-4 bg-white border-b border-gray-200">
-        <h2 className="text-xl md:text-2xl font-bold text-gray-800">Savings</h2>
+        <h2 className="text-lg sm:text-xl font-bold text-gray-800">Savings</h2>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowAddForm(true)}

@@ -39,7 +39,7 @@ export default function Committees() {
         <div className="flex items-center gap-3">
           <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6 flex-1">
             <p className="text-sm text-gray-500 mb-1">Total Payout</p>
-            <p className="text-2xl font-bold text-emerald-600">{formatPKR(totalPayout)}</p>
+            <p className="text-lg sm:text-2xl font-bold text-emerald-600">{formatPKR(totalPayout)}</p>
           </div>
           <button
             onClick={() => { setEditing(null); setShowForm(true); }}

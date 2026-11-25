@@ -155,7 +155,7 @@ export default function Installments() {
   return (
     <>
       <header className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4 bg-white border-b border-gray-200">
-        <h2 className="text-xl md:text-2xl font-bold text-gray-800">Installment Plans</h2>
+        <h2 className="text-lg sm:text-xl font-bold text-gray-800">Installment Plans</h2>
         <button
           onClick={() => { setEditingPlan(null); setShowPlanForm(true); }}
           className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors flex items-center gap-1"
