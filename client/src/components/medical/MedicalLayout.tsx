@@ -17,7 +17,7 @@ export default function MedicalLayout() {
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Desktop sidebar — lg and above */}
-      <aside className={`hidden lg:flex bg-white border-r border-gray-200 min-h-screen flex-col shrink-0 transition-all duration-200 ${
+      <aside className={`hidden lg:flex bg-white border-r border-gray-200 h-screen sticky top-0 flex-col shrink-0 transition-all duration-200 ${
         sidebarCollapsed ? "w-16 p-2" : "w-64 p-4"
       }`}>
         {sidebarCollapsed ? (
