@@ -35,15 +35,16 @@ export default function FamilyMembers() {
   }
 
   return (
-    <div className="p-4 md:p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-gray-800">Family Members</h1>
+    <div className="p-4 md:p-6 space-y-4 sm:space-y-6">
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="text-lg sm:text-xl font-bold text-gray-800">Family Members</h1>
         <button
           onClick={() => { setEditing(null); setShowForm(true); }}
-          className="flex items-center gap-1 px-3 py-2 bg-rose-600 text-white rounded-lg text-sm hover:bg-rose-700 transition-colors"
+          className="flex items-center gap-1 p-1.5 sm:px-3 sm:py-1.5 sm:bg-rose-600 sm:text-white text-rose-600 rounded-lg text-sm sm:hover:bg-rose-700 hover:bg-rose-50 transition-colors shrink-0"
         >
-          <Plus size={16} />
-          Add Member
+          <Plus size={20} className="sm:hidden" />
+          <Plus size={16} className="hidden sm:block" />
+          <span className="hidden sm:inline">Add Member</span>
         </button>
       </div>
 
@@ -54,7 +55,7 @@ export default function FamilyMembers() {
           No family members yet. Add yourself to get started.
         </div>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {members.map((m) => (
             <div
               key={m.id}

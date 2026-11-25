@@ -15,9 +15,9 @@ export default function MedicalDashboard() {
 
   return (
     <div className="p-4 md:p-6 space-y-6">
-      <h1 className="text-xl font-bold text-gray-800">Medical Dashboard</h1>
+      <h1 className="text-lg sm:text-xl font-bold text-gray-800">Medical Dashboard</h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
         <div
           onClick={() => navigate("/medical/family-members")}
           className="bg-white rounded-xl border border-gray-200 p-4 cursor-pointer hover:border-rose-300 transition-colors"
@@ -53,7 +53,7 @@ export default function MedicalDashboard() {
               <ClipboardList size={20} className="text-green-600" />
             </div>
           </div>
-          <p className="text-sm text-gray-600">Manage Categories & Markers</p>
+          <p className="text-sm text-gray-600">Categories & Markers</p>
         </div>
       </div>
 
@@ -69,9 +69,9 @@ export default function MedicalDashboard() {
               <div
                 key={`${f.category_id}-${f.family_member_id}`}
                 onClick={() => navigate(`/medical/reports?category_id=${f.category_id}&family_member_id=${f.family_member_id}`)}
-                className="flex items-center justify-between p-3 rounded-lg hover:bg-amber-50 cursor-pointer transition-colors"
+                className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-3 p-3 rounded-lg hover:bg-amber-50 cursor-pointer transition-colors"
               >
-                <div>
+                <div className="min-w-0">
                   <p className="text-sm font-medium text-gray-800">
                     {f.category_name}
                   </p>
@@ -79,7 +79,7 @@ export default function MedicalDashboard() {
                     {f.family_member_name} &middot; Last: {formatDate(f.last_report_date)}
                   </p>
                 </div>
-                <div className="text-right">
+                <div className="shrink-0">
                   <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full ${
                     f.is_overdue
                       ? "bg-red-100 text-red-700"
@@ -96,14 +96,15 @@ export default function MedicalDashboard() {
       )}
 
       <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-800">Recent Reports</h2>
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <h2 className="text-base sm:text-lg font-semibold text-gray-800">Recent Reports</h2>
           <button
             onClick={() => navigate("/medical/reports")}
-            className="flex items-center gap-1 px-3 py-1.5 bg-rose-600 text-white rounded-lg text-sm hover:bg-rose-700 transition-colors"
+            className="flex items-center gap-1 p-1.5 sm:px-3 sm:py-1.5 sm:bg-rose-600 sm:text-white text-rose-600 rounded-lg text-sm sm:hover:bg-rose-700 hover:bg-rose-50 transition-colors shrink-0"
           >
-            <Plus size={16} />
-            Add Report
+            <Plus size={20} className="sm:hidden" />
+            <Plus size={16} className="hidden sm:block" />
+            <span className="hidden sm:inline">Add Report</span>
           </button>
         </div>
 
