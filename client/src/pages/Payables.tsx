@@ -69,44 +69,58 @@ export default function Payables() {
 
   return (
     <>
-      <header className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4 bg-white border-b border-gray-200">
-        <h2 className="text-lg sm:text-xl font-bold text-gray-800">Payable to Me</h2>
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 text-gray-500">
-            <Filter size={14} className="hidden sm:block" />
-            <select
-              value={filterTypeId}
-              onChange={(e) => setFilterTypeId(Number(e.target.value))}
-              className="px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+      <header className="px-4 py-3 md:px-6 md:py-4 bg-white border-b border-gray-200 space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg sm:text-xl font-bold text-gray-800">Payable to Me</h2>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowLumpSum(true)}
+              className="sm:hidden p-1.5 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
             >
-              <option value={0}>All Types</option>
-              {payableTypes.map((t) => (
-                <option key={t.id} value={t.id}>{t.name}</option>
-              ))}
-            </select>
-            <select
-              value={filterPayeeId}
-              onChange={(e) => setFilterPayeeId(Number(e.target.value))}
-              className="px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <Banknote size={20} />
+            </button>
+            <button
+              onClick={() => { setEditing(null); setShowForm(true); }}
+              className="sm:hidden p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
             >
-              <option value={0}>All Payees</option>
-              {payees.map((p) => (
-                <option key={p.id} value={p.id}>{p.name}</option>
-              ))}
-            </select>
+              <Plus size={20} />
+            </button>
+            <button
+              onClick={() => setShowLumpSum(true)}
+              className="hidden sm:flex px-3 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-colors items-center gap-1"
+            >
+              <Banknote size={16} /> Lump Sum
+            </button>
+            <button
+              onClick={() => { setEditing(null); setShowForm(true); }}
+              className="hidden sm:flex px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors items-center gap-1"
+            >
+              <Plus size={16} /> Add Payable
+            </button>
           </div>
-          <button
-            onClick={() => setShowLumpSum(true)}
-            className="px-3 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-colors flex items-center gap-1"
+        </div>
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-gray-500">
+          <Filter size={14} className="hidden sm:block" />
+          <select
+            value={filterTypeId}
+            onChange={(e) => setFilterTypeId(Number(e.target.value))}
+            className="min-w-0 flex-1 sm:flex-none px-2 py-1.5 border border-gray-300 rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <Banknote size={16} /> Lump Sum
-          </button>
-          <button
-            onClick={() => { setEditing(null); setShowForm(true); }}
-            className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors flex items-center gap-1"
+            <option value={0}>All Types</option>
+            {payableTypes.map((t) => (
+              <option key={t.id} value={t.id}>{t.name}</option>
+            ))}
+          </select>
+          <select
+            value={filterPayeeId}
+            onChange={(e) => setFilterPayeeId(Number(e.target.value))}
+            className="min-w-0 flex-1 sm:flex-none px-2 py-1.5 border border-gray-300 rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <Plus size={16} /> Add Payable
-          </button>
+            <option value={0}>All Payees</option>
+            {payees.map((p) => (
+              <option key={p.id} value={p.id}>{p.name}</option>
+            ))}
+          </select>
         </div>
       </header>
       <div className="p-4 md:p-6 space-y-4 md:space-y-6">
